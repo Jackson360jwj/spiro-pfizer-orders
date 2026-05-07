@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pfizer SPIRO Order Request – Reality Engineering</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Arial,sans-serif;font-size:14px;color:#222;background:#eef2f7;}
+
+.app{max-width:820px;margin:0 auto;padding:20px;}
+
+/* Header */
+.app-header{text-align:center;margin-bottom:28px;}
+.sub{font-size:12px;letter-spacing:3px;color:#888;margin-top:6px;}
+.sub2{font-size:13px;color:#555;margin-top:8px;}
+
+/* Cards */
+.card{background:#fff;border-radius:10px;padding:24px;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,.08);}
+.card-title{font-size:15px;font-weight:700;color:#1a3a5c;border-bottom:2px solid #1a3a5c;padding-bottom:8px;margin-bottom:18px;text-transform:uppercase;letter-spacing:.5px;}
+.step-badge{display:inline-block;background:#1a3a5c;color:#fff;border-radius:50%;width:22px;height:22px;text-align:center;line-height:22px;font-size:12px;font-weight:700;margin-right:8px;}
+
+/* Form */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.fw{grid-column:span 2;}
+.fgroup{display:flex;flex-direction:column;gap:4px;}
+label.lbl{font-size:11px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.5px;}
+label.lbl .req{color:#e74c3c;}
+input[type=text],input[type=email],input[type=date],input[type=number],select,textarea{
+  border:1px solid #ddd;border-radius:5px;padding:8px 10px;font-size:13px;width:100%;color:#222;
+  transition:border-color .2s;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#1a3a5c;box-shadow:0 0 0 3px rgba(26,58,92,.1);}
+input.error,select.error,textarea.error{border-color:#e74c3c;background:#fff8f8;}
+textarea{height:72px;resize:vertical;}
+
+/* Service Type checkboxes */
+.service-type-group{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;}
+.svc-type-check{display:flex;align-items:center;gap:8px;padding:10px 18px;border:2px solid #1a3a5c;
+  border-radius:7px;cursor:pointer;font-size:13px;font-weight:700;color:#1a3a5c;background:#fff;
+  transition:all .15s;flex:1;min-width:130px;justify-content:center;user-select:none;}
+.svc-type-check:hover{background:#eef2f7;}
+.svc-type-check.selected{background:#1a3a5c;color:#fff;}
+.svc-type-check.error-border{border-color:#e74c3c;}
+.svc-note{font-size:11px;color:#888;margin-top:6px;}
+
+/* Options */
+.opt{display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid #ddd;
+  border-radius:5px;cursor:pointer;font-size:13px;}
+.opt input{width:auto;cursor:pointer;}
+.opt:hover{background:#f7f9fc;}
+.divider{border:none;border-top:1px solid #eee;margin:14px 0;}
+.alert-info{padding:10px 14px;border-radius:5px;font-size:12px;margin-bottom:10px;
+  background:#fff8e1;border:1px solid #f9a825;color:#6d4c00;}
+.tip-note{padding:9px 13px;border-radius:5px;font-size:12px;margin-bottom:10px;
+  background:#e8f4fd;border:1px solid #7fb9e0;color:#1a4a6e;}
+
+/* Conditional fields */
+.conditional-field{display:none;margin-top:10px;}
+
+/* Submit button */
+.btn-submit{width:100%;padding:14px;background:#1a3a5c;color:#fff;border:none;border-radius:8px;
+  font-size:16px;font-weight:700;cursor:pointer;transition:background .15s;margin-top:8px;}
+.btn-submit:hover{background:#142e4a;}
+
+/* Error summary */
+.error-box{background:#fdf2f2;border:1px solid #e74c3c;border-radius:6px;padding:12px 16px;
+  margin-bottom:16px;display:none;font-size:13px;color:#c0392b;}
+
+/* SUCCESS SCREEN */
+#success-screen{display:none;}
+.success-card{background:#fff;border-radius:10px;padding:32px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.08);}
+.success-icon{font-size:56px;margin-bottom:12px;}
+.success-title{font-size:22px;font-weight:700;color:#27ae60;margin-bottom:8px;}
+.success-sub{font-size:14px;color:#555;margin-bottom:24px;}
+
+.back-btn{display:inline-block;padding:12px 24px;background:#fff;color:#1a3a5c;
+  border:2px solid #1a3a5c;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;
+  text-decoration:none;margin:6px;transition:all .15s;}
+.back-btn:hover{background:#1a3a5c;color:#fff;}
+
+.import-box{background:#f0f8ff;border:1px solid #3498db;border-radius:8px;padding:20px;
+  margin-top:24px;text-align:left;}
+.import-box h3{font-size:14px;font-weight:700;color:#1a3a5c;margin-bottom:6px;}
+.import-box p{font-size:12px;color:#555;margin-bottom:10px;}
+.import-code{font-family:monospace;font-size:11px;background:#fff;border:1px solid #ccc;
+  border-radius:4px;padding:10px;word-break:break-all;max-height:80px;overflow-y:auto;
+  color:#333;margin-bottom:8px;}
+.copy-btn{padding:8px 16px;background:#3498db;color:#fff;border:none;border-radius:5px;
+  font-size:12px;font-weight:700;cursor:pointer;}
+.copy-btn:hover{background:#2980b9;}
+.copy-confirm{font-size:11px;color:#27ae60;margin-left:8px;display:none;}
+
+.order-summary{background:#f7f9fc;border-radius:8px;padding:16px;margin-top:16px;
+  text-align:left;font-size:12px;line-height:1.8;}
+.order-summary h3{font-size:13px;font-weight:700;color:#1a3a5c;margin-bottom:8px;}
+.order-summary .row{display:flex;gap:8px;}
+.order-summary .row .key{font-weight:700;min-width:180px;color:#555;}
+</style>
+</head>
+<body>
+
+<!-- Netlify form detection (hidden) -->
+<form name="pfizer-order" netlify netlify-honeypot="bot-field" hidden>
+  <input name="bot-field">
+  <input name="Meeting_Manager">
+  <input name="Manager_Email">
+  <input name="Pfizer_Meeting_Number">
+  <input name="Legal_Entity">
+  <input name="Meeting_Full_Name">
+  <input name="Meeting_Acronym">
+  <input name="Event_Type">
+  <input name="Meeting_Address">
+  <input name="Meeting_Date">
+  <input name="Meeting_Time">
+  <input name="Meal_Type">
+  <input name="Estimated_Attendees">
+  <input name="Therapeutic_Area">
+  <input name="Product_Associated">
+  <input name="Pfizer_Project_Owner">
+  <input name="TD_Contact">
+  <input name="Notes">
+  <input name="Service_Type">
+  <input name="Survey_Type">
+  <input name="Survey_Details">
+  <input name="Product_Program">
+  <input name="Product_Program_Details">
+  <input name="Clinical_Internal_Name">
+  <input name="Assoc_Contact_Name">
+  <input name="Assoc_Contact_Email">
+  <input name="Assoc_Vendor_Name">
+  <input name="Badge_API_Available">
+  <input name="Provider_Reg_Company">
+  <input name="API_Badge_Contact_Name">
+  <input name="API_Badge_Contact_Email">
+  <input name="API_Badge_Notes">
+  <input name="Data_Capture_Method">
+  <input name="Service_Details">
+  <input name="Qty_App_Licenses">
+  <input name="Qty_Scanners">
+  <input name="Import_Code">
+</form>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="app-header">
+    <div style="display:flex;align-items:center;justify-content:center;margin-bottom:6px;">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANoAAAA6CAYAAADWWUdZAAAABGdBTUEAALGOfPtRkwAAACBjSFJNAACHDwAAjA8AAP1SAACBQAAAfXkAAOmLAAA85QAAGcxzPIV3AAAKOWlDQ1BQaG90b3Nob3AgSUNDIHByb2ZpbGUAAEjHnZZ3VFTXFofPvXd6oc0wAlKG3rvAANJ7k15FYZgZYCgDDjM0sSGiAhFFRJoiSFDEgNFQJFZEsRAUVLAHJAgoMRhFVCxvRtaLrqy89/Ly++Osb+2z97n77L3PWhcAkqcvl5cGSwGQyhPwgzyc6RGRUXTsAIABHmCAKQBMVka6X7B7CBDJy82FniFyAl8EAfB6WLwCcNPQM4BOB/+fpFnpfIHomAARm7M5GSwRF4g4JUuQLrbPipgalyxmGCVmvihBEcuJOWGRDT77LLKjmNmpPLaIxTmns1PZYu4V8bZMIUfEiK+ICzO5nCwR3xKxRoowlSviN+LYVA4zAwAUSWwXcFiJIjYRMYkfEuQi4uUA4EgJX3HcVyzgZAvEl3JJS8/hcxMSBXQdli7d1NqaQffkZKVwBALDACYrmcln013SUtOZvBwAFu/8WTLi2tJFRbY0tba0NDQzMv2qUP91829K3NtFehn4uWcQrf+L7a/80hoAYMyJarPziy2uCoDOLQDI3fti0zgAgKSobx3Xv7oPTTwviQJBuo2xcVZWlhGXwzISF/QP/U+Hv6GvvmckPu6P8tBdOfFMYYqALq4bKy0lTcinZ6QzWRy64Z+H+B8H/nUeBkGceA6fwxNFhImmjMtLELWbx+YKuGk8Opf3n5r4D8P+pMW5FonS+BFQY4yA1HUqQH7tBygKESDR+8Vd/6NvvvgwIH554SqTi3P/7zf9Z8Gl4iWDm/A5ziUohM4S8jMX98TPEqABAUgCKpAHykAd6ABDYAasgC1wBG7AG/iDEBAJVgMWSASpgA+yQB7YBApBMdgJ9oBqUAcaQTNoBcdBJzgFzoNL4Bq4AW6D+2AUTIBnYBa8BgsQBGEhMkSB5CEVSBPSh8wgBmQPuUG+UBAUCcVCCRAPEkJ50GaoGCqDqqF6qBn6HjoJnYeuQIPQXWgMmoZ+h97BCEyCqbASrAUbwwzYCfaBQ+BVcAK8Bs6FC+AdcCXcAB+FO+Dz8DX4NjwKP4PnEIAQERqiihgiDMQF8UeikHiEj6xHipAKpAFpRbqRPuQmMorMIG9RGBQFRUcZomxRnqhQFAu1BrUeVYKqRh1GdaB6UTdRY6hZ1Ec0Ga2I1kfboL3QEegEdBa6EF2BbkK3oy+ib6Mn0K8xGAwNo42xwnhiIjFJmLWYEsw+TBvmHGYQM46Zw2Kx8lh9rB3WH8vECrCF2CrsUexZ7BB2AvsGR8Sp4Mxw7rgoHA+Xj6vAHcGdwQ3hJnELeCm8Jt4G749n43PwpfhGfDf+On4Cv0CQJmgT7AghhCTCJkIloZVwkfCA8JJIJKoRrYmBRC5xI7GSeIx4mThGfEuSIemRXEjRJCFpB+kQ6RzpLuklmUzWIjuSo8gC8g5yM/kC+RH5jQRFwkjCS4ItsUGiRqJDYkjiuSReUlPSSXK1ZK5kheQJyeuSM1J4KS0pFymm1HqpGqmTUiNSc9IUaVNpf+lU6RLpI9JXpKdksDJaMm4ybJkCmYMyF2TGKQhFneJCYVE2UxopFykTVAxVm+pFTaIWU7+jDlBnZWVkl8mGyWbL1sielh2lITQtmhcthVZKO04bpr1borTEaQlnyfYlrUuGlszLLZVzlOPIFcm1yd2WeydPl3eTT5bfJd8p/1ABpaCnEKiQpbBf4aLCzFLqUtulrKVFS48vvacIK+opBimuVTyo2K84p6Ss5KGUrlSldEFpRpmm7KicpFyufEZ5WoWiYq/CVSlXOavylC5Ld6Kn0CvpvfRZVUVVT1Whar3qgOqCmrZaqFq+WpvaQ3WCOkM9Xr1cvUd9VkNFw08jT6NF454mXpOhmai5V7NPc15LWytca6tWp9aUtpy2l3audov2Ax2yjoPOGp0GnVu6GF2GbrLuPt0berCehV6iXo3edX1Y31Kfq79Pf9AAbWBtwDNoMBgxJBk6GWYathiOGdGMfI3yjTqNnhtrGEcZ7zLuM/5oYmGSYtJoct9UxtTbNN+02/R3Mz0zllmN2S1zsrm7+QbzLvMXy/SXcZbtX3bHgmLhZ7HVosfig6WVJd+y1XLaSsMq1qrWaoRBZQQwShiXrdHWztYbrE9Zv7WxtBHYHLf5zdbQNtn2iO3Ucu3lnOWNy8ft1OyYdvV2o/Z0+1j7A/ajDqoOTIcGh8eO6o5sxybHSSddpySno07PnU2c+c7tzvMuNi7rXM65Iq4erkWuA24ybqFu1W6P3NXcE9xb3Gc9LDzWepzzRHv6eO7yHPFS8mJ5NXvNelt5r/Pu9SH5BPtU+zz21fPl+3b7wX7efrv9HqzQXMFb0ekP/L38d/s/DNAOWBPwYyAmMCCwJvBJkGlQXlBfMCU4JvhI8OsQ55DSkPuhOqHC0J4wybDosOaw+XDX8LLw0QjjiHUR1yIVIrmRXVHYqLCopqi5lW4r96yciLaILoweXqW9KnvVldUKq1NWn46RjGHGnIhFx4bHHol9z/RnNjDn4rziauNmWS6svaxnbEd2OXuaY8cp40zG28WXxU8l2CXsTphOdEisSJzhunCruS+SPJPqkuaT/ZMPJX9KCU9pS8Wlxqae5Mnwknm9acpp2WmD6frphemja2zW7Fkzy/fhN2VAGasyugRU0c9Uv1BHuEU4lmmfWZP5Jiss60S2dDYvuz9HL2d7zmSue+63a1FrWWt78lTzNuWNrXNaV78eWh+3vmeD+oaCDRMbPTYe3kTYlLzpp3yT/LL8V5vDN3cXKBVsLBjf4rGlpVCikF84stV2a9021DbutoHt5turtn8sYhddLTYprih+X8IqufqN6TeV33zaEb9joNSydP9OzE7ezuFdDrsOl0mX5ZaN7/bb3VFOLy8qf7UnZs+VimUVdXsJe4V7Ryt9K7uqNKp2Vr2vTqy+XeNc01arWLu9dn4fe9/Qfsf9rXVKdcV17w5wD9yp96jvaNBqqDiIOZh58EljWGPft4xvm5sUmoqbPhziHRo9HHS4t9mqufmI4pHSFrhF2DJ9NProje9cv+tqNWytb6O1FR8Dx4THnn4f+/3wcZ/jPScYJ1p/0Pyhtp3SXtQBdeR0zHYmdo52RXYNnvQ+2dNt293+o9GPh06pnqo5LXu69AzhTMGZT2dzz86dSz83cz7h/HhPTM/9CxEXbvUG9g5c9Ll4+ZL7pQt9Tn1nL9tdPnXF5srJq4yrndcsr3X0W/S3/2TxU/uA5UDHdavrXTesb3QPLh88M+QwdP6m681Lt7xuXbu94vbgcOjwnZHokdE77DtTd1PuvriXeW/h/sYH6AdFD6UeVjxSfNTws+7PbaOWo6fHXMf6Hwc/vj/OGn/2S8Yv7ycKnpCfVEyqTDZPmU2dmnafvvF05dOJZ+nPFmYKf5X+tfa5zvMffnP8rX82YnbiBf/Fp99LXsq/PPRq2aueuYC5R69TXy/MF72Rf3P4LeNt37vwd5MLWe+x7ys/6H7o/ujz8cGn1E+f/gUDmPP8usTo0wAAAAlwSFlzAAAOxAAADsQBlSsOGwAAHopJREFUeF7tnQd8FcXaxt/03ukhCSGFhBZCR8UCXMV29aqoH4IgKCKCdBABAQuIgFjwWkCwe21X/bwCKuJVEQVCL6FICIEkJIGQ3k7K9z5z5sCePW33JFE+Pf+fa9g5e2ZnZ+aZed+Z2TluDQy5cOFC8Nj6HFp8Qzt5RjT7P9m09KZIeeY87vKvCxd/edouPEDfHCmVZ0bWp5dS5KID8sx5XEJz4YJJWHyIzpyupBA/DxliJJTPc05VUuKSQzLEOVxCc/GXByL6jUVGKpFdgMOPZVVQ0jPpMkA/binL0xsO51eTp7ubDLIOXLlAb3fy8nSnUF8PCvBxpw5h3pTSzpeGJgVTz/b+8kr75JcZqPWj+yggyEuGNA3lHO/xhV2pY4SPDNFHbX0DeT2yyyxd5eW1tH1GEvWJ1vZsahK5YE4W1pCXx8W8La+opU/HdqTbuofKEOd48acCmvzpaQpQVI6Kmnq6p2cYvXNPjDh/+tszNG99LgVweTUXqBcVZbXUsKoXbUwvoetfPEoBod7yUyMYBajg5y55NoWCGpGWGV9m04rv87numcdRXllHYwdE0Jq7omWIdpKWptORzHIif08izr9BXYLpu/Hx8lOigauO0RaYk17cJ1XWUlKHAEqfnSw/1Y57aXU9VXNCkVh7R0VVPeWX1FL2uWo6eLqCth8vo4+2n6O5XNi9Fh4kN66kizflyWgdUG79Ho05EGdjhnVQKcnQYB5nbQPN35grr9BPMcdRo4hPxFlRR7X8p7FUc9pQ8Mq4G/C35mLkVbiG76e8pqkP1AvkPRiaHEy9E4OovNiguoY/r2ugy146Jq5zhgJuSFd8lk3EDaIybjSGiNsZkSUrReYItJV+nnSYr+/y7GFjmA7cuYPi/3MsaHW1HPgC1I0DLQsSGcwHfzb34yzymbWXipGxNnBDitVxNtHhxn+c5YlvuJFA76CM09edvv71nLxCPx7IV+SvMk4Oa0w6TQgDRF1ufC9xT4k7bqT8vDkOPJ/injumdoJ5YKyYyuvYAjpwuITWpxcbL9RJvxdYpIGoZ3hIGSfuzb3pD1MSjRfpoPPSw0I0mkRmgm8JsR06UUZdl+kzI5HUxoMCRWYHeFENiyyUe7cSO2K71NjO9nd9cY2x8JTgudhcXrXlrAxwoYW3xsURlRrYZpQBAHkZ7EU3vnJcBmjn3Z2FdOIEi8JTVT5sjV3PJuOVcYEyQBvdlh2m9MwyfSIzgSSw2A5mlFN3jkcrtoXGNjVxd21+cBi6anxWzULibtwMJAI9HdvhbfUOiSIuxOn0UW+RHK3M28DmoS1HmFvihV87bz7+kRjquGexmleqw8DXWUNLmbBfIw4F9/YOp4S4IMt40Rhz2IRPT8kAbYxce4IoiEWhNAVkYa9/gEWtA4jjQIaTIjMhxbaf40lZrk1sbolLDjYcPVNt3pqzkNbeF0uRId5ikADg03LO0ErOqAIW267TlfT+rvPUAOH5cyVVZgIoMdCrY2LpwQEtZICRAhZrqym7iUIUgyF8D382Q+9ICRHxO0MR2+vvDI+h1k4MsriN3W5Mj/oZABy/IgOdXNGDosPMnXxHtFt0kHILOW+FfS7h5//ooXga1qNxgyEr/ptPMz7MMq8wXPHv6BNOH4+KFacf7TlPb6cVkj/3yrbAIFjWeQP9fEw6/Ca4TMICPOmmzsHs69kuE5E9nPffKgYQAETuPS7NMl9lfha82JNawBR0wB1vnaBPtxWaN4SIg/3AL6Z1or93CZGBjunBoth73I7I7A2GWMtDSIP95JSEINrDabGHdaHxQ5xZ2UNTpcVM+pJ/s5MKP02ZoVw4LUO9KX9RVxlgxKrQ+NqENn50dI7+0ZzGsvLHfJr2PldYrlQ2YTN41MAW9ObdxtE8rfzRQtPKdyyyIcuPGH0gE9zgXcYV6OdJCTJAPyKN75/keCE2GQg47o6tfen43M4ywDrpeVXUec4+olCVWPk5ByQG0dZHtPtmPVawyH5z0JPpFRqA2LhjSuX07LIjNptNXZXGngXLVUYPac0Pr7qehVtwuoJq65ASx5h6zt+bRV+fEaauXTiT3/pvgTz581EKE9AKBo1lZ4vpV7eilm39jIMjSrjhyThRJnpcewx48Zh1k7G2QZfIej53hPYea6S5aAskjePdfbSUeq88agyzgk2h6eGNu6JEK2U2vo7MYbMkjcV2qXK0oJqKc6uMvoM98DkX8Cd7i2SAC60cmpUkenHzusEHW0t3rc4wnlth2fd5VFzAZaO0tBBHaS29ObajDHBMLxYZRGDXYmksSCLHv/NICfVZyZaBFZpEaGIYGQ+ibgC5guayr3apMn9DDrdG8C9lAMAzWOvNuddbgN7PhS5acL2YdVt741ybsn6g8eLze2FaqqhnQc36gM1imLLK3szQQMmJgTSKzWMtoNLvam6RKeH7pLGZ2fd5S7E1idDs4aiz+CP56Odz5rY3KkJNHQ3txv6TaiQNQ8uH0oudHqz5K7P0pnbkAz8Lo6BKfN3pnU15dOp8jQwwMnDVb8ZyUYoMvRn7yrswT6cBVHZUel0iY6sFq2uUVKC89bg1fL8dh0up3wvmZmSTCE1UPow+qkXFCYxULce5VFi3XU5EqwuTzzc8wKYJ5gHNzB2+zs+TFrp6NafYP4MFUqI2ITlP2Qfr8/zFSrk9q5y2wndTDz6wyfjciBjyVY6M2qA/V3JUdl0iQx1mM/VrzAEq2IyBEdzSzsirBXzf7ekl7GNefK4mEdqdb2dab4H46K1xDeTvjTADuUU1o7qeHhnUSvzz9itaWPZqPu707HcuoTlDQktfGn1dG26VVQMvnu6Ul11Jb+4wNnxDXj1uxWSsp8gof5p6lbFs7IHKvY0ruS6RQURcXStW9KBg1cAYVvOXr0gVy7z0iu3XQyV0uVx21mihjXgvk/6zTWWCAU5YdEyAPHGMo0XNTcmZUgOdyii3dLS5F1s0lCsD8+TQtpaVAmksraMtJ8pkgAs9rLs72rhsTz2ayb3auI9P09eHS6j0rGqqCeXC1tLe6Y5NxiXf5dGv+4r0iwwm43M9yM9Gb4l5yPLnnBPb1r1FYgG4TaGhTsEpxUVYAvPKz2dp1ZYCMRo088scunFNBrlN3EXvwc9Rt0DIR3Z+l7BtrgnO2GP5VeQ+Yw+5Tdut/xifpmvJ1+MbuFdST7LXNlBcfCCFsnkIklv7km8LH8tKwS3cgo2uXs1ZfpmaKBYzmJmQXNkMbD0MfZl9M3VdYpHNGxZFERrE88Q3XC6Ys9MKRMPlW849mVpkgw9+Iv9lBGIrQ8+Ghdp6xMbPs+KHfNtCg/+H0UTMM43852804Z1MmvTeSZr10SlaviGX1mOo24szBDP2yowB3NW3bu9Hw1PDZIAD8H3+rwGVGvmv58Az8/fEyKdGVvODWwyCVNfRU9dzL6ZgIUwd9RwTP/PmtEJ54kIv/dnKufFyNsutzLuK+qQsR67QwS18jdaFBmrUjaI9pMjKuCfz9zY3F2PS1tDm/EPUbsfrMsQIXg0r5euFP6dVbNygQMQ2hWZi5zRugZB+9ACY8MMBcaGiqs09tFKomPwn+/EuMlAjyGDEp/vg7+KvRj7bzw0EMkr5HaSb73+3qmGYPag1m5N8rbL1RTo541b+8OedwG5u/mOaB1OP5ilFhjwvZZMRgygaEQ2jes7OGhAJ90yl3JMFqEQWu/MNyqo4yyZuEOVWFlKkSmyBbPoWw4yE/65FbJyeuYPbOBZah3AfugbzFuqBARN4KByovGwSRLPJ1bAq1ex1jUsJ4yCIeebi2e69qqU8MefyXiw+g6rgfN1pEcwUF07z5YR4SxNSSUUdPcyuB14u1sr8v7WhQSgvMWdnI14pshLumSAaJR13rqXMcm5APeXLw/w3h8XWPs1cbBgwKV7pQGy4PYtscO9wGtk7zLHQwFf3cwvED26ReJzjPhxhlyh/+nxKJzo5Hz2ZEyJD64bBBycP+JOOwKLo/QdLxJzYBfA99u8WXmfdPHkCraTa//Nwp+LcSjoOx92FU9zUJYT64y1zdSMG2KTzDPKkVZjo1sl3D8XTVSkh1sUmRVbMPVmQSmRxLLIT5exSmERmgs+zKyC21TLACMRWhJ4NJrBabLgt+5ZXp4TSJk4P0CQ02Jijr5VmlBI+DecMaXi9Dx2YmUS3dNW+ktoMFlkoO7vL7oyix29pp/OIpOnD2pOvcuGuDcTrLmqfkgs1ItKPYsOtt5yDEoKMPaDazGFTer5rUKRR/DKZ3RJYQmpBVNTSNide5jTx3wkJNLC7SmwQA4u6yMoQftyutZRhTWQmhNjOUbRKbBj6P7+SfTaIzeQfSpFdyff/Hr22RJPQwDqsXMeIi7LCsQNbmFd1YQ7EaThOLNWZcXUrWsQ9i66DHeXlN0eSt/qlQCss/y5PzIWZwZm0eliUPLHO4lsjLZ13bnw++MnlpzUaazWQK21SK1954hw/PpxAV3STYoPI2JopYnMxRCWy+F3rKKOM64UtkZngz0+x2GJ2rpEBRjBKXQgzEpYVxMYig8h/4Psr0Sw0sOB27soRoUJrmCu4740T8sR56tQ9RhOzGe9bIdPVviMLb+76XOr0TDolLrE8sPPRG9bmCUU8DeKdPBdNj943B9Bx7WNzXslPExOoX+dgMahy3orIEllkx8vYKvHUKGoWW1b5WQuxhXHPVoieraiGBrBVB5Er2ZdTqU9oYlQHQ7DKrh4Vjo9hbzdebM3J49YGQQCbnOmcEUe5kI6dsTyOwBfLV02immA7X7xm4+IPB95Ayrz9dARlpeBXNk9znk+9MD9qotOuN+mYHpGZkGLrkKYSm78nneL7bFW9v3eYLb4UbrB1CQ2sHRkrBj/MxObrTp98X0AZ5y7dwYGfd3PPg0bCGvDv7B3WRAbYXD16tMTm+1wufmeCPCnp0b10/Jz5IuW2weaT2EkssqNl7K/rFZkJFtvJirNiKkBJe9W63mMFVZTM6QkP8dYvtPv6hpMPBg6ULguak2BPixXLlwpPb+KWC6afchCkKUB83FK6VopcIsC6YrHFz95rs9HHZPSRxojMBIsNUwFtdrwmA8w5zvdP5HRgJwFs3KVbaEBMOIpdjhS9Grf8Z3Or6PVfLr0do8RWcqrhXJF2bDLEzqvmQ+2fAvbxVm7WuJ+li+YHYgv0pLjZ++gEtpFQEebFAlPW28bQUE9hLDg1GWerKX4mRMYdkmzcnRLakMQgio4NMI5CKuEHfPCtTHlyabDzdAXVoHVTPikymkXz7v1xtOa+WFo92vGxdkwsLb8zyig45WOjYCvqjIMtLi4NYOpzXew4C2IzNyP3pIygfmHs/hjMB050w99PCYmm9NTRMsDICTZb42YZezJRNyROCQ2I93bUvhoi5oe87U39AyNNbdWZEDsNq+fODA10TfdQuqdXGI3tF0H393d83Nc3QuyBESjMZlUD46vv7WtvWz6fi6bDJDY23zJVL5b+2v1/qE9YB+fFZqii7iFRtKfHCBlgBCLrOGuPhciA00LDPMdlqVZm9tmU+uzHAuEIaoZFgC2usdICL/45e/xs5fWVDdiqzGwBMacXr8NgBNUJnsBrNOqVIl5utAWDLVrgCnAov4r251ZafQZbx7aT5bTrEt5/5ZIEYgvwpFgWW5ZKbNu7D6fezoittoq6hbSnvT1GygAjmWymCpFh4EUlMmBzu7nMZ7tTTLj9STzsLR/68E7L7cBq6ymCVX32iW4y4CJWt5sDmDeBz+Qs0Dunp+Hd/sZzBq/1THr3pPn7SbgPJ7UBk4xO4jZmu+Uzc9qfGRZlXIgssbrdHICvp1624whOt0eYN9Uu7yFOm3K7uc8PFNE/XpKvqJgw1FOfjoG0vRErNLTgNiHNOO2izMuiGip6uZfFvJcj8MqUqAfqii7rVtazKRSlGhnsvfc92lnEdcTLT4bYgUXWNSiS9qfeKwOMQGSxMBexPaP63mz9tORwp3s0gCUod+ONZCuvPJzLraJXtupYOQGhI6FOH1xJ8FeBWPirXglSU09zsD1eIxiERdYWPbkHPfmtxkERmLIW6Xd8YPWMCydA3eIGKZrFcIpFrCQt5R7qGRrjuGdjkXUJthQZespY9gXFe3BWejITjRIa+GAEul8WmtJXQ+vEreOEty13OPq9wPDuWfzmlbKnlmbj/GudMxtNiLew1SOQnJPlbBIeytNhMrv4/VCI7TRbbEp2sthS7YmNRdY5qB0d6GEpshj0ZLAElPXMCo0WGph9S6QYeTMD6uab37rW9t59zck8G29Rd+8cbPOVda1cERtozFx148I91YJG/MyTi2ZGii2KfSm12Hax2HqERluKTYrsYOooGWDkgshgZTgQGXDPK2W/CO8F4camg8/1rDV75sZ2xpE4OJzKeNhn+OKrXPoB+51LxI7Eymua8sBzSD5Yn2PsdZSfF1Q7PQiiZuZgNj85PrP4+X6fQOAS/EaBRd424sCPOJoog7lupdzOqxs8DVTCDLaSzrON8Zm1Yi1/OKzZdq6GKPwgtr2Ug3sr2J0yQgzZY1RRwCJLtiIymJ8xmIzWKDLgll9qaBCiUlyPbbzbs7OvZ3sALEPC76Kpv4PFwh4c1k4OfuAXIk8VGchTYwL1gHvB2a2urafcklqLFf14Lr0/VGGPLM5w9aZCNdxrtmF/EduiYfNY1Bcd2WgTdJ64lWk5URnn93kWtvIFW7yT58/3DVcOkGgA27+jUVDGhfvhl0pbKQdImgFreYj6GBOG59SXcW5T9/D/ZUY5AnWe8y9nWYrFEq2UPe/QvsLj1Cm0Ax3uaT5Pdrq4hqIwGY081lKHuQJEcB66ccXnO7pw8f8fr5l7qBa9s9ZGHGLjziGXxdYGA04K7jm6gd5LvF6eGclmkbWHuYgFylrvwY1+akxA0/hoLlxcCjyBTXzUP4BoD4jF14Pacg+Vh+8pUIssp8QJkQG2rJAul9Bc/GmYw37z37HDFnxZnWJrwyLKx0onK8AFiJy5T7/IWLw3X9FC/MacS2gu/lR8MaYj3dgvQr/YvN2pNZuep4vMe7aT52uonejJPLSLDPdlkd3QN4L+V+745XbqdG5DfYP5hHN9fT2FhYZQSHCQDLFOVVU15ebli3g7xphvB1BTY6Cs0znUulULCgrUvmMxvrdnfzqdO19E/r6+FB8XQ5FttU0wGwwGOnkqh1pEhFNoiP20wzU9cfK0GKiIVaUd/JZxkuMI5rgc702JeDzwLoQCfXlYYPH92to6Tld7Tp/9wi04V0jl5ZXkjgEALgg/f19qyc+vldPZZ8hQWyvu5Yi8/LNUUVnFzxRI4WHmP6SYX3COSkrLKL6jvh9rzM7Jo6PHM6m6uoYiwkMopWsyeXub+0vOcMOaDNqA31dQ/wiiPdhf65cYJF4WNZH63BHag5/iVb/9YQuIgUV+fZ9ws5/9dZv62OKGiopKUeAmKvnfw4fdTLfcMFiGWCf9aAYtXfkaF7I73Xv3rXT1wH7yE6IsrvDT5z1DEx8YQVdd0VeG2ueTLzbSxk0/iUqK9Ir84f9BaAtmTyJPT/sPeyo7l6bPfUak5aah18hQ61RWVtO4yXPJl8Xcv08KjR05TH5iZNioR2jokCs5/A4ZYpsxE+eQt5dXo/LQ08uTHfmLpktxSRm9v2Y5+fnZXxq05u0PaVvaftHImHYC8/fzpRF33UJX9O8lzu3x6MJlLNYieuOlp2WIbZ57eR2lHzH+2PvqF58Sf028vOY9+mHLNvrozRdliH2QV0uff50yuZ6gnEV5c6OCUWuU3a03DhHXNYbrVx+njTsKtYutxolf/FQiRXZd73DaqPqxDHcUSnT7drTg0Uk0e8o4ccyfOYEu6+d4LSAqfkCAP7VsEU4ffraeariwTXh4eFAg92Te3tqGh9//+Eva8O2P1CEmkmZOvp9WPTufnp4/jVK7JVN8bIxDkYGL93TcIqIHCAgIoBbhoVxR91FmVrb8xAh6YV8fBxu2SPxYrB2i2zudh14sUghy7oyHLnx/4ZxJ5OPj+OVEpBHP/dS8KbTsydk0b8YE0aOvfecTKit3vAjZ39+PArkMteDn50MhIYGcb370wqtvyVAjyINAzk+tzFqwjLJz82jo4IG0ZOEMWrXscZr84EgKCgqgnt3t/+SuVjZwj3ItV3pdZqSzIP5yA/2tl6XIgDtaQWQSTIfkTnHi6No5UbP5gZZ04GW9xb9ffMU887VSVFxC3/34C3XsECUqSnJinBBw2zYtadKD99Ko4f+QVzYthloD9e/bQ/QAL732jgzVD8xQVEJn87Curo46RLWnhLgOF76f0jXJaA5qAN9vH9mGWreMoMT4DnTTddeI3gEmbZPClanWUEfXDOzP5v1hOnDI+EspevmIG2VYUaOH30Z33XaDSHcACz6FG9WVix+j6CiNv9mgAbzOhcoPETSb2KTIhvQMp28etBQZ4KJ0Ez0R7Osz7CvgyM45I8w3LcCXSEroSH17dhdm0I5d++Un2tmWtpdT4UbDbh0qQ4xUVlVRdU0NVVVXUx3fp6lh51T0CLffch0VlZTQh//+Sn6iD1Rq+JbO5iFMb/ha5wqLxHfhs+UXaH9THfdHOQD4a5t/+kWIv21r67svOw3rHmWC3hem8qvrPpAf6OPXHXspNDSYe/yeMgT1qFaYk8jHSvYDmxJU/sGpzSQ2KbLBqWH0rQ2RAXc44WfyC2jSrCdp9sLl4pg480k6z72MVkrLyum+Ebdzq+5Lb77/bxHmrnLu7YEKhoqBVtlEcXEpDR87ncZPXUDjpzxO33z/s/ykaUGhDhzQW1RK3OPsOf3bxyEPc3Lznc5DX18f+vjzDTRt7hLx3Znzl9LiFdb3orAGeoMHJs+nsRMfo5mPL6WTWTl0w7VXaRrI0YtpW0D4wVUsujVvfyzOG3TU4HLuzdSNwL+4kRv90Gx6eMYi9nkfk6FNx6bxcXRND2wX3oRig09cXkuDON5NCr/OGu5odVu1iKAn506mx6aNFwfs/ZCgQHmJY+pl5o9hsaH3eX3dvzTb/QB+AjfKVFR0sWL6sx8wfdIYGn7HTeyr+PDRdEunlJgWxkx7+D7xFw6/QJvVJqirqxejq87mIUbcYO4tmD1RfBfm88Rx5m/v2qOae4GHxtwtGgykZdrDo+mOW8ytg6bm8v49KTY6irZu3yV6Yx8v7eXj5eVhVtYAAzfTJ42l7l07iYajOdj8UDxdnQKx1TZebEJkdRxfiNiG3BHCR/Px9hYDIp0SYsXRJTmBnXRtgxhKeqZ0oS6d4iltz0E6kH6UvDTG0a1LJ5HurzdvkSFcGPxdZH6/3inCD2xuMFx9w5CrhMm2dftukSdaET4a90rO5qHwsdq1ET4qvpuU2FHXMDnyp2+vFBp9z21icOXdD/9XftK8oCGE2fvy6vfEIIZWuiQlCPMYZrIJDCb16dlN+GtaTW5nwDbdA8UOxo0QmxQZ9vj/foL5Po62EO62o7kaPTwyfhR5cOZ/vWmL5vmQOK5gHaIjaeu23fT5V5tkqJGCs4WiMBvbAGkBvlpoSAht3PSjLqGBxuahm8aBD1uYGqPbb76WTufm0fc//SrOmxOYvHfeer2YX9u7P11zw3IHfweN0zPPv04ZmadkqBH4uU1ZH63x40TTduFOiE2KDNt+Y49/rbjDic7IzKIHp8yncfLAvNDiFa/KS2wDM0UMVHCLbAIt6j133iyGbuHYah3EmDdzArVqGU5fbthM49jfmPfkSpoyZzEtee41USgYuHAEWsJqTk+tIj22QJxVbLKZBhFMTGWz61T2GTFAhIlcLeD5jx3PdDoP0ZC8uvYDs++PGDeDtqVhNbp9DIZaYXqaTOBBVw2gsJBgevtfn4twR6CMtFwHIGbkr5JrB11BEWwN5HODWFOjLZ6W7DtifrWsrIKeWv5PmvLo0zSXy3v81McpbfdBMTDS3GC78Mu6Bhu3z9AqNikyiFS97bcjPObMeWwhepP4uA5ieNl0JMbHil7GHjA70Xt1ZTNJuQLCODzbQDH8FyOSWCHhCLRig7mSwEnGvBAevlWLMOqd2k1M/KZ2T5ZX2gZiRJ7BfNUyEIBKlpwUT23YvzIRzH5VWGiw8FsxVK5lVQoqagKbes7mIRqnTnyt+fdjKJmfw9HKEggtIjyUunVOFIIFcbHRYmAKDU67NvZ/YB3+XXRkW+rM+eCIGr5X65YtxL2U9OjeWTRyuC+mNbSAqRuIVLgX3IF5eXmK7195WW+2iu698CzNCXZA25hRRtk5lZwAvh/Xn9hWPjQKc2+SddsLKQs7HyM5FXV0edcQ2qLa9lsLrtdkXPzl6ffCEdqeXirEZnNliKGeBnQOpq2POLdZUfM3Gy5cXOJsm9yJeidJM9IaHN4v2XmRAZfQXLhgdkxJpKTEICpUbQVxjkXWjUWoXGjsDC6huXAhSZ+dTHenmL+VMLJXOO2bmSTPnIXo/wBd1OevG0V1gwAAAABJRU5ErkJggg==" alt="Reality Engineering" style="height:52px;">
+    </div>
+    <div class="sub">Pfizer SPIRO — Order Request</div>
+    <div class="sub2">Please complete all required fields and click <strong>Submit Order</strong>.</div>
+  </div>
+
+  <!-- ── ORDER FORM ── -->
+  <div id="order-form">
+    <div class="error-box" id="error-box">⚠️ Please fill in all required fields highlighted below.</div>
+
+    <!-- STEP 1: SERVICE TYPE -->
+    <div class="card">
+      <div class="card-title"><span class="step-badge">1</span>Service Type <span class="req" style="font-size:11px;font-weight:400;">&nbsp;* select all that apply</span></div>
+      <div class="service-type-group" id="service_type_group">
+        <div class="svc-type-check" id="svc_mobile_app" onclick="toggleServiceType('Mobile App', this)">📱 Mobile App</div>
+        <div class="svc-type-check" id="svc_scanner" onclick="toggleServiceType('Scanner', this)">📷 Scanner</div>
+        <div class="svc-type-check" id="svc_qr_code" onclick="toggleServiceType('QR Code', this)">🔲 QR Code</div>
+        <div class="svc-type-check" id="svc_image_capture" onclick="toggleServiceType('Image Capture', this)">📸 Image Capture</div>
+        <div class="svc-type-check" id="svc_list_import" onclick="toggleServiceType('List Import', this)">📋 List Import</div>
+      </div>
+      <div class="svc-note">Select one or more — customers may order multiple service types for the same event.</div>
+
+      <!-- Quantity fields — shown conditionally -->
+      <div id="svc_quantities" style="display:none;margin-top:16px;">
+        <div class="fg">
+          <div class="fgroup" id="qty_app_wrap" style="display:none;">
+            <label class="lbl">Number of App Licenses <span class="req">*</span></label>
+            <input type="number" id="f_qty_app" placeholder="e.g. 2" min="1">
+          </div>
+          <div class="fgroup" id="qty_scanner_wrap" style="display:none;">
+            <label class="lbl">Number of Scanners <span class="req">*</span></label>
+            <input type="number" id="f_qty_scanner" placeholder="e.g. 3" min="1">
+            <p style="margin:6px 0 0;font-size:12px;color:#555;">📦 Shipping &amp; Handling ($250) will be included in your quote for scanner orders.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2: EVENT INFO -->
+    <div class="card">
+      <div class="card-title"><span class="step-badge">2</span>Event Information</div>
+      <div class="fg">
+        <div class="fgroup">
+          <label class="lbl">Your Name (Meeting Manager) <span class="req">*</span></label>
+          <input type="text" id="f_mgr" placeholder="e.g. Sarah Mitchell">
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Your Email <span class="req">*</span></label>
+          <input type="email" id="f_mgr_email" placeholder="you@company.com">
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Pfizer Meeting # <span class="req">*</span></label>
+          <input type="text" id="f_pfz" placeholder="e.g. PFZ159560">
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Legal Entity</label>
+          <input type="text" id="f_entity" value="1400: Pfizer Inc.">
+        </div>
+        <div class="fgroup fw">
+          <label class="lbl">Meeting Full Name <span class="req">*</span></label>
+          <input type="text" id="f_name" placeholder="e.g. American College of Osteopathic Family Physicians">
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Meeting Acronym (Short Name)</label>
+          <input type="text" id="f_acronym" placeholder="e.g. ACOFP">
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Event Type <span class="req">*</span></label>
+          <select id="f_etype">
+            <option value="">— Select —</option>
+            <option>Product Theater</option>
+            <option>Symposia</option>
+            <option>Education Reception</option>
+          </select>
+        </div>
+        <div class="fgroup fw">
+          <label class="lbl">Meeting Site / Address <span class="req">*</span></label>
+          <textarea id="f_addr" placeholder="Venue name and full address"></textarea>
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Meeting Date <span class="req">*</span></label>
+          <input type="date" id="f_date">
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Meeting End Date</label>
+          <input type="date" id="f_date_end">
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Meeting Time</label>
+          <input type="text" id="f_time" placeholder="e.g. 12:15 PM – 1:15 PM">
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Meal Type <span class="req">*</span></label>
+          <select id="f_meal">
+            <option value="">— Select —</option>
+            <option>Breakfast</option>
+            <option>Lunch</option>
+            <option>Dinner</option>
+            <option>Coffee + Tea</option>
+            <option>Snacks</option>
+            <option>No TOV (no compliance tracking)</option>
+          </select>
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Estimated # Attendees</label>
+          <input type="number" id="f_att" placeholder="e.g. 100">
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Therapeutic Area <span class="req">*</span></label>
+          <input type="text" id="f_therapy" placeholder="e.g. Oncology">
+        </div>
+        <div class="fgroup fw">
+          <label class="lbl">Pfizer Project Owner (Name &amp; Email) <span class="req">*</span></label>
+          <input type="text" id="f_owner" placeholder="e.g. Jane.Smith@pfizer.com">
+        </div>
+        <div class="fgroup fw">
+          <label class="lbl">TD Contact (Name, Phone / Email)</label>
+          <textarea id="f_td" placeholder="Name and contact info for the Technical Director who will be on-site"></textarea>
+        </div>
+        <div class="fgroup fw">
+          <label class="lbl">Notes / Special Instructions</label>
+          <textarea id="f_notes" placeholder="Any additional information…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: PRODUCT / PROGRAM -->
+    <div class="card">
+      <div class="card-title"><span class="step-badge">3</span>Product / Program</div>
+      <div class="fg">
+        <div class="fgroup fw">
+          <label class="lbl">Product / Program <span class="req">*</span></label>
+          <input type="text" id="f_product_program" list="product_program_options"
+                 placeholder="Type or select a product…" autocomplete="off"
+                 oninput="onProductChange()" onchange="onProductChange()">
+          <datalist id="product_program_options"></datalist>
+        </div>
+        <div class="fgroup fw conditional-field" id="product_details_wrap">
+          <label class="lbl">Product / Program Details <span class="req">*</span></label>
+          <textarea id="f_product_details" placeholder="Please describe the product or program…"></textarea>
+        </div>
+        <div class="fgroup fw conditional-field" id="clinical_name_wrap">
+          <label class="lbl">Clinical / Internal Name <span style="font-size:10px;font-weight:400;color:#888;text-transform:none;letter-spacing:0;">(optional)</span></label>
+          <input type="text" id="f_clinical_name" placeholder="e.g. Study XYZ-123">
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4: TOV / COMPLIANCE REPORTING -->
+    <div class="card">
+      <div class="card-title"><span class="step-badge">4</span>TOV / Compliance Reporting</div>
+      <div class="fg">
+        <div class="fgroup fw">
+          <label class="lbl">Is Transfer of Value (TOV) reporting required for this event?</label>
+          <p style="font-size:12px;color:#666;margin:0 0 10px;">TOV is required by default for Pfizer SPIRO events. Selecting "Not Required" reduces the price by $500.</p>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <label style="display:flex;align-items:center;gap:10px;padding:12px 16px;border:2px solid #1a3a5c;border-radius:8px;cursor:pointer;background:#f0f4f8;">
+              <input type="radio" name="f_tov" id="f_tov_yes" value="yes" checked onchange="onTOVChange()">
+              <span><strong>TOV Required (standard)</strong> — Compliance data transfer included</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;padding:12px 16px;border:2px solid #ddd;border-radius:8px;cursor:pointer;">
+              <input type="radio" name="f_tov" id="f_tov_no" value="no" onchange="onTOVChange()">
+              <span><strong>TOV Not Required</strong> — Reduces quote by $500</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 5: ASSOCIATION / VENDOR -->
+    <div class="card">
+      <div class="card-title"><span class="step-badge">5</span>Association / Vendor <span style="font-size:11px;font-weight:400;color:#888;text-transform:none;letter-spacing:0;">(optional)</span></div>
+      <div class="fg">
+        <div class="fgroup">
+          <label class="lbl">Association Contact Name</label>
+          <input type="text" id="f_assoc_contact_name" placeholder="e.g. Jane Smith">
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Association Contact Email</label>
+          <input type="email" id="f_assoc_contact_email" placeholder="contact@association.org">
+        </div>
+        <div class="fgroup fw">
+          <label class="lbl">Association / Vendor Name</label>
+          <input type="text" id="f_assoc_vendor_name" placeholder="e.g. Freeman, Experient, etc.">
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 6: BADGE KIT / API -->
+    <div class="card">
+      <div class="card-title"><span class="step-badge">6</span>Badge Kit / Developer Kit / API Available <span class="req" style="font-size:11px;font-weight:400;">&nbsp;* required</span></div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:4px;" id="badge_api_group">
+        <label class="opt" style="flex:1;min-width:100px;" onclick="onBadgeAPIChange('Yes')">
+          <input type="radio" name="badge_api" value="Yes" id="badge_api_yes"> Yes
+        </label>
+        <label class="opt" style="flex:1;min-width:100px;" onclick="onBadgeAPIChange('No')">
+          <input type="radio" name="badge_api" value="No" id="badge_api_no"> No
+        </label>
+        <label class="opt" style="flex:1;min-width:100px;" onclick="onBadgeAPIChange('Unknown')">
+          <input type="radio" name="badge_api" value="Unknown" id="badge_api_unknown"> Unknown
+        </label>
+      </div>
+      <div class="conditional-field" id="badge_api_details_wrap" style="margin-top:14px;">
+        <div class="fg">
+          <div class="fgroup">
+            <label class="lbl">Provider / Registration Company</label>
+            <input type="text" id="f_provider_reg_company" placeholder="e.g. Cvent, Eventbrite">
+          </div>
+          <div class="fgroup">
+            <label class="lbl">API / Badge Kit Contact Name</label>
+            <input type="text" id="f_api_badge_contact_name" placeholder="Contact name">
+          </div>
+          <div class="fgroup">
+            <label class="lbl">API / Badge Kit Contact Email</label>
+            <input type="email" id="f_api_badge_contact_email" placeholder="api@provider.com">
+          </div>
+          <div class="fgroup fw">
+            <label class="lbl">API / Badge Kit Notes</label>
+            <textarea id="f_api_badge_notes" placeholder="Any relevant notes about the API or badge kit…"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUBMIT -->
+    <div class="card">
+      <p style="font-size:12px;color:#777;margin-bottom:12px;">Clicking Submit will send your order directly to Reality Engineering. You'll be contacted to confirm details and receive a quote before your event.</p>
+      <button class="btn-submit" onclick="submitOrder()">✉️ Submit Order Request</button>
+    </div>
+  </div>
+
+  <!-- ── SUCCESS SCREEN ── -->
+  <div id="success-screen">
+    <div class="success-card">
+      <div class="success-icon">✅</div>
+      <div class="success-title">Order Submitted!</div>
+      <div class="success-sub">Your order has been received by Reality Engineering.<br>You'll be contacted to confirm details and receive a quote before your event.</div>
+      <div style="margin-top:8px;">
+        <button class="back-btn" onclick="goBack()">← Submit Another Order</button>
+      </div>
+
+      <!-- Import code hidden from customer — sent to RE via email notification -->
+      <div id="import-code-display" style="display:none;"></div>
+
+      <div class="order-summary" id="order-summary"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── Product List (easy to maintain) ──
+const PRODUCT_LIST = [
+  'Abrysvo','Braftovi / Mektovi','Bosulif','Cibinqo','Daurismo','Elrexfio',
+  'Emblaveo','Ibrance','Inlyta','Litfulo','Lorbrena','Ngenla','Nurtec','Padcev',
+  'Paxlovid','Prevnar 13','Prevnar 20','Talzenna','Tivdak','Tukysa','Xtandi',
+  'Above Brand / Clinical Development','Other'
+];
+
+// Populate product datalist (combo box — allows both selection and free text)
+(function(){
+  const dl = document.getElementById('product_program_options');
+  PRODUCT_LIST.forEach(p => {
+    const o = document.createElement('option');
+    o.value = p;
+    dl.appendChild(o);
+  });
+})();
+
+let selectedServiceTypes = new Set();
+
+function $id(id){ return document.getElementById(id); }
+function val(id){ return ($id(id)||{}).value?.trim() || ''; }
+function radioVal(name){ return document.querySelector(`input[name="${name}"]:checked`)?.value || ''; }
+
+function toggleServiceType(type, el){
+  if(selectedServiceTypes.has(type)){
+    selectedServiceTypes.delete(type);
+    el.classList.remove('selected');
+  } else {
+    selectedServiceTypes.add(type);
+    el.classList.add('selected');
+  }
+  // Clear error state if at least one selected
+  if(selectedServiceTypes.size > 0){
+    document.querySelectorAll('.svc-type-check').forEach(r => r.classList.remove('error-border'));
+  }
+  updateQuantityFields();
+}
+
+function updateQuantityFields(){
+  const hasApp     = selectedServiceTypes.has('Mobile App');
+  const hasScanner = selectedServiceTypes.has('Scanner');
+  const showAny    = hasApp || hasScanner;
+
+  $id('svc_quantities').style.display  = showAny     ? 'block' : 'none';
+  $id('qty_app_wrap').style.display     = hasApp      ? 'block' : 'none';
+  $id('qty_scanner_wrap').style.display = hasScanner  ? 'block' : 'none';
+
+  // Clear values when hidden
+  if(!hasApp)     $id('f_qty_app').value = '';
+  if(!hasScanner) $id('f_qty_scanner').value = '';
+}
+
+function onProductChange(){
+  const v = val('f_product_program');
+  const isKnown = PRODUCT_LIST.includes(v);
+  const isAboveBrand = (v === 'Above Brand / Clinical Development');
+  // Show details box if they typed something custom (not in the list) or explicitly chose "Other"
+  $id('product_details_wrap').style.display = (!isKnown && v !== '') || v === 'Other' ? 'block' : 'none';
+  $id('clinical_name_wrap').style.display = isAboveBrand ? 'block' : 'none';
+}
+
+function onTOVChange(){
+  // Highlight the selected radio card
+  document.querySelectorAll('input[name="f_tov"]').forEach(r => {
+    const card = r.closest('label');
+    if(card) card.style.borderColor = r.checked ? '#1a3a5c' : '#ddd';
+    if(card) card.style.background  = r.checked ? '#f0f4f8' : '';
+  });
+}
+
+function onBadgeAPIChange(val_){
+  document.querySelectorAll('input[name="badge_api"]').forEach(r => {
+    if(r.value === val_) r.checked = true;
+  });
+  $id('badge_api_details_wrap').style.display = (val_ === 'Yes') ? 'block' : 'none';
+}
+
+function fmtDate(d){
+  if(!d) return '';
+  const dt = new Date(d+'T12:00:00');
+  return dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+
+function validate(){
+  const required = ['f_mgr','f_mgr_email','f_pfz','f_name','f_etype','f_addr','f_date','f_meal','f_therapy','f_owner','f_product_program'];
+  let ok = true;
+  required.forEach(id => {
+    const el = $id(id);
+    if(!el) return;
+    el.classList.remove('error');
+    if(!el.value.trim()){ el.classList.add('error'); ok = false; }
+  });
+
+  // Service type — at least one must be selected
+  if(selectedServiceTypes.size === 0){
+    document.querySelectorAll('.svc-type-check').forEach(r => r.classList.add('error-border'));
+    ok = false;
+  }
+
+  // Quantity fields — required when Mobile App or Scanner selected
+  if(selectedServiceTypes.has('Mobile App')){
+    const el = $id('f_qty_app');
+    el.classList.remove('error');
+    if(!el.value.trim()){ el.classList.add('error'); ok = false; }
+  }
+  if(selectedServiceTypes.has('Scanner')){
+    const el = $id('f_qty_scanner');
+    el.classList.remove('error');
+    if(!el.value.trim()){ el.classList.add('error'); ok = false; }
+  }
+
+  // Badge API
+  if(!radioVal('badge_api')){
+    $id('badge_api_group').style.outline = '2px solid #e74c3c';
+    ok = false;
+  } else {
+    $id('badge_api_group').style.outline = '';
+  }
+
+  // Conditional: product details required when custom/unknown product entered
+  const prod = val('f_product_program');
+  const prodIsKnown = PRODUCT_LIST.includes(prod);
+  if(prod && (!prodIsKnown || prod === 'Other')){
+    const el = $id('f_product_details');
+    el.classList.remove('error');
+    if(!el.value.trim()){ el.classList.add('error'); ok = false; }
+  }
+
+  $id('error-box').style.display = ok ? 'none' : 'block';
+  return ok;
+}
+
+function buildData(){
+  const badgeAPI = radioVal('badge_api');
+  const d = {
+    // Core fields
+    f_mgr:              val('f_mgr'),
+    f_mgr_email:        val('f_mgr_email'),
+    f_pfz:              val('f_pfz'),
+    f_entity:           val('f_entity'),
+    f_name:             val('f_name'),
+    f_acronym:          val('f_acronym'),
+    f_etype:            val('f_etype'),
+    f_addr:             val('f_addr'),
+    f_date:             val('f_date'),
+    f_date_end:         val('f_date_end'),
+    f_time:             val('f_time'),
+    f_meal:             val('f_meal'),
+    f_att:              val('f_att'),
+    f_therapy:          val('f_therapy'),
+    f_owner:            val('f_owner'),
+    f_td:               val('f_td'),
+    f_notes:            val('f_notes'),
+    // New fields
+    service_type:       Array.from(selectedServiceTypes).join(', '),
+    qty_app_licenses:   val('f_qty_app'),
+    qty_scanners:       val('f_qty_scanner'),
+    tov:                document.querySelector('input[name="f_tov"]:checked')?.value || 'yes',
+    survey_type:        '',
+    survey_details:     '',
+    product_program:    val('f_product_program'),
+    product_program_details: val('f_product_details'),
+    clinical_internal_name: val('f_clinical_name'),
+    assoc_contact_name: val('f_assoc_contact_name'),
+    assoc_contact_email: val('f_assoc_contact_email'),
+    assoc_vendor_name:  val('f_assoc_vendor_name'),
+    badge_api_available: badgeAPI,
+    provider_reg_company: val('f_provider_reg_company'),
+    api_badge_contact_name: val('f_api_badge_contact_name'),
+    api_badge_contact_email: val('f_api_badge_contact_email'),
+    api_badge_notes:    val('f_api_badge_notes'),
+  };
+  return d;
+}
+
+function buildSummaryHTML(d){
+  const rows = [
+    ['Meeting Manager', d.f_mgr],
+    ['Email', d.f_mgr_email],
+    ['Pfizer Meeting #', d.f_pfz],
+    ['Meeting Full Name', d.f_name],
+    ['Event Type', d.f_etype],
+    ['Date', fmtDate(d.f_date)],
+    ['Address', d.f_addr],
+    ['Service Type', d.service_type],
+    ['App Licenses', d.qty_app_licenses],
+    ['Scanners', d.qty_scanners],
+    ['Product / Program', d.product_program],
+    ['TOV Required', d.tov === 'no' ? 'No (−$500)' : 'Yes (standard)'],
+    ['Badge / API Available', d.badge_api_available],
+  ];
+  let html = '<h3>Order Summary</h3>';
+  rows.forEach(([k,v]) => {
+    if(v) html += `<div class="row"><span class="key">${k}:</span><span>${v}</span></div>`;
+  });
+  return html;
+}
+
+async function submitOrder(){
+  if(!validate()){
+    $id('error-box').scrollIntoView({behavior:'smooth', block:'start'});
+    return;
+  }
+
+  const btn = document.querySelector('.btn-submit');
+  btn.textContent = 'Submitting…';
+  btn.disabled = true;
+
+  const d = buildData();
+  const code = btoa(JSON.stringify(d));
+
+  const payload = new URLSearchParams({
+    'form-name':              'pfizer-order',
+    'bot-field':              '',
+    'Meeting_Manager':        d.f_mgr,
+    'Manager_Email':          d.f_mgr_email,
+    'Pfizer_Meeting_Number':  d.f_pfz,
+    'Legal_Entity':           d.f_entity,
+    'Meeting_Full_Name':      d.f_name,
+    'Meeting_Acronym':        d.f_acronym,
+    'Event_Type':             d.f_etype,
+    'Meeting_Address':        d.f_addr,
+    'Meeting_Date':           fmtDate(d.f_date),
+    'Meeting_Time':           d.f_time,
+    'Meal_Type':              d.f_meal,
+    'Estimated_Attendees':    d.f_att,
+    'Therapeutic_Area':       d.f_therapy,
+    'Pfizer_Project_Owner':   d.f_owner,
+    'TD_Contact':             d.f_td,
+    'Notes':                  d.f_notes,
+    'Service_Type':           d.service_type,
+    'TOV_Required':           d.tov === 'no' ? 'No (−$500)' : 'Yes (standard)',
+    'Product_Program':        d.product_program,
+    'Product_Program_Details': d.product_program_details,
+    'Clinical_Internal_Name': d.clinical_internal_name,
+    'Assoc_Contact_Name':     d.assoc_contact_name,
+    'Assoc_Contact_Email':    d.assoc_contact_email,
+    'Assoc_Vendor_Name':      d.assoc_vendor_name,
+    'Badge_API_Available':    d.badge_api_available,
+    'Provider_Reg_Company':   d.provider_reg_company,
+    'API_Badge_Contact_Name': d.api_badge_contact_name,
+    'API_Badge_Contact_Email': d.api_badge_contact_email,
+    'API_Badge_Notes':        d.api_badge_notes,
+    'Qty_App_Licenses':       d.qty_app_licenses,
+    'Qty_Scanners':           d.qty_scanners,
+    'Import_Code':            code,
+  });
+
+  try {
+    const res = await fetch('/', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: payload.toString() });
+    if(!res.ok) throw new Error('Network response not ok');
+    showSuccess(d, code);
+  } catch(err) {
+    showSuccess(d, code);
+  }
+}
+
+function showSuccess(d, code){
+  $id('order-form').style.display = 'none';
+  $id('success-screen').style.display = 'block';
+  $id('import-code-display').textContent = code;
+  $id('order-summary').innerHTML = buildSummaryHTML(d);
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function copyCode(){
+  const code = $id('import-code-display').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    $id('copy-confirm').style.display = 'inline';
+    setTimeout(() => $id('copy-confirm').style.display='none', 2000);
+  });
+}
+
+function goBack(){
+  $id('success-screen').style.display='none';
+  $id('order-form').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RE Order Management — Pfizer SPIRO</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Arial,sans-serif;font-size:13px;color:#222;background:#eef2f7;height:100vh;overflow:hidden;}
+
+/* ── LAYOUT ── */
+.shell{display:flex;flex-direction:column;height:100vh;}
+.topbar{background:#1a3a5c;color:#fff;padding:10px 20px;display:flex;align-items:center;gap:16px;flex-shrink:0;}
+.topbar img{height:38px;width:auto;}
+.topbar .title{font-size:16px;font-weight:700;letter-spacing:.3px;}
+.topbar .subtitle{font-size:11px;opacity:.65;margin-top:1px;}
+.topbar-right{margin-left:auto;display:flex;gap:8px;align-items:center;}
+.main{display:flex;flex:1;overflow:hidden;}
+
+/* ── TABLE PANE ── */
+.table-pane{flex:1;display:flex;flex-direction:column;overflow:hidden;padding:16px;}
+.controls{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+.search-box{flex:1;min-width:200px;padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px;}
+.filter-select{padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:12px;color:#333;background:#fff;}
+.btn-refresh{padding:8px 16px;background:#1a3a5c;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;}
+.btn-refresh:hover{background:#142e4a;}
+.count-badge{font-size:11px;color:#888;white-space:nowrap;}
+
+.table-wrap{flex:1;overflow-y:auto;border-radius:8px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.08);}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead{position:sticky;top:0;z-index:10;}
+th{background:#1a3a5c;color:#fff;padding:10px 10px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.4px;white-space:nowrap;}
+td{padding:9px 10px;border-bottom:1px solid #f0f0f0;vertical-align:top;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+tr:hover td{background:#f5f8ff;cursor:pointer;}
+tr.selected td{background:#e8f0fe;}
+.empty-row td{text-align:center;padding:40px;color:#888;font-size:14px;}
+
+/* ── STATUS BADGES ── */
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;white-space:nowrap;}
+.badge-submitted{background:#e8e8e8;color:#555;}
+.badge-reviewed{background:#dbeafe;color:#1d4ed8;}
+.badge-imported{background:#ede9fe;color:#6d28d9;}
+.badge-qgenerated{background:#fff3cd;color:#92400e;}
+.badge-qsent{background:#fef9c3;color:#713f12;}
+.badge-approved{background:#d1fae5;color:#065f46;}
+.badge-closed{background:#374151;color:#f9fafb;}
+
+/* ── DETAIL PANEL ── */
+.detail-pane{width:0;overflow:hidden;transition:width .25s ease;background:#fff;border-left:1px solid #ddd;display:flex;flex-direction:column;}
+.detail-pane.open{width:440px;}
+.detail-header{background:#1a3a5c;color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.detail-header h2{font-size:14px;font-weight:700;flex:1;}
+.close-btn{background:none;border:none;color:#fff;font-size:20px;cursor:pointer;line-height:1;}
+.detail-body{flex:1;overflow-y:auto;padding:16px;}
+.detail-section{margin-bottom:18px;}
+.detail-section-title{font-size:10px;font-weight:700;color:#1a3a5c;text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid #e5e7eb;padding-bottom:4px;margin-bottom:10px;}
+.detail-field{display:flex;flex-direction:column;margin-bottom:10px;}
+.detail-field label{font-size:10px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px;}
+.detail-field span{font-size:12px;color:#222;word-break:break-word;}
+.detail-field span.empty{color:#bbb;font-style:italic;}
+.detail-2col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.import-code-box{font-family:monospace;font-size:9px;background:#f5f5f5;border:1px solid #ddd;border-radius:4px;padding:8px;word-break:break-all;max-height:60px;overflow-y:auto;color:#555;}
+.copy-small{padding:4px 10px;background:#3498db;color:#fff;border:none;border-radius:4px;font-size:10px;cursor:pointer;font-weight:700;}
+.copy-small:hover{background:#2980b9;}
+
+/* ── STATUS ACTIONS ── */
+.status-actions{flex-shrink:0;padding:14px 16px;border-top:1px solid #eee;background:#fafafa;}
+.status-actions-title{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.status-btn-grid{display:flex;flex-wrap:wrap;gap:6px;}
+.status-btn{padding:6px 12px;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;}
+.status-btn:hover{opacity:.85;}
+.status-btn.active{ring:2px;}
+
+/* ── TOP BUTTONS ── */
+.btn-sm{padding:7px 14px;border:none;border-radius:5px;font-size:12px;font-weight:700;cursor:pointer;}
+
+/* ── EMPTY/ERROR STATE ── */
+.state-card{background:#fff;border-radius:10px;padding:40px;text-align:center;margin:20px;box-shadow:0 2px 8px rgba(0,0,0,.08);}
+.state-card .icon{font-size:48px;margin-bottom:12px;}
+.state-card h2{font-size:18px;font-weight:700;color:#1a3a5c;margin-bottom:8px;}
+.state-card p{font-size:13px;color:#666;margin-bottom:4px;}
+.state-card code{background:#f5f5f5;padding:4px 8px;border-radius:4px;font-size:12px;display:inline-block;margin-top:8px;}
+
+/* ── LOGIN OVERLAY ── */
+#login-overlay{position:fixed;inset:0;background:rgba(10,20,40,.82);display:flex;align-items:center;justify-content:center;z-index:9999;}
+#login-overlay.hidden{display:none;}
+.login-card{background:#fff;border-radius:14px;padding:40px 48px;width:340px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.3);}
+.login-card img{height:52px;margin-bottom:18px;}
+.login-card h2{font-size:18px;font-weight:700;color:#1a3a5c;margin-bottom:4px;}
+.login-card p{font-size:12px;color:#888;margin-bottom:24px;}
+.login-card input{width:100%;padding:11px 14px;border:1px solid #d1d5db;border-radius:7px;font-size:14px;margin-bottom:14px;outline:none;box-sizing:border-box;}
+.login-card input:focus{border-color:#1a3a5c;box-shadow:0 0 0 3px rgba(26,58,92,.15);}
+.login-card button{width:100%;padding:11px;background:#1a3a5c;color:#fff;border:none;border-radius:7px;font-size:14px;font-weight:700;cursor:pointer;}
+.login-card button:hover{background:#142e4a;}
+.login-error{color:#dc2626;font-size:12px;margin-top:8px;min-height:16px;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN OVERLAY -->
+<div id="login-overlay">
+  <div class="login-card">
+    <img src="data:image/png;base64,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aA" alt="RE">
+    <h2>RE Order Management</h2>
+    <p>Pfizer SPIRO — Internal Use Only</p>
+    <input type="password" id="login-pw" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button onclick="doLogin()">Sign In</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<div class="shell">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <img src="data:image/png;base64,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" alt="Reality Engineering">
+    <div>
+      <div class="title">RE Order Management</div>
+      <div class="subtitle">Pfizer SPIRO — Internal Workflow Tracker</div>
+    </div>
+    <div class="topbar-right">
+      <span class="count-badge" id="order-count">Loading…</span>
+      <button class="btn-refresh" onclick="loadOrders()">↻ Refresh</button>
+      <a href="Pfizer_Quote_Generator.html" style="padding:7px 14px;background:#27ae60;color:#fff;border-radius:5px;font-size:12px;font-weight:700;text-decoration:none;">📄 Quote Generator</a>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- TABLE PANE -->
+    <div class="table-pane">
+      <div class="controls">
+        <input type="text" class="search-box" id="search" placeholder="Search event, requester, email, product, survey…" oninput="applyFilters()">
+        <select class="filter-select" id="filter-status" onchange="applyFilters()">
+          <option value="">All Statuses</option>
+          <option>Submitted</option>
+          <option>Reviewed</option>
+          <option>Imported to OTIS</option>
+          <option>Quote Generated</option>
+          <option>Quote Sent</option>
+          <option>Approved</option>
+          <option>Closed</option>
+        </select>
+        <select class="filter-select" id="filter-service" onchange="applyFilters()">
+          <option value="">All Service Types</option>
+          <option>Mobile App</option>
+          <option>Scanner</option>
+        </select>
+        <select class="filter-select" id="filter-product" onchange="applyFilters()">
+          <option value="">All Products</option>
+        </select>
+      </div>
+
+      <div class="table-wrap" id="table-wrap">
+        <table id="order-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Submitted</th>
+              <th>Requester</th>
+              <th>Email</th>
+              <th>Event Name</th>
+              <th>Dates</th>
+              <th>Service</th>
+              <th>Product</th>
+              <th>Survey</th>
+              <th>Status</th>
+              <th>Quote #</th>
+            </tr>
+          </thead>
+          <tbody id="order-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- DETAIL PANE -->
+    <div class="detail-pane" id="detail-pane">
+      <div class="detail-header">
+        <h2 id="detail-title">Order Details</h2>
+        <button class="close-btn" onclick="closeDetail()">×</button>
+      </div>
+      <div class="detail-body" id="detail-body"></div>
+      <div class="status-actions" id="status-actions"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── Worker URL — update this after deploying your Cloudflare Worker ──────────
+const WORKER_URL = 'https://spiro-order-api.realityengineeringops.workers.dev';
+
+let sessionToken  = sessionStorage.getItem('pfizer_token') || null;
+let allOrders     = [];
+let filteredOrders = [];
+let selectedOrderId = null;
+
+// ── Auth helpers ─────────────────────────────────────────────────────────────
+async function doLogin(){
+  const pw  = document.getElementById('login-pw').value;
+  const err = document.getElementById('login-error');
+  err.textContent = '';
+  if(!pw){ err.textContent = 'Please enter a password.'; return; }
+  try {
+    const r = await fetch(WORKER_URL + '/auth', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({password: pw})
+    });
+    if(!r.ok){ err.textContent = 'Incorrect password. Try again.'; return; }
+    const data = await r.json();
+    sessionToken = data.token;
+    sessionStorage.setItem('pfizer_token', sessionToken);
+    document.getElementById('login-overlay').classList.add('hidden');
+    loadOrders();
+  } catch(e){
+    err.textContent = 'Could not reach server. Check your connection.';
+  }
+}
+
+function authHeaders(){
+  return { 'Content-Type':'application/json', 'Authorization': `Bearer ${sessionToken}` };
+}
+
+function handleUnauth(){
+  sessionToken = null;
+  sessionStorage.removeItem('pfizer_token');
+  document.getElementById('login-overlay').classList.remove('hidden');
+  document.getElementById('login-error').textContent = 'Session expired. Please sign in again.';
+}
+
+const STATUS_FLOW = [
+  'Submitted','Reviewed','Imported to OTIS','Quote Generated','Quote Sent','Approved','Closed'
+];
+
+const STATUS_BADGE = {
+  'Submitted':       'badge-submitted',
+  'Reviewed':        'badge-reviewed',
+  'Imported to OTIS':'badge-imported',
+  'Quote Generated': 'badge-qgenerated',
+  'Quote Sent':      'badge-qsent',
+  'Approved':        'badge-approved',
+  'Closed':          'badge-closed',
+};
+
+const STATUS_BTN_COLOR = {
+  'Submitted':       '#6b7280',
+  'Reviewed':        '#2563eb',
+  'Imported to OTIS':'#7c3aed',
+  'Quote Generated': '#d97706',
+  'Quote Sent':      '#b45309',
+  'Approved':        '#059669',
+  'Closed':          '#374151',
+};
+
+function fmtDate(iso){
+  if(!iso || iso === 'N/A') return '—';
+  try{
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  }catch(e){ return iso; }
+}
+
+function fmtDateTime(iso){
+  if(!iso) return '—';
+  try{
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) + ' ' +
+           d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  }catch(e){ return iso; }
+}
+
+function badge(status){
+  const cls = STATUS_BADGE[status] || 'badge-submitted';
+  return `<span class="badge ${cls}">${status || '—'}</span>`;
+}
+
+async function loadOrders(){
+  document.getElementById('order-count').textContent = 'Loading…';
+  try {
+    const resp = await fetch(WORKER_URL + '/list-orders', { headers: authHeaders() });
+    if(resp.status === 401){ handleUnauth(); return; }
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    allOrders = await resp.json();
+    populateProductFilter();
+    applyFilters();
+    document.getElementById('order-count').textContent = allOrders.length + ' orders';
+  } catch(err) {
+    showOfflineState();
+    document.getElementById('order-count').textContent = 'Error';
+  }
+}
+
+function showOfflineState(){
+  document.getElementById('table-wrap').innerHTML = `
+    <div class="state-card">
+      <div class="icon">🌐</div>
+      <h2>Could Not Load Orders</h2>
+      <p>There was a problem reaching the server.</p>
+      <p style="margin-top:8px;color:#888;">Check your internet connection or contact Justin.</p>
+    </div>`;
+}
+
+function populateProductFilter(){
+  const products = [...new Set(allOrders.map(o => o.product_program).filter(Boolean))].sort();
+  const sel = document.getElementById('filter-product');
+  sel.innerHTML = '<option value="">All Products</option>';
+  products.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p; opt.textContent = p;
+    sel.appendChild(opt);
+  });
+}
+
+function applyFilters(){
+  const search  = document.getElementById('search').value.toLowerCase();
+  const fStatus = document.getElementById('filter-status').value;
+  const fSvc    = document.getElementById('filter-service').value;
+  const fProd   = document.getElementById('filter-product').value;
+
+  filteredOrders = allOrders.filter(o => {
+    const txt = [o.event_name, o.requester_name, o.requester_email,
+                 o.product_program, o.survey_type, o.service_type, o.order_status,
+                 o.order_id, o.otis_quote_number, o.f_pfz, o.f_acronym,
+                 o.import_code ? '' : ''].join(' ').toLowerCase();
+    if(search && !txt.includes(search)) return false;
+    if(fStatus && o.order_status !== fStatus) return false;
+    if(fSvc && o.service_type !== fSvc) return false;
+    if(fProd && o.product_program !== fProd) return false;
+    return true;
+  });
+  renderTable();
+}
+
+function renderTable(){
+  const tbody = document.getElementById('order-tbody');
+  if(!filteredOrders.length){
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="11">No orders match your filters.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = filteredOrders.map(o => `
+    <tr onclick="openDetail('${o.order_id}')" class="${o.order_id === selectedOrderId ? 'selected' : ''}">
+      <td style="font-family:monospace;font-size:10px;">${o.order_id || '—'}</td>
+      <td>${fmtDate(o.submitted_at)}</td>
+      <td>${o.requester_name || '—'}</td>
+      <td style="color:#2563eb;">${o.requester_email || '—'}</td>
+      <td title="${o.event_name || ''}">${o.event_name || '—'}</td>
+      <td style="white-space:nowrap;">${fmtDate(o.event_start_date)}${o.event_end_date ? '<br><span style=color:#999>→ '+fmtDate(o.event_end_date)+'</span>' : ''}</td>
+      <td>${o.service_type || '—'}</td>
+      <td title="${o.product_program || ''}">${o.product_program || '—'}</td>
+      <td title="${o.survey_type || ''}">${o.survey_type || '—'}</td>
+      <td>${badge(o.order_status)}</td>
+      <td style="font-weight:700;color:#1a3a5c;">${o.otis_quote_number || '—'}</td>
+    </tr>`).join('');
+}
+
+function dv(val, fallback){
+  if(!val || val === '' || val === 'N/A') return `<span class="empty">${fallback || 'Not provided'}</span>`;
+  return val;
+}
+
+function openDetail(orderId){
+  selectedOrderId = orderId;
+  const o = allOrders.find(x => x.order_id === orderId);
+  if(!o) return;
+
+  // Highlight row
+  document.querySelectorAll('#order-tbody tr').forEach(tr => tr.classList.remove('selected'));
+  document.querySelectorAll('#order-tbody tr').forEach(tr => {
+    if(tr.onclick && tr.onclick.toString().includes(orderId)) tr.classList.add('selected');
+  });
+  renderTable();
+
+  document.getElementById('detail-title').textContent = o.event_name || o.order_id;
+  document.getElementById('detail-pane').classList.add('open');
+
+  // Build detail body
+  const body = document.getElementById('detail-body');
+  body.innerHTML = `
+    <div class="detail-section">
+      <div class="detail-section-title">Order Info</div>
+      <div class="detail-2col">
+        <div class="detail-field"><label>Order ID</label><span style="font-family:monospace;font-size:11px;">${dv(o.order_id)}</span></div>
+        <div class="detail-field"><label>Status</label><span>${badge(o.order_status)}</span></div>
+        <div class="detail-field"><label>Submitted</label><span>${dv(fmtDateTime(o.submitted_at))}</span></div>
+        <div class="detail-field"><label>Quote #</label><span style="font-weight:700;color:#1a3a5c;">${dv(o.otis_quote_number)}</span></div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">Requester</div>
+      <div class="detail-2col">
+        <div class="detail-field"><label>Name</label><span>${dv(o.requester_name)}</span></div>
+        <div class="detail-field"><label>Email</label><span>${dv(o.requester_email)}</span></div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">Event</div>
+      <div class="detail-field"><label>Meeting Name</label><span>${dv(o.event_name)}</span></div>
+      <div class="detail-2col">
+        <div class="detail-field"><label>Start Date</label><span>${dv(fmtDate(o.event_start_date))}</span></div>
+        <div class="detail-field"><label>End Date</label><span>${dv(fmtDate(o.event_end_date))}</span></div>
+      </div>
+      <div class="detail-field"><label>Pfizer Meeting #</label><span>${dv(o.pfizer_meeting_number)}</span></div>
+      <div class="detail-field"><label>Address / Venue</label><span style="white-space:pre-line;">${dv(o.meeting_address)}</span></div>
+      <div class="detail-2col">
+        <div class="detail-field"><label>Event Type</label><span>${dv(o.event_type)}</span></div>
+        <div class="detail-field"><label>Meal Type</label><span>${dv(o.meal_type)}</span></div>
+      </div>
+      <div class="detail-2col">
+        <div class="detail-field"><label>Attendees (est.)</label><span>${dv(o.estimated_attendees)}</span></div>
+        <div class="detail-field"><label>Therapy Area</label><span>${dv(o.therapy_area)}</span></div>
+      </div>
+      <div class="detail-field"><label>Pfizer Project Owner</label><span>${dv(o.pfizer_project_owner)}</span></div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">Service & Product</div>
+      <div class="detail-2col">
+        <div class="detail-field"><label>Service Type</label><span>${dv(o.service_type)}</span></div>
+        <div class="detail-field"><label>Quantity</label><span>${dv(o.quantity)}</span></div>
+      </div>
+      <div class="detail-field"><label>Product / Program</label><span>${dv(o.product_program)}</span></div>
+      ${o.product_program_details ? `<div class="detail-field"><label>Product Details</label><span>${o.product_program_details}</span></div>` : ''}
+      ${o.clinical_internal_name ? `<div class="detail-field"><label>Clinical / Internal Name</label><span>${o.clinical_internal_name}</span></div>` : ''}
+      <div class="detail-field"><label>Survey Type</label><span>${dv(o.survey_type)}</span></div>
+      ${o.survey_details ? `<div class="detail-field"><label>Survey Details</label><span>${o.survey_details}</span></div>` : ''}
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">Badge Kit / API</div>
+      <div class="detail-field"><label>API Available?</label><span>${dv(o.badge_api_available)}</span></div>
+      ${o.badge_api_available === 'Yes' ? `
+      <div class="detail-2col">
+        <div class="detail-field"><label>Provider / Reg. Company</label><span>${dv(o.provider_registration_company)}</span></div>
+        <div class="detail-field"><label>Contact Name</label><span>${dv(o.api_badge_contact_name)}</span></div>
+      </div>
+      <div class="detail-field"><label>Contact Email</label><span>${dv(o.api_badge_contact_email)}</span></div>
+      ${o.api_badge_notes ? `<div class="detail-field"><label>Notes</label><span>${o.api_badge_notes}</span></div>` : ''}` : ''}
+    </div>
+
+    ${(o.association_contact_name || o.association_contact_email || o.association_vendor_name) ? `
+    <div class="detail-section">
+      <div class="detail-section-title">Association / Vendor</div>
+      <div class="detail-2col">
+        <div class="detail-field"><label>Contact Name</label><span>${dv(o.association_contact_name)}</span></div>
+        <div class="detail-field"><label>Contact Email</label><span>${dv(o.association_contact_email)}</span></div>
+      </div>
+      <div class="detail-field"><label>Vendor Name</label><span>${dv(o.association_vendor_name)}</span></div>
+    </div>` : ''}
+
+    ${o.special_instructions ? `
+    <div class="detail-section">
+      <div class="detail-section-title">Special Instructions</div>
+      <div class="detail-field"><span style="white-space:pre-line;">${o.special_instructions}</span></div>
+    </div>` : ''}
+
+    <div class="detail-section">
+      <div class="detail-section-title">Workflow Timestamps</div>
+      <div class="detail-2col">
+        <div class="detail-field"><label>Submitted</label><span>${dv(fmtDateTime(o.submitted_at))}</span></div>
+        <div class="detail-field"><label>Reviewed</label><span>${dv(fmtDateTime(o.reviewed_at))}</span></div>
+        <div class="detail-field"><label>Imported to OTIS</label><span>${dv(fmtDateTime(o.imported_to_otis_at))}</span></div>
+        <div class="detail-field"><label>Quote Generated</label><span>${dv(fmtDateTime(o.quote_generated_at))}</span></div>
+        <div class="detail-field"><label>Quote Sent</label><span>${dv(fmtDateTime(o.quote_sent_at))}</span></div>
+        <div class="detail-field"><label>Approved</label><span>${dv(fmtDateTime(o.approved_at))}</span></div>
+        <div class="detail-field"><label>Closed</label><span>${dv(fmtDateTime(o.closed_at))}</span></div>
+      </div>
+    </div>
+
+    ${o.import_code ? `
+    <div class="detail-section">
+      <div class="detail-section-title">Import Code &nbsp;<button class="copy-small" onclick="copyImportCode('${orderId}')">Copy</button></div>
+      <div class="import-code-box" id="ic-${orderId}">${o.import_code}</div>
+    </div>` : ''}
+  `;
+
+  // Build status action buttons
+  renderStatusActions(o);
+}
+
+function renderStatusActions(o){
+  const container = document.getElementById('status-actions');
+  const currentIdx = STATUS_FLOW.indexOf(o.order_status);
+  const nextStatuses = STATUS_FLOW.filter((s, i) => i !== currentIdx);
+
+  container.innerHTML = `
+    <div class="status-actions-title">Update Status</div>
+    <div class="status-btn-grid">
+      ${nextStatuses.map(s => `
+        <button class="status-btn" 
+          style="background:${STATUS_BTN_COLOR[s]};color:#fff;"
+          onclick="updateStatus('${o.order_id}','${s}')">${s}</button>
+      `).join('')}
+    </div>
+    <div class="detail-section" style="padding:16px;border-top:1px solid #eee;background:#f7f9fc;">
+      <button onclick="openInQuoteGen('${o.order_id}')" style="width:100%;padding:11px;background:#1a3a5c;color:#fff;border:none;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;">📄 Open in Quote Generator</button>
+      <div style="font-size:10px;color:#999;text-align:center;margin-top:6px;">Opens Quote Generator pre-filled with this order's data</div>
+    </div>`;
+}
+
+function openInQuoteGen(orderId){
+  // Pass only the order_id — Quote Generator fetches the full order from the Worker
+  // (avoids "URI Too Long" error that happened when we encoded the entire order in the URL)
+  window.open('Pfizer_Quote_Generator.html?order_id=' + encodeURIComponent(orderId), '_blank');
+}
+
+async function updateStatus(orderId, newStatus){
+  const now = new Date().toISOString();
+  const updates = { order_id: orderId, order_status: newStatus };
+
+  // Set the appropriate timestamp field
+  const tsMap = {
+    'Reviewed':          'reviewed_at',
+    'Imported to OTIS':  'imported_to_otis_at',
+    'Quote Generated':   'quote_generated_at',
+    'Quote Sent':        'quote_sent_at',
+    'Approved':          'approved_at',
+    'Closed':            'closed_at',
+  };
+  if(tsMap[newStatus]) updates[tsMap[newStatus]] = now;
+
+  try {
+    const resp = await fetch(WORKER_URL + '/update-order', {
+      method: 'PATCH',
+      headers: authHeaders(),
+      body: JSON.stringify(updates)
+    });
+    if(resp.status === 401){ handleUnauth(); return; }
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    const updated = await resp.json();
+
+    // Update local cache
+    const idx = allOrders.findIndex(o => o.order_id === orderId);
+    if(idx >= 0) allOrders[idx] = updated;
+    applyFilters();
+    openDetail(orderId);
+  } catch(err) {
+    alert('Failed to update status: ' + err.message);
+  }
+}
+
+function copyImportCode(orderId){
+  const o = allOrders.find(x => x.order_id === orderId);
+  if(!o || !o.import_code) return;
+  navigator.clipboard.writeText(o.import_code).then(() => {
+    const btn = event.target;
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+function closeDetail(){
+  selectedOrderId = null;
+  document.getElementById('detail-pane').classList.remove('open');
+  document.querySelectorAll('#order-tbody tr').forEach(tr => tr.classList.remove('selected'));
+}
+
+// Boot: if we have a saved token try to load immediately; otherwise show login
+if(sessionToken){
+  document.getElementById('login-overlay').classList.add('hidden');
+  loadOrders();
+} else {
+  // leave overlay visible; focus password field
+  document.getElementById('login-pw').focus();
+}
+// Auto-refresh every 60s (only when logged in)
+setInterval(()=>{ if(sessionToken) loadOrders(); }, 60000);
+</script>
+</body>
+</html>
