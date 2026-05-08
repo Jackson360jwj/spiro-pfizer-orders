@@ -143,6 +143,15 @@ textarea{height:72px;resize:vertical;}
 .login-card button{width:100%;padding:11px;background:#1a3a5c;color:#fff;border:none;border-radius:7px;font-size:14px;font-weight:700;cursor:pointer;}
 .login-card button:hover{background:#142e4a;}
 .login-error{color:#dc2626;font-size:12px;margin-top:8px;min-height:16px;}
+
+/* ── STATION SCANNER CONFIGURATION ── */
+.station-row{background:#f7f9fc;border:1px solid #dde4ef;border-radius:8px;padding:16px 18px;margin-bottom:12px;}
+.station-row-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.station-num-badge{background:#1a3a5c;color:#fff;font-size:11px;font-weight:700;padding:3px 12px;border-radius:12px;letter-spacing:.5px;text-transform:uppercase;}
+.station-remove-btn{background:none;border:1px solid #e0e0e0;color:#c0392b;font-size:12px;font-weight:700;cursor:pointer;padding:3px 10px;border-radius:5px;}
+.station-remove-btn:hover{background:#fdecea;border-color:#c0392b;}
+.add-station-btn{width:100%;padding:11px;background:#fff;border:2px dashed #1a3a5c;border-radius:7px;color:#1a3a5c;font-weight:700;font-size:13px;cursor:pointer;transition:background .15s;margin-top:4px;}
+.add-station-btn:hover{background:#eef2f7;}
 </style>
 </head>
 <body>
@@ -308,9 +317,17 @@ textarea{height:72px;resize:vertical;}
     </div>
   </div>
 
-  <!-- ── STEP 2: SERVICES ── -->
+  <!-- ── STEP 2: STATION SCANNER CONFIGURATION ── -->
   <div class="card">
-    <div class="card-title"><span class="step-badge">2</span>Services &amp; Pricing</div>
+    <div class="card-title"><span class="step-badge">2</span>Station Scanner Configuration</div>
+    <p style="font-size:12px;color:#888;margin-bottom:16px;">Add each station in the booth. Each station gets its own survey type, brand/therapy tagging, scanner count, and market manager.</p>
+    <div id="stations-container"></div>
+    <button class="add-station-btn" onclick="addStation()">＋ Add Station</button>
+  </div>
+
+  <!-- ── STEP 3: SERVICES ── -->
+  <div class="card">
+    <div class="card-title"><span class="step-badge">3</span>Services &amp; Pricing</div>
 
     <label class="lbl" style="display:block;margin-bottom:6px;">Service Type * <span style="font-size:10px;font-weight:400;color:#888;text-transform:none;letter-spacing:0;">— select all that apply</span></label>
     <div class="svc-tabs">
@@ -483,7 +500,7 @@ textarea{height:72px;resize:vertical;}
 
   <!-- ── STEP 3: QUOTE DETAILS ── -->
   <div class="card" id="qdetails_card" style="display:none;">
-    <div class="card-title"><span class="step-badge">3</span>Quote Details</div>
+    <div class="card-title"><span class="step-badge">4</span>Quote Details</div>
     <div class="fg">
       <div class="fgroup">
         <label class="lbl">Quote Number <span style="font-weight:400;color:#999;font-size:10px;text-transform:none;letter-spacing:0;">— auto-filled from OTIS, or enter manually</span></label>
@@ -1350,6 +1367,152 @@ async function createOTISOrder(){
   }
 }
 
+// ── STATION SCANNER CONFIGURATION ──────────────────────────────────────────
+let stationCount = 0;
+
+const STATION_NAMES = [
+  'Commercial','Med Info','Med Affairs','Market Access',
+  'EPIC - Every Color is Primary','Round Table PT (TOV)',
+  'Surf Activation','FAL','Health Equity','Other'
+];
+
+const SURVEY_TYPES = [
+  'Scan & Go','Scan & Go with Notes','Attendee Type',
+  'Attendee Type with Waiver','Attendee Type with Product Survey',
+  'Attendee Type with Waiver and Product Survey',
+  'Migraine Survey w/ Opt In','Pax Survey w/ Opt In',
+  'Comirnaty Survey','Opt In Only','TOV Capture','Other'
+];
+
+const THERAPY_LIST = ['I&I','Derm','Vaccines','Migraine','Cardio','SINJ','Other'];
+
+const THERAPY_BRANDS = {
+  'I&I':      ['Velsipity','Xeljanz','Above Brand','Unbranded','Other'],
+  'Derm':     ['Cibinqo','Litfulo','Above Brand','Unbranded','Other'],
+  'Vaccines': ['Paxlovid','Comirnaty','Prevnar 20','Abrysvo','Vyndamax','Above Brand','Unbranded','Other'],
+  'Migraine': ['Nurtec','Zavzpret','IGIV','Above Brand','Unbranded','Other'],
+  'Cardio':   ['Vyndamax','Above Brand','Unbranded','Other'],
+  'SINJ':     ['SINJ','Above Brand','Unbranded','Other'],
+  'Other':    ['Other'],
+};
+
+function sOpts(arr, ph){
+  return `<option value="">— ${ph} —</option>` +
+    arr.map(v => `<option value="${v}">${v}</option>`).join('');
+}
+
+function addStation(){
+  stationCount++;
+  const n = stationCount;
+  const el = document.createElement('div');
+  el.className = 'station-row';
+  el.id = 'station-row-' + n;
+  el.innerHTML = `
+<div class="station-row-hdr">
+  <span class="station-num-badge" id="slabel-${n}">Station ${n}</span>
+  <button class="station-remove-btn" onclick="removeStation(${n})">✕ Remove</button>
+</div>
+<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;">
+  <div class="fgroup">
+    <label class="lbl">Station</label>
+    <select id="st${n}_name" onchange="stOtherToggle(${n},'name',this)">${sOpts(STATION_NAMES,'Select station')}</select>
+    <input type="text" id="st${n}_name_oth" placeholder="Describe station…" style="display:none;margin-top:6px;">
+  </div>
+  <div class="fgroup">
+    <label class="lbl">Survey Type</label>
+    <select id="st${n}_survey" onchange="stOtherToggle(${n},'survey',this)">${sOpts(SURVEY_TYPES,'Select survey')}</select>
+    <input type="text" id="st${n}_survey_oth" placeholder="Describe survey…" style="display:none;margin-top:6px;">
+  </div>
+  <div class="fgroup">
+    <label class="lbl">Therapy</label>
+    <select id="st${n}_therapy" onchange="stTherapyChange(${n})">${sOpts(THERAPY_LIST,'Select therapy')}</select>
+    <input type="text" id="st${n}_therapy_oth" placeholder="Describe therapy…" style="display:none;margin-top:6px;">
+  </div>
+  <div class="fgroup">
+    <label class="lbl">Brand</label>
+    <select id="st${n}_brand" onchange="stOtherToggle(${n},'brand',this);stUpdateTag(${n})">
+      <option value="">— Select therapy first —</option>
+    </select>
+    <input type="text" id="st${n}_brand_oth" placeholder="Describe brand…" style="display:none;margin-top:6px;" oninput="stUpdateTag(${n})">
+  </div>
+  <div class="fgroup">
+    <label class="lbl">Count</label>
+    <input type="number" id="st${n}_count" min="1" value="1">
+  </div>
+</div>
+<div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:flex-end;margin-top:10px;">
+  <div class="fgroup">
+    <label class="lbl">Market Manager (Email)</label>
+    <input type="email" id="st${n}_mgr" placeholder="firstname.lastname@pfizer.com">
+  </div>
+  <div id="st${n}_tag" style="display:none;padding:6px 14px;background:#eef2f7;border:1px solid #c5d3e8;border-radius:6px;font-size:12px;font-weight:700;color:#1a3a5c;white-space:nowrap;margin-bottom:1px;">
+    🏷 <span id="st${n}_tagtxt"></span>
+  </div>
+</div>`;
+  $id('stations-container').appendChild(el);
+  renumberStations();
+}
+
+function removeStation(n){
+  const r = $id('station-row-' + n);
+  if(r) r.remove();
+  renumberStations();
+}
+
+function renumberStations(){
+  document.querySelectorAll('#stations-container .station-row').forEach((r, i) => {
+    const lbl = r.querySelector('[id^="slabel-"]');
+    if(lbl) lbl.textContent = 'Station ' + (i + 1);
+  });
+}
+
+function stOtherToggle(n, field, sel){
+  const oth = $id('st' + n + '_' + field + '_oth');
+  if(oth) oth.style.display = (sel.value === 'Other') ? 'block' : 'none';
+  stUpdateTag(n);
+}
+
+function stTherapyChange(n){
+  const tv  = $id('st' + n + '_therapy').value;
+  const oth = $id('st' + n + '_therapy_oth');
+  if(oth) oth.style.display = (tv === 'Other') ? 'block' : 'none';
+
+  const bSel = $id('st' + n + '_brand');
+  const bOth = $id('st' + n + '_brand_oth');
+  if(!bSel) return;
+
+  if(tv && THERAPY_BRANDS[tv]){
+    bSel.innerHTML = `<option value="">— Select brand —</option>` +
+      THERAPY_BRANDS[tv].map(b => `<option value="${b}">${b}</option>`).join('');
+    if(bOth) bOth.style.display = 'none';
+  } else if(tv === 'Other'){
+    bSel.innerHTML = `<option value="Other">Other</option>`;
+    if(bOth) bOth.style.display = 'block';
+  } else {
+    bSel.innerHTML = `<option value="">— Select therapy first —</option>`;
+    if(bOth) bOth.style.display = 'none';
+  }
+  stUpdateTag(n);
+}
+
+function stUpdateTag(n){
+  const tEl    = $id('st' + n + '_therapy');
+  const bEl    = $id('st' + n + '_brand');
+  const tagDiv = $id('st' + n + '_tag');
+  const tagTxt = $id('st' + n + '_tagtxt');
+  if(!tEl || !bEl || !tagDiv) return;
+
+  const t = (tEl.value === 'Other') ? (($id('st' + n + '_therapy_oth') || {}).value || '') : tEl.value;
+  const b = (bEl.value === 'Other') ? (($id('st' + n + '_brand_oth')   || {}).value || '') : bEl.value;
+
+  if(t && b){
+    tagDiv.style.display = 'inline-block';
+    tagTxt.textContent   = b + ' / ' + t;
+  } else {
+    tagDiv.style.display = 'none';
+  }
+}
+
 function newOrder(){
   if(!confirm('Clear all data and start a new order?')) return;
   document.querySelectorAll('input[type=text],input[type=email],input[type=number],input[type=date],textarea')
@@ -1373,6 +1536,9 @@ function newOrder(){
   selectedSvcs.clear();
   document.querySelectorAll('.svc-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.svc-section').forEach(s => s.style.display = 'none');
+  // Clear stations
+  const sc = $id('stations-container'); if(sc) sc.innerHTML = '';
+  stationCount = 0;
   window.scrollTo({top:0,behavior:'smooth'});
 }
 // ── Boot: show login overlay if no session token ──────────────────────────────
