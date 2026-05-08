@@ -95,34 +95,38 @@ textarea{height:72px;resize:vertical;}
 .order-summary h3{font-size:13px;font-weight:700;color:#1a3a5c;margin-bottom:8px;}
 .order-summary .row{display:flex;gap:8px;}
 .order-summary .row .key{font-weight:700;min-width:180px;color:#555;}
+
+/* Station Scanner Configuration */
+.station-row{background:#f7f9fc;border:1px solid #dde4ef;border-radius:8px;padding:16px 18px;margin-bottom:12px;}
+.station-row-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.station-num-badge{background:#1a3a5c;color:#fff;font-size:11px;font-weight:700;padding:3px 12px;border-radius:12px;letter-spacing:.5px;text-transform:uppercase;}
+.station-remove-btn{background:none;border:1px solid #e0e0e0;color:#c0392b;font-size:12px;font-weight:700;cursor:pointer;padding:3px 10px;border-radius:5px;}
+.station-remove-btn:hover{background:#fdecea;border-color:#c0392b;}
+.add-station-btn{width:100%;padding:11px;background:#fff;border:2px dashed #1a3a5c;border-radius:7px;color:#1a3a5c;font-weight:700;font-size:13px;cursor:pointer;transition:background .15s;margin-top:4px;}
+.add-station-btn:hover{background:#eef2f7;}
 </style>
 </head>
 <body>
 
 <!-- Netlify form detection (hidden) -->
-<form name="pfizer-order" netlify netlify-honeypot="bot-field" hidden>
+<form name="pfizer-spiro-order" netlify netlify-honeypot="bot-field" hidden>
   <input name="bot-field">
-  <input name="Meeting_Manager">
-  <input name="Manager_Email">
-  <input name="Pfizer_Meeting_Number">
-  <input name="Legal_Entity">
-  <input name="Meeting_Full_Name">
-  <input name="Meeting_Acronym">
-  <input name="Event_Type">
-  <input name="Meeting_Address">
-  <input name="Meeting_Date">
-  <input name="Meeting_Time">
-  <input name="Meal_Type">
-  <input name="Estimated_Attendees">
+  <input name="Congress_Manager">
+  <input name="Congress_Manager_Email">
   <input name="Therapeutic_Area">
-  <input name="Product_Associated">
-  <input name="Pfizer_Project_Owner">
-  <input name="TD_Contact">
+  <input name="Pfizer_Marketing_Email">
+  <input name="Show_Name">
+  <input name="Location_Venue">
+  <input name="Delivery_Address">
+  <input name="Open_Date">
+  <input name="Close_Date">
+  <input name="Exhibit_Size">
+  <input name="Booth_Number">
+  <input name="OnSite_Contact">
+  <input name="Delivery_Date">
   <input name="Notes">
   <input name="Service_Type">
-  <input name="Survey_Type">
-  <input name="Survey_Details">
-  <input name="Product_Program">
+  <input name="Primary_Product">
   <input name="Product_Program_Details">
   <input name="Clinical_Internal_Name">
   <input name="Assoc_Contact_Name">
@@ -133,8 +137,6 @@ textarea{height:72px;resize:vertical;}
   <input name="API_Badge_Contact_Name">
   <input name="API_Badge_Contact_Email">
   <input name="API_Badge_Notes">
-  <input name="Data_Capture_Method">
-  <input name="Service_Details">
   <input name="Qty_App_Licenses">
   <input name="Qty_Scanners">
   <input name="Import_Code">
@@ -148,7 +150,7 @@ textarea{height:72px;resize:vertical;}
       <img src="data:image/png;base64,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" alt="Reality Engineering" style="height:52px;">
     </div>
     <div class="sub">Pfizer SPIRO — Order Request</div>
-    <div class="sub2">Please complete all required fields and click <strong>Submit Order</strong>.</div>
+    <div class="sub2">Complete all required fields and click <strong>Submit Order</strong>. Your Reality Engineering team will follow up to confirm details and provide a quote.</div>
   </div>
 
   <!-- ── ORDER FORM ── -->
@@ -188,95 +190,78 @@ textarea{height:72px;resize:vertical;}
       <div class="card-title"><span class="step-badge">2</span>Event Information</div>
       <div class="fg">
         <div class="fgroup">
-          <label class="lbl">Your Name (Meeting Manager) <span class="req">*</span></label>
-          <input type="text" id="f_mgr" placeholder="e.g. Sarah Mitchell">
+          <label class="lbl">Congress Manager (Your Name) <span class="req">*</span></label>
+          <input type="text" id="f_congress_mgr" placeholder="e.g. Kathy Deneen">
         </div>
         <div class="fgroup">
-          <label class="lbl">Your Email <span class="req">*</span></label>
-          <input type="email" id="f_mgr_email" placeholder="you@company.com">
-        </div>
-        <div class="fgroup">
-          <label class="lbl">Pfizer Meeting # <span class="req">*</span></label>
-          <input type="text" id="f_pfz" placeholder="e.g. PFZ159560">
-        </div>
-        <div class="fgroup">
-          <label class="lbl">Legal Entity</label>
-          <input type="text" id="f_entity" value="1400: Pfizer Inc.">
-        </div>
-        <div class="fgroup fw">
-          <label class="lbl">Meeting Full Name <span class="req">*</span></label>
-          <input type="text" id="f_name" placeholder="e.g. American College of Osteopathic Family Physicians">
-        </div>
-        <div class="fgroup">
-          <label class="lbl">Meeting Acronym (Short Name)</label>
-          <input type="text" id="f_acronym" placeholder="e.g. ACOFP">
-        </div>
-        <div class="fgroup">
-          <label class="lbl">Event Type <span class="req">*</span></label>
-          <select id="f_etype">
-            <option value="">— Select —</option>
-            <option>Product Theater</option>
-            <option>Symposia</option>
-            <option>Education Reception</option>
-          </select>
-        </div>
-        <div class="fgroup fw">
-          <label class="lbl">Meeting Site / Address <span class="req">*</span></label>
-          <textarea id="f_addr" placeholder="Venue name and full address"></textarea>
-        </div>
-        <div class="fgroup">
-          <label class="lbl">Meeting Date <span class="req">*</span></label>
-          <input type="date" id="f_date">
-        </div>
-        <div class="fgroup">
-          <label class="lbl">Meeting End Date</label>
-          <input type="date" id="f_date_end">
-        </div>
-        <div class="fgroup">
-          <label class="lbl">Meeting Time</label>
-          <input type="text" id="f_time" placeholder="e.g. 12:15 PM – 1:15 PM">
-        </div>
-        <div class="fgroup">
-          <label class="lbl">Meal Type <span class="req">*</span></label>
-          <select id="f_meal">
-            <option value="">— Select —</option>
-            <option>Breakfast</option>
-            <option>Lunch</option>
-            <option>Dinner</option>
-            <option>Coffee + Tea</option>
-            <option>Snacks</option>
-            <option>No TOV (no compliance tracking)</option>
-          </select>
-        </div>
-        <div class="fgroup">
-          <label class="lbl">Estimated # Attendees</label>
-          <input type="number" id="f_att" placeholder="e.g. 100">
+          <label class="lbl">Congress Manager Email <span class="req">*</span></label>
+          <input type="email" id="f_congress_email" placeholder="you@pfizer.com">
         </div>
         <div class="fgroup">
           <label class="lbl">Therapeutic Area <span class="req">*</span></label>
-          <input type="text" id="f_therapy" placeholder="e.g. Oncology">
+          <input type="text" id="f_therapy" placeholder="e.g. Vaccines">
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Pfizer Marketing Email</label>
+          <input type="email" id="f_pfz_mktg_email" placeholder="e.g. finley.hutchinson@pfizer.com">
         </div>
         <div class="fgroup fw">
-          <label class="lbl">Pfizer Project Owner (Name &amp; Email) <span class="req">*</span></label>
-          <input type="text" id="f_owner" placeholder="e.g. Jane.Smith@pfizer.com">
+          <label class="lbl">Show Name <span class="req">*</span></label>
+          <input type="text" id="f_show_name" placeholder="e.g. AAPA 2026">
         </div>
         <div class="fgroup fw">
-          <label class="lbl">TD Contact (Name, Phone / Email)</label>
-          <textarea id="f_td" placeholder="Name and contact info for the Technical Director who will be on-site"></textarea>
+          <label class="lbl">Location / Venue <span class="req">*</span></label>
+          <textarea id="f_location" placeholder="Venue name — e.g. Ernest N Morial Convention Center"></textarea>
         </div>
         <div class="fgroup fw">
-          <label class="lbl">Notes / Special Instructions</label>
+          <label class="lbl">Delivery Address <span style="font-size:10px;font-weight:400;color:#888;text-transform:none;letter-spacing:0;">(hotel or shipping address for equipment)</span></label>
+          <textarea id="f_delivery_addr" placeholder="e.g. Le Meridien New Orleans, 333 Poydras Street, New Orleans, LA 70130&#10;Attn: Rob Loughran 404-717-3985"></textarea>
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Open Date <span class="req">*</span></label>
+          <input type="date" id="f_open_date">
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Close Date</label>
+          <input type="date" id="f_close_date">
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Exhibit Size</label>
+          <input type="text" id="f_exhibit_size" placeholder="e.g. 20x40">
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Booth #</label>
+          <input type="text" id="f_booth" placeholder="e.g. 3727">
+        </div>
+        <div class="fgroup">
+          <label class="lbl">On-Site Contact (Name &amp; Phone) <span class="req">*</span></label>
+          <input type="text" id="f_onsite_contact" placeholder="e.g. Rob Loughran 404-717-3985">
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Delivery Date</label>
+          <input type="date" id="f_delivery_date">
+        </div>
+        <div class="fgroup fw">
+          <label class="lbl">Special Instructions / Notes</label>
           <textarea id="f_notes" placeholder="Any additional information…"></textarea>
         </div>
       </div>
     </div>
 
-    <!-- STEP 3: PRODUCT / PROGRAM -->
+    <!-- STEP 3: STATION SCANNER CONFIGURATION -->
     <div class="card">
-      <div class="card-title"><span class="step-badge">3</span>Product / Program</div>
+      <div class="card-title"><span class="step-badge">3</span>Station Scanner Configuration</div>
+      <p style="font-size:12px;color:#888;margin-bottom:16px;">Add each station in the booth. Specify the survey type, therapy area, brand, and how many scanners or app licenses are needed per station.</p>
+      <div id="stations-container"></div>
+      <button class="add-station-btn" onclick="addStation()">＋ Add Station</button>
+    </div>
+
+    <!-- STEP 4: PRIMARY PRODUCT -->
+    <div class="card">
+      <div class="card-title"><span class="step-badge">4</span>Primary Product</div>
       <div class="fg">
         <div class="fgroup fw">
-          <label class="lbl">Product / Program <span class="req">*</span></label>
+          <label class="lbl">Primary Product <span class="req">*</span></label>
           <input type="text" id="f_product_program" list="product_program_options"
                  placeholder="Type or select a product…" autocomplete="off"
                  oninput="onProductChange()" onchange="onProductChange()">
@@ -293,9 +278,9 @@ textarea{height:72px;resize:vertical;}
       </div>
     </div>
 
-    <!-- STEP 4: TOV / COMPLIANCE REPORTING -->
+    <!-- STEP 5: TOV / COMPLIANCE REPORTING -->
     <div class="card">
-      <div class="card-title"><span class="step-badge">4</span>TOV / Compliance Reporting</div>
+      <div class="card-title"><span class="step-badge">5</span>TOV / Compliance Reporting</div>
       <div class="fg">
         <div class="fgroup fw">
           <label class="lbl">Is Transfer of Value (TOV) reporting required for this event?</label>
@@ -314,9 +299,9 @@ textarea{height:72px;resize:vertical;}
       </div>
     </div>
 
-    <!-- STEP 5: ASSOCIATION / VENDOR -->
+    <!-- STEP 6: ASSOCIATION / VENDOR -->
     <div class="card">
-      <div class="card-title"><span class="step-badge">5</span>Association / Vendor <span style="font-size:11px;font-weight:400;color:#888;text-transform:none;letter-spacing:0;">(optional)</span></div>
+      <div class="card-title"><span class="step-badge">6</span>Association / Vendor <span style="font-size:11px;font-weight:400;color:#888;text-transform:none;letter-spacing:0;">(optional)</span></div>
       <div class="fg">
         <div class="fgroup">
           <label class="lbl">Association Contact Name</label>
@@ -333,9 +318,9 @@ textarea{height:72px;resize:vertical;}
       </div>
     </div>
 
-    <!-- STEP 6: BADGE KIT / API -->
+    <!-- STEP 7: BADGE KIT / API -->
     <div class="card">
-      <div class="card-title"><span class="step-badge">6</span>Badge Kit / Developer Kit / API Available <span class="req" style="font-size:11px;font-weight:400;">&nbsp;* required</span></div>
+      <div class="card-title"><span class="step-badge">7</span>Badge Kit / Developer Kit / API Available <span class="req" style="font-size:11px;font-weight:400;">&nbsp;* required</span></div>
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:4px;" id="badge_api_group">
         <label class="opt" style="flex:1;min-width:100px;" onclick="onBadgeAPIChange('Yes')">
           <input type="radio" name="badge_api" value="Yes" id="badge_api_yes"> Yes
@@ -396,6 +381,175 @@ textarea{height:72px;resize:vertical;}
 </div>
 
 <script>
+// ── Station Scanner Data ──
+const STATION_NAMES = ['Commercial','Med Info','Med Affairs','Market Access','EPIC - Every Color is Primary','Round Table PT (TOV)','Surf Activation','FAL','Health Equity','Other'];
+const SURVEY_TYPES  = ['Scan & Go','Scan & Go with Notes','Attendee Type','Attendee Type with Waiver','Attendee Type with Product Survey','Attendee Type with Waiver and Product Survey','Opt In Only','TOV Capture','Other'];
+const THERAPY_LIST  = ['I&I','Derm','Vaccines','Migraine','Cardio','SINJ','Other'];
+const THERAPY_BRANDS = {
+  'I&I':      ['Velsipity','Xeljanz','Above Brand','Unbranded','Other'],
+  'Derm':     ['Cibinqo','Litfulo','Above Brand','Unbranded','Other'],
+  'Vaccines': ['Paxlovid','Comirnaty','Prevnar 20','Abrysvo','Vyndamax','Above Brand','Unbranded','Other'],
+  'Migraine': ['Nurtec','Zavzpret','IGIV','Above Brand','Unbranded','Other'],
+  'Cardio':   ['Vyndamax','Above Brand','Unbranded','Other'],
+  'SINJ':     ['SINJ','Above Brand','Unbranded','Other'],
+  'Other':    ['Other'],
+};
+
+let stationCount = 0;
+
+function sOpts(arr, ph){
+  return `<option value="">— ${ph} —</option>` +
+    arr.map(v => `<option value="${v}">${v}</option>`).join('');
+}
+
+function addStation(){
+  stationCount++;
+  const n = stationCount;
+  const el = document.createElement('div');
+  el.className = 'station-row';
+  el.id = 'station-row-' + n;
+  el.innerHTML = `
+<div class="station-row-hdr">
+  <span class="station-num-badge" id="slabel-${n}">Station ${n}</span>
+  <button class="station-remove-btn" onclick="removeStation(${n})">✕ Remove</button>
+</div>
+<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;">
+  <div class="fgroup">
+    <label class="lbl">Station</label>
+    <select id="st${n}_name" onchange="stOtherToggle(${n},'name',this)">${sOpts(STATION_NAMES,'Select station')}</select>
+    <input type="text" id="st${n}_name_oth" placeholder="Describe station…" style="display:none;margin-top:6px;">
+  </div>
+  <div class="fgroup">
+    <label class="lbl">Survey Type</label>
+    <select id="st${n}_survey" onchange="stOtherToggle(${n},'survey',this)">${sOpts(SURVEY_TYPES,'Select survey')}</select>
+    <input type="text" id="st${n}_survey_oth" placeholder="Describe survey…" style="display:none;margin-top:6px;">
+  </div>
+  <div class="fgroup">
+    <label class="lbl">Therapy</label>
+    <select id="st${n}_therapy" onchange="stTherapyChange(${n})">${sOpts(THERAPY_LIST,'Select therapy')}</select>
+    <input type="text" id="st${n}_therapy_oth" placeholder="Describe therapy…" style="display:none;margin-top:6px;">
+  </div>
+  <div class="fgroup">
+    <label class="lbl">Brand</label>
+    <select id="st${n}_brand" onchange="stOtherToggle(${n},'brand',this);stUpdateTag(${n})">
+      <option value="">— Select therapy first —</option>
+    </select>
+    <input type="text" id="st${n}_brand_oth" placeholder="Describe brand…" style="display:none;margin-top:6px;" oninput="stUpdateTag(${n})">
+  </div>
+  <div class="fgroup">
+    <label class="lbl">Scanners</label>
+    <input type="number" id="st${n}_scanners" min="0" value="0">
+  </div>
+  <div class="fgroup">
+    <label class="lbl">Apps</label>
+    <input type="number" id="st${n}_apps" min="0" value="0">
+  </div>
+</div>
+<div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:flex-end;margin-top:10px;">
+  <div class="fgroup">
+    <label class="lbl">Market Manager (Email)</label>
+    <input type="email" id="st${n}_mgr" placeholder="firstname.lastname@pfizer.com">
+  </div>
+  <div id="st${n}_tag" style="display:none;padding:6px 14px;background:#eef2f7;border:1px solid #c5d3e8;border-radius:6px;font-size:12px;font-weight:700;color:#1a3a5c;white-space:nowrap;margin-bottom:1px;">
+    🏷 <span id="st${n}_tagtxt"></span>
+  </div>
+</div>`;
+  document.getElementById('stations-container').appendChild(el);
+  renumberStations();
+}
+
+function removeStation(n){
+  const r = document.getElementById('station-row-' + n);
+  if(r) r.remove();
+  renumberStations();
+}
+
+function renumberStations(){
+  document.querySelectorAll('#stations-container .station-row').forEach((r, i) => {
+    const lbl = r.querySelector('[id^="slabel-"]');
+    if(lbl) lbl.textContent = 'Station ' + (i + 1);
+  });
+}
+
+function stOtherToggle(n, field, sel){
+  const oth = document.getElementById('st' + n + '_' + field + '_oth');
+  if(oth) oth.style.display = (sel.value === 'Other') ? 'block' : 'none';
+  stUpdateTag(n);
+}
+
+function stTherapyChange(n){
+  const tv  = document.getElementById('st' + n + '_therapy').value;
+  const oth = document.getElementById('st' + n + '_therapy_oth');
+  if(oth) oth.style.display = (tv === 'Other') ? 'block' : 'none';
+
+  const bSel = document.getElementById('st' + n + '_brand');
+  const bOth = document.getElementById('st' + n + '_brand_oth');
+  if(!bSel) return;
+
+  if(tv && THERAPY_BRANDS[tv]){
+    bSel.innerHTML = `<option value="">— Select brand —</option>` +
+      THERAPY_BRANDS[tv].map(b => `<option value="${b}">${b}</option>`).join('');
+    if(bOth) bOth.style.display = 'none';
+  } else if(tv === 'Other'){
+    bSel.innerHTML = `<option value="Other">Other</option>`;
+    if(bOth) bOth.style.display = 'block';
+  } else {
+    bSel.innerHTML = `<option value="">— Select therapy first —</option>`;
+    if(bOth) bOth.style.display = 'none';
+  }
+  stUpdateTag(n);
+}
+
+function stUpdateTag(n){
+  const tEl  = document.getElementById('st' + n + '_therapy');
+  const bSel = document.getElementById('st' + n + '_brand');
+  const bOth = document.getElementById('st' + n + '_brand_oth');
+  const tagW = document.getElementById('st' + n + '_tag');
+  const tagT = document.getElementById('st' + n + '_tagtxt');
+  if(!tEl || !tagW || !tagT) return;
+
+  const therapy = tEl.value;
+  const brandSel = bSel ? bSel.value : '';
+  const brand = (brandSel === 'Other' && bOth) ? bOth.value.trim() : brandSel;
+
+  if(therapy && brand){
+    tagT.textContent = brand + ' / ' + therapy;
+    tagW.style.display = 'inline-block';
+  } else {
+    tagW.style.display = 'none';
+  }
+}
+
+function getStationsData(){
+  const stations = [];
+  document.querySelectorAll('#stations-container .station-row').forEach((row, i) => {
+    const id = row.id.replace('station-row-', '');
+    const nameEl    = document.getElementById('st' + id + '_name');
+    const surveyEl  = document.getElementById('st' + id + '_survey');
+    const therapyEl = document.getElementById('st' + id + '_therapy');
+    const brandEl   = document.getElementById('st' + id + '_brand');
+    const nameOth   = document.getElementById('st' + id + '_name_oth');
+    const surveyOth = document.getElementById('st' + id + '_survey_oth');
+    const therapyOth= document.getElementById('st' + id + '_therapy_oth');
+    const brandOth  = document.getElementById('st' + id + '_brand_oth');
+    const scannersEl= document.getElementById('st' + id + '_scanners');
+    const appsEl    = document.getElementById('st' + id + '_apps');
+    const mgrEl     = document.getElementById('st' + id + '_mgr');
+
+    stations.push({
+      station_num: i + 1,
+      name:     nameEl?.value === 'Other' ? (nameOth?.value || 'Other') : (nameEl?.value || ''),
+      survey:   surveyEl?.value === 'Other' ? (surveyOth?.value || 'Other') : (surveyEl?.value || ''),
+      therapy:  therapyEl?.value === 'Other' ? (therapyOth?.value || 'Other') : (therapyEl?.value || ''),
+      brand:    brandEl?.value === 'Other' ? (brandOth?.value || 'Other') : (brandEl?.value || ''),
+      scanners: scannersEl?.value || '0',
+      apps:     appsEl?.value || '0',
+      mgr:      mgrEl?.value || '',
+    });
+  });
+  return stations;
+}
+
 // ── Product List (easy to maintain) ──
 const PRODUCT_LIST = [
   'Abrysvo','Braftovi / Mektovi','Bosulif','Cibinqo','Daurismo','Elrexfio',
@@ -481,7 +635,7 @@ function fmtDate(d){
 }
 
 function validate(){
-  const required = ['f_mgr','f_mgr_email','f_pfz','f_name','f_etype','f_addr','f_date','f_meal','f_therapy','f_owner','f_product_program'];
+  const required = ['f_congress_mgr','f_congress_email','f_therapy','f_show_name','f_location','f_open_date','f_onsite_contact','f_product_program'];
   let ok = true;
   required.forEach(id => {
     const el = $id(id);
@@ -532,59 +686,64 @@ function validate(){
 function buildData(){
   const badgeAPI = radioVal('badge_api');
   const d = {
-    // Core fields
-    f_mgr:              val('f_mgr'),
-    f_mgr_email:        val('f_mgr_email'),
-    f_pfz:              val('f_pfz'),
-    f_entity:           val('f_entity'),
-    f_name:             val('f_name'),
-    f_acronym:          val('f_acronym'),
-    f_etype:            val('f_etype'),
-    f_addr:             val('f_addr'),
-    f_date:             val('f_date'),
-    f_date_end:         val('f_date_end'),
-    f_time:             val('f_time'),
-    f_meal:             val('f_meal'),
-    f_att:              val('f_att'),
-    f_therapy:          val('f_therapy'),
-    f_owner:            val('f_owner'),
-    f_td:               val('f_td'),
-    f_notes:            val('f_notes'),
-    // New fields
-    service_type:       Array.from(selectedServiceTypes).join(', '),
-    qty_app_licenses:   val('f_qty_app'),
-    qty_scanners:       val('f_qty_scanner'),
-    tov:                document.querySelector('input[name="f_tov"]:checked')?.value || 'yes',
-    survey_type:        '',
-    survey_details:     '',
-    product_program:    val('f_product_program'),
+    // Event info — keys use f_ prefix to match Quote Generator element IDs directly
+    f_congress_mgr:      val('f_congress_mgr'),
+    f_congress_email:    val('f_congress_email'),
+    f_therapy:           val('f_therapy'),
+    f_pfz_mktg_email:    val('f_pfz_mktg_email'),
+    f_show_name:         val('f_show_name'),
+    f_location:          val('f_location'),
+    f_delivery_addr:     val('f_delivery_addr'),
+    f_open_date:         val('f_open_date'),
+    f_close_date:        val('f_close_date'),
+    f_exhibit_size:      val('f_exhibit_size'),
+    f_booth:             val('f_booth'),
+    f_onsite_contact:    val('f_onsite_contact'),
+    f_delivery_date:     val('f_delivery_date'),
+    f_notes:             val('f_notes'),
+    // Product
+    f_product:           val('f_product_program'),
+    product_program:     val('f_product_program'),
     product_program_details: val('f_product_details'),
     clinical_internal_name: val('f_clinical_name'),
-    assoc_contact_name: val('f_assoc_contact_name'),
+    // Service
+    service_type:        Array.from(selectedServiceTypes).join(', '),
+    qty_app_licenses:    val('f_qty_app'),
+    qty_scanners:        val('f_qty_scanner'),
+    tov:                 document.querySelector('input[name="f_tov"]:checked')?.value || 'yes',
+    // Association / Badge API
+    assoc_contact_name:  val('f_assoc_contact_name'),
     assoc_contact_email: val('f_assoc_contact_email'),
-    assoc_vendor_name:  val('f_assoc_vendor_name'),
+    assoc_vendor_name:   val('f_assoc_vendor_name'),
     badge_api_available: badgeAPI,
     provider_reg_company: val('f_provider_reg_company'),
     api_badge_contact_name: val('f_api_badge_contact_name'),
     api_badge_contact_email: val('f_api_badge_contact_email'),
-    api_badge_notes:    val('f_api_badge_notes'),
+    api_badge_notes:     val('f_api_badge_notes'),
+    // Stations
+    stations:            getStationsData(),
   };
   return d;
 }
 
 function buildSummaryHTML(d){
   const rows = [
-    ['Meeting Manager', d.f_mgr],
-    ['Email', d.f_mgr_email],
-    ['Pfizer Meeting #', d.f_pfz],
-    ['Meeting Full Name', d.f_name],
-    ['Event Type', d.f_etype],
-    ['Date', fmtDate(d.f_date)],
-    ['Address', d.f_addr],
+    ['Congress Manager', d.f_congress_mgr],
+    ['Email', d.f_congress_email],
+    ['Show Name', d.f_show_name],
+    ['Therapeutic Area', d.f_therapy],
+    ['Primary Product', d.f_product || d.product_program],
+    ['Location / Venue', d.f_location],
+    ['Delivery Address', d.f_delivery_addr],
+    ['Open Date', fmtDate(d.f_open_date)],
+    ['Close Date', fmtDate(d.f_close_date)],
+    ['Exhibit Size', d.f_exhibit_size],
+    ['Booth #', d.f_booth],
+    ['On-Site Contact', d.f_onsite_contact],
+    ['Delivery Date', fmtDate(d.f_delivery_date)],
     ['Service Type', d.service_type],
     ['App Licenses', d.qty_app_licenses],
     ['Scanners', d.qty_scanners],
-    ['Product / Program', d.product_program],
     ['TOV Required', d.tov === 'no' ? 'No (−$500)' : 'Yes (standard)'],
     ['Badge / API Available', d.badge_api_available],
   ];
@@ -592,6 +751,13 @@ function buildSummaryHTML(d){
   rows.forEach(([k,v]) => {
     if(v) html += `<div class="row"><span class="key">${k}:</span><span>${v}</span></div>`;
   });
+  if(d.stations && d.stations.length > 0){
+    html += `<div class="row" style="margin-top:8px;"><span class="key">Stations (${d.stations.length}):</span></div>`;
+    d.stations.forEach(s => {
+      const tag = (s.brand && s.therapy) ? ` 🏷 ${s.brand}/${s.therapy}` : '';
+      html += `<div class="row" style="padding-left:16px;"><span class="key">Station ${s.station_num} — ${s.name||'—'}</span><span>${s.survey||'—'}${tag} | Scanners: ${s.scanners} | Apps: ${s.apps}${s.mgr ? ' | '+s.mgr : ''}</span></div>`;
+    });
+  }
   return html;
 }
 
@@ -609,27 +775,25 @@ async function submitOrder(){
   const code = btoa(JSON.stringify(d));
 
   const payload = new URLSearchParams({
-    'form-name':              'pfizer-order',
+    'form-name':              'pfizer-spiro-order',
     'bot-field':              '',
-    'Meeting_Manager':        d.f_mgr,
-    'Manager_Email':          d.f_mgr_email,
-    'Pfizer_Meeting_Number':  d.f_pfz,
-    'Legal_Entity':           d.f_entity,
-    'Meeting_Full_Name':      d.f_name,
-    'Meeting_Acronym':        d.f_acronym,
-    'Event_Type':             d.f_etype,
-    'Meeting_Address':        d.f_addr,
-    'Meeting_Date':           fmtDate(d.f_date),
-    'Meeting_Time':           d.f_time,
-    'Meal_Type':              d.f_meal,
-    'Estimated_Attendees':    d.f_att,
+    'Congress_Manager':       d.f_congress_mgr,
+    'Congress_Manager_Email': d.f_congress_email,
     'Therapeutic_Area':       d.f_therapy,
-    'Pfizer_Project_Owner':   d.f_owner,
-    'TD_Contact':             d.f_td,
+    'Pfizer_Marketing_Email': d.f_pfz_mktg_email,
+    'Show_Name':              d.f_show_name,
+    'Location_Venue':         d.f_location,
+    'Delivery_Address':       d.f_delivery_addr,
+    'Open_Date':              fmtDate(d.f_open_date),
+    'Close_Date':             fmtDate(d.f_close_date),
+    'Exhibit_Size':           d.f_exhibit_size,
+    'Booth_Number':           d.f_booth,
+    'OnSite_Contact':         d.f_onsite_contact,
+    'Delivery_Date':          fmtDate(d.f_delivery_date),
     'Notes':                  d.f_notes,
     'Service_Type':           d.service_type,
     'TOV_Required':           d.tov === 'no' ? 'No (−$500)' : 'Yes (standard)',
-    'Product_Program':        d.product_program,
+    'Primary_Product':        d.f_product || d.product_program,
     'Product_Program_Details': d.product_program_details,
     'Clinical_Internal_Name': d.clinical_internal_name,
     'Assoc_Contact_Name':     d.assoc_contact_name,
