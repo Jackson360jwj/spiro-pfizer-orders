@@ -226,8 +226,16 @@ textarea{height:72px;resize:vertical;}
         <textarea id="f_location" placeholder="e.g. Ernest N Morial Convention Center" oninput="liveCalc()"></textarea>
       </div>
       <div class="fgroup fw">
-        <label class="lbl">Delivery Address <span style="font-weight:400;color:#999;font-size:10px;text-transform:none;letter-spacing:0;">— hotel or shipping address for equipment</span></label>
-        <textarea id="f_delivery_addr" placeholder="e.g. Le Meridien New Orleans, 333 Poydras Street, New Orleans, Louisiana 70130&#10;Attn: Rob Loughran 404-717-3985" oninput="liveCalc()"></textarea>
+        <label class="lbl">Delivery Address</label>
+        <div style="display:flex;gap:8px;margin-bottom:8px;">
+          <label style="display:flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #c5d3e8;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;color:#1a3a5c;background:#f5f8fc;flex:1;justify-content:center;" id="ship_booth_lbl">
+            <input type="radio" name="ship_type" id="ship_booth" value="booth" onchange="updateDeliveryUI()" style="accent-color:#1a3a5c;"> 🏛 Direct to Event Booth
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #c5d3e8;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;color:#1a3a5c;background:#f5f8fc;flex:1;justify-content:center;" id="ship_hotel_lbl">
+            <input type="radio" name="ship_type" id="ship_hotel" value="hotel" onchange="updateDeliveryUI()" style="accent-color:#1a3a5c;"> 🏨 Ship to Hotel
+          </label>
+        </div>
+        <textarea id="f_delivery_addr" placeholder="Select shipping type above…" oninput="liveCalc()"></textarea>
       </div>
       <div class="fgroup">
         <label class="lbl">Open Date *</label>
@@ -332,7 +340,7 @@ textarea{height:72px;resize:vertical;}
     <div id="svc_app" class="svc-section">
       <div class="svc-row">
         <div><div class="svc-name">RE:nvent Mobile App</div><div class="svc-desc">Custom iPhone or Android setup instructions to primary TD</div></div>
-        <span class="svc-price">$300 / unit</span>
+        <span class="svc-price">$350 / unit</span>
         <div class="qty-wrap">
           <button class="qbtn" onclick="adj('app_qty',-1)">−</button>
           <input class="qinput" type="number" id="app_qty" value="1" min="0" oninput="liveCalc()">
@@ -373,7 +381,7 @@ textarea{height:72px;resize:vertical;}
     <div id="svc_scanner" class="svc-section">
       <div class="svc-row">
         <div><div class="svc-name">RE:nvent Mobile Scanner — <em>Without Data</em></div><div class="svc-desc">iPhone Scanner, badge scan only — no attendee data lookup</div></div>
-        <span class="svc-price">$350 / unit</span>
+        <span class="svc-price">$400 / unit</span>
         <div class="qty-wrap">
           <button class="qbtn" onclick="adj('scanner_qty_nodata',-1)">−</button>
           <input class="qinput" type="number" id="scanner_qty_nodata" value="0" min="0" oninput="liveCalc()">
@@ -382,11 +390,20 @@ textarea{height:72px;resize:vertical;}
       </div>
       <div class="svc-row">
         <div><div class="svc-name">RE:nvent Mobile Scanner — <em>With Data</em></div><div class="svc-desc">iPhone Scanner with attendee data lookup and matching</div></div>
-        <span class="svc-price">$400 / unit</span>
+        <span class="svc-price">$450 / unit</span>
         <div class="qty-wrap">
           <button class="qbtn" onclick="adj('scanner_qty_data',-1)">−</button>
           <input class="qinput" type="number" id="scanner_qty_data" value="0" min="0" oninput="liveCalc()">
           <button class="qbtn" onclick="adj('scanner_qty_data',1)">+</button>
+        </div>
+      </div>
+      <div class="svc-row">
+        <div><div class="svc-name">Internet/PAX Router</div><div class="svc-desc">On-site wireless router for scanner internet connectivity</div></div>
+        <span class="svc-price">$1,550 / unit</span>
+        <div class="qty-wrap">
+          <button class="qbtn" onclick="adj('internet_qty',-1)">−</button>
+          <input class="qinput" type="number" id="internet_qty" value="0" min="0" oninput="liveCalc()">
+          <button class="qbtn" onclick="adj('internet_qty',1)">+</button>
         </div>
       </div>
       <div class="svc-row" style="background:#fff8e1;border:1px solid #f9a825;">
@@ -681,6 +698,26 @@ document.getElementById('f_qdate').value = new Date().toISOString().split('T')[0
 // ── Helpers ──
 function $id(id){ return document.getElementById(id); }
 function val(id){ return ($id(id)||{}).value || ''; }
+
+function updateDeliveryUI(){
+  const type = document.querySelector('input[name="ship_type"]:checked')?.value;
+  const ta   = $id('f_delivery_addr');
+  const boothLbl = $id('ship_booth_lbl');
+  const hotelLbl = $id('ship_hotel_lbl');
+  const activeStyle = 'background:#1a3a5c;color:#fff;border-color:#1a3a5c;';
+  const idleStyle   = 'background:#f5f8fc;color:#1a3a5c;border-color:#c5d3e8;';
+  if(boothLbl) boothLbl.style.cssText += type==='booth' ? activeStyle : idleStyle;
+  if(hotelLbl) hotelLbl.style.cssText += type==='hotel' ? activeStyle : idleStyle;
+  if(!ta) return;
+  if(type === 'booth'){
+    ta.placeholder = 'Booth # and hall/location within venue\ne.g. Booth 1234, Hall B — Ernest N Morial Convention Center';
+  } else if(type === 'hotel'){
+    ta.placeholder = 'Hotel name, street address, city, state, zip\nAttn: [Contact Name] [Phone]\ne.g. Le Meridien New Orleans, 333 Poydras St, New Orleans, LA 70130\nAttn: Rob Loughran 404-717-3985';
+  } else {
+    ta.placeholder = 'Select shipping type above…';
+  }
+  liveCalc();
+}
 function fmt(n){
   if(typeof n === 'string') return n;
   return '$' + Number(n).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:2});
@@ -756,35 +793,39 @@ function calcPrices(){
   if(selectedSvcs.size === 0) return {subtotal:0, api:0, ccFee:0, grand:0, lines:[]};
   const notov = noTOV();
   const cc = isCC();
-  let ccBase = 0;   // amount subject to 3% CC fee
-  let api = 0;      // passthrough — not in CC base
-  const lines = []; // {desc, qty, unit, total, included}
+  let ccBase = 0;
+  let api = 0;
+  const lines = [];
 
-  const setupFull = notov
-    ? 'Event Set-up: Symposia Survey, Post Show Summary Report and Export sent to Pfizer project owner. Manage DLU Compliance Data Transfer of Value for disclosure reporting for these (13) countries: Brazil, Colombia, Croatia, France, Italy, Netherlands, Pakistan, Philippines, Portugal, Saudi Arabia, Slovakia, Turkey, United States. Pfizer Customer Data Match Service run 3x weekly. For No TOV needed (−$500).'
-    : 'Event Set-up: Symposia Survey, Post Show Summary Report and Export sent to Pfizer project owner. Manage DLU Compliance Data Transfer of Value for disclosure reporting for these (13) countries: Brazil, Colombia, Croatia, France, Italy, Netherlands, Pakistan, Philippines, Portugal, Saudi Arabia, Slovakia, Turkey, United States. Pfizer Customer Data Match Service run 3x weekly.';
+  const setupDesc = notov
+    ? 'Lead Service Event Set-up: Symposia Survey, Post Show Summary Report and Export sent to Pfizer project owner. Manage DLU Compliance Data Transfer of Value for disclosure reporting for these (13) countries: Brazil, Colombia, Croatia, France, Italy, Netherlands, Pakistan, Philippines, Portugal, Saudi Arabia, Slovakia, Turkey, United States. Pfizer Customer Data Match Service run 3x weekly. For No TOV needed (−$500).'
+    : 'Lead Service Event Set-up: Symposia Survey, Post Show Summary Report and Export sent to Pfizer project owner. Manage DLU Compliance Data Transfer of Value for disclosure reporting for these (13) countries: Brazil, Colombia, Croatia, France, Italy, Netherlands, Pakistan, Philippines, Portugal, Saudi Arabia, Slovakia, Turkey, United States. Pfizer Customer Data Match Service run 3x weekly.';
 
   const setupSimple = 'Event Set-up: Symposia Survey, Post Show Summary Report and Export Access sent to Brand Manager. Pfizer Customer Data Match Service run Thursdays therefore final reports sent ASAP after match is run unless otherwise requested. Manage DLU Compliance Data Transfer of Value for Monthly Disclosure reporting.';
 
-  const setupPrice = notov ? 1350 : 1850;
-
-  // ── Per-unit lines for each selected service type ──
+  // ── Per-unit hardware lines ──
   if(selectedSvcs.has('app')){
     const q = parseInt(val('app_qty'))||0;
-    lines.push({desc:'<strong>RE:nvent Mobile App:</strong> Custom iPhone or Android set up instructions to primary TD', qty:q, unit:300, total:q*300});
-    ccBase += q*300;
+    lines.push({desc:'<strong>RE:nvent Mobile App:</strong> Custom iPhone or Android set up instructions to primary TD', qty:q, unit:350, total:q*350});
+    ccBase += q*350;
   }
 
   if(selectedSvcs.has('scanner')){
     const qNoData = parseInt(val('scanner_qty_nodata'))||0;
     const qData   = parseInt(val('scanner_qty_data'))||0;
     if(qNoData > 0){
-      lines.push({desc:'<strong>RE:nvent Mobile Scanner — Without Data:</strong> iPhone Scanner, badge scan only', qty:qNoData, unit:350, total:qNoData*350});
-      ccBase += qNoData*350;
+      lines.push({desc:'<strong>RE:nvent Mobile Scanner — Without Data:</strong> iPhone Scanner, badge scan only', qty:qNoData, unit:400, total:qNoData*400});
+      ccBase += qNoData*400;
     }
     if(qData > 0){
-      lines.push({desc:'<strong>RE:nvent Mobile Scanner — With Data:</strong> iPhone Scanner with attendee data lookup', qty:qData, unit:400, total:qData*400});
-      ccBase += qData*400;
+      lines.push({desc:'<strong>RE:nvent Mobile Scanner — With Data:</strong> iPhone Scanner with attendee data lookup', qty:qData, unit:450, total:qData*450});
+      ccBase += qData*450;
+    }
+    // Internet/PAX routers
+    const qInternet = parseInt(val('internet_qty'))||0;
+    if(qInternet > 0){
+      lines.push({desc:'<strong>Internet/PAX Router:</strong> On-site wireless router for scanner connectivity', qty:qInternet, unit:1550, total:qInternet*1550});
+      ccBase += qInternet*1550;
     }
   }
 
@@ -796,8 +837,8 @@ function calcPrices(){
 
   if(selectedSvcs.has('image')){
     const q = parseInt(val('img_qty'))||0;
-    lines.push({desc:'<strong>RE:nvent Mobile App:</strong> Custom iPhone or Android set up instructions to primary TD',qty:q,unit:300,total:q*300});
-    ccBase += q*300;
+    lines.push({desc:'<strong>RE:nvent Mobile App:</strong> Custom iPhone or Android set up instructions to primary TD',qty:q,unit:350,total:q*350});
+    ccBase += q*350;
     lines.push({desc:'<strong>Badge Image transcription</strong> and reg list match if available',qty:null,unit:null,total:650});
     ccBase += 650;
   }
@@ -807,18 +848,57 @@ function calcPrices(){
     ccBase += 1250;
   }
 
-  // ── ONE Event Set-up fee for the whole event (not per service type) ──
+  // ── SPIRO Event Set-up: driven by distinct brands in station rows ──
   const needsSetup = selectedSvcs.has('app') || selectedSvcs.has('scanner') || selectedSvcs.has('image');
   const needsSimpleSetup = selectedSvcs.has('qr');
+
   if(needsSetup){
-    lines.push({desc:setupFull, qty:null, unit:null, total:setupPrice});
-    ccBase += setupPrice;
-  } else if(needsSimpleSetup && !needsSetup){
+    // Collect brand → set of survey types from station rows
+    const brandSurveys = {}; // { brand: Set<survey> }
+    document.querySelectorAll('#stations-container .station-row').forEach(row => {
+      const id = row.id.replace('station-row-','');
+      const brandEl  = $id('st'+id+'_brand');
+      const brandOth = $id('st'+id+'_brand_oth');
+      const survEl   = $id('st'+id+'_survey');
+      const survOth  = $id('st'+id+'_survey_oth');
+      const brand  = (brandEl?.value  === 'Other' ? (brandOth?.value||'Other') : (brandEl?.value||'')).trim();
+      const survey = (survEl?.value   === 'Other' ? (survOth?.value||'Other')  : (survEl?.value||'')).trim();
+      if(!brand) return;
+      if(!brandSurveys[brand]) brandSurveys[brand] = new Set();
+      if(survey) brandSurveys[brand].add(survey);
+    });
+
+    const brands = Object.keys(brandSurveys);
+    const setupPrice = notov ? 1650 : 2150; // first brand setup ($2,150; −$500 no-TOV = $1,650)
+    const extraSetupPrice = notov ? 1050 : 1550; // additional brand ($1,550; −$500 no-TOV)
+
+    if(brands.length === 0){
+      // No stations yet — show a single setup line as placeholder
+      lines.push({desc:setupDesc, qty:null, unit:null, total:setupPrice});
+      ccBase += setupPrice;
+    } else {
+      brands.forEach((brand, idx) => {
+        const price = idx === 0 ? setupPrice : extraSetupPrice;
+        const label = idx === 0 ? 'Lead Service Event Set-up' : 'Extra Event Set-up (Additional Brand)';
+        const brandTag = brand ? ` — <em>${brand}</em>` : '';
+        lines.push({desc:`<strong>${label}${brandTag}:</strong> ${idx===0 ? setupDesc.replace('Lead Service Event Set-up: ','') : 'Symposia Survey, Post Show Report, Export, Compliance Tracking, CDW delivery — additional brand tagging in Pfizer Data Warehouse.'}`, qty:null, unit:null, total:price});
+        ccBase += price;
+
+        // Added Config: each survey type beyond the first costs $250
+        const surveys = Array.from(brandSurveys[brand]);
+        if(surveys.length > 1){
+          const addedConfigs = surveys.length - 1;
+          lines.push({desc:`<strong>Added Configuration${addedConfigs>1?'s':''} — ${brand}:</strong> Additional survey type${addedConfigs>1?'s':''} (${surveys.slice(1).join(', ')})`, qty:addedConfigs, unit:250, total:addedConfigs*250});
+          ccBase += addedConfigs*250;
+        }
+      });
+    }
+  } else if(needsSimpleSetup){
     lines.push({desc:setupSimple, qty:null, unit:null, total:1250});
     ccBase += 1250;
   }
 
-  // ── API passthrough (Mobile App requires it) ──
+  // ── API passthrough ──
   if(selectedSvcs.has('app')){
     const apiRaw  = $id('api_cost') ? $id('api_cost').value.trim() : '';
     const apiCost = (apiRaw === '' || isNaN(parseFloat(apiRaw))) ? 1200 : parseFloat(apiRaw);
@@ -827,7 +907,6 @@ function calcPrices(){
       lines.push({desc:'API Connection Passthrough' + (apiIsEst ? ' <em style="font-size:10px;color:#e67e22;">(estimate — Katherine to verify exact cost)</em>' : ''), qty:null, unit:null, total:apiCost});
       api += apiCost;
     }
-    // If cost is 0 and confirmed actual, show a $0 / no-charge line so it's explicit on the quote
     if(apiCost === 0 && !apiIsEst){
       lines.push({desc:'API Connection Passthrough <em style="font-size:10px;color:#27ae60;">(no charge)</em>', qty:null, unit:null, total:0});
     }
@@ -841,23 +920,34 @@ function calcPrices(){
     lines.push({desc:'API connection cost passthrough',qty:null,unit:null,total:500}); api+=500;
   }
 
+  // ── Shipping & Handling ──
+  if(selectedSvcs.has('scanner')){
+    const qInternet = parseInt(val('internet_qty'))||0;
+    const qNoData   = parseInt(val('scanner_qty_nodata'))||0;
+    const qData     = parseInt(val('scanner_qty_data'))||0;
+    const hasScanner = (qNoData + qData) > 0;
+    if(hasScanner || qInternet > 0){
+      const shCost = qInternet > 0 ? 550 : 250;
+      const shDesc = qInternet > 0 ? 'Shipping and Handling — Scanners and Internet' : 'Shipping and Handling — Scanners';
+      lines.push({desc:`<strong>${shDesc}</strong>`, qty:null, unit:null, total:shCost});
+      ccBase += shCost;
+    }
+  }
+
   // ── Shared add-ons ──
-  // Shipping auto-included for scanners (physical hardware) — all other services are digital
-  if(selectedSvcs.has('scanner')){ lines.push({desc:'Shipping and Handling',qty:null,unit:null,total:250}); ccBase+=250; }
   if($id('opt_prereg_app')&& $id('opt_prereg_app').checked){ lines.push({desc:'Pre-Registration Attendee List Import into RE:nvent Mobile App for attendee look-up',qty:null,unit:null,total:500}); ccBase+=500; }
   if($id('opt_prereg_img')&& $id('opt_prereg_img').checked){ lines.push({desc:'Pre-Registration Attendee List Import into RE:nvent Mobile App for attendee look-up',qty:null,unit:null,total:500}); ccBase+=500; }
   if($id('opt_expedite_app')&&$id('opt_expedite_app').checked){ lines.push({desc:'Expedite Service: order received less than 5 business days prior to event',qty:null,unit:null,total:500}); ccBase+=500; }
   if($id('opt_expedite_img')&&$id('opt_expedite_img').checked){ lines.push({desc:'Expedite Service: order received less than 5 business days prior to event',qty:null,unit:null,total:500}); ccBase+=500; }
   if($id('opt_expedite_list')&&$id('opt_expedite_list').checked){ lines.push({desc:'Expedite Service: order received less than 5 business days prior to event',qty:null,unit:null,total:500}); ccBase+=500; }
 
-  // Remote Training included for app and image only (not scanner — hardware only)
+  // Remote Training included for app and image only
   if(selectedSvcs.has('app') || selectedSvcs.has('image')){
     lines.push({desc:'<strong>Remote Training:</strong> pre-scheduled 15 minute call with TD to review application set-up on their cell',qty:null,unit:null,total:'Included',included:true});
   }
-  // No remote training for QR Code or Scanner — app/image only
 
   // ── Totals ──
-  const ccFee   = cc ? Math.round(ccBase * 0.03 * 100) / 100 : 0;
+  const ccFee    = cc ? Math.round(ccBase * 0.03 * 100) / 100 : 0;
   const subtotal = ccBase + api;
   const grand    = subtotal + ccFee;
 
@@ -889,7 +979,9 @@ function buildQuote(){
   $id('q_product').textContent     = val('f_product')        || '—';
   $id('q_show_name').textContent   = val('f_show_name')      || '—';
   $id('q_location').textContent    = val('f_location')       || '—';
-  $id('q_delivery_addr').textContent = val('f_delivery_addr')|| '';
+  const shipType = document.querySelector('input[name="ship_type"]:checked')?.value;
+  const shipLabel = shipType === 'booth' ? '📍 Direct to Booth\n' : shipType === 'hotel' ? '🏨 Ship to Hotel\n' : '';
+  $id('q_delivery_addr').textContent = shipLabel + (val('f_delivery_addr') || '');
   $id('q_open_date').textContent   = fmtDate(val('f_open_date'));
   $id('q_close_date').textContent  = fmtDate(val('f_close_date'));
   $id('q_exhibit_size').textContent= val('f_exhibit_size')   || '—';
@@ -1045,6 +1137,12 @@ function doImportObject(d, alreadyInKV){
   };
   Object.keys(fieldMap).forEach(k => { const el=$id(k); if(el && d[k]!==undefined) el.value=d[k]; });
 
+  // Restore shipping type radio
+  if(d.ship_type){
+    const rb = document.querySelector(`input[name="ship_type"][value="${d.ship_type}"]`);
+    if(rb){ rb.checked = true; updateDeliveryUI(); }
+  }
+
   // Show association card if there's any association data
   const assocCard = $id('assoc_api_card');
   if(assocCard && (d.badge_api_available || d.assoc_vendor_name || d.assoc_contact_name || d.provider_reg_company)){
@@ -1091,8 +1189,9 @@ function doImportObject(d, alreadyInKV){
 
   // Quantities — prefer saved Quote Generator values; fall back to original order-form values
   if($id('app_qty'))            $id('app_qty').value            = d.app_qty            || d.qty_app_licenses || 0;
-  if($id('scanner_qty_nodata')) $id('scanner_qty_nodata').value = d.scanner_qty_nodata || d.qty_scanners     || 0;
+  if($id('scanner_qty_nodata')) $id('scanner_qty_nodata').value = d.scanner_qty_nodata || d.qty_scanners || 0;
   if($id('scanner_qty_data'))   $id('scanner_qty_data').value   = d.scanner_qty_data   || 0;
+  if($id('internet_qty'))       $id('internet_qty').value       = d.internet_qty        || 0;
   if($id('qr_qty'))             $id('qr_qty').value             = d.qr_qty             || 0;
   if($id('img_qty'))            $id('img_qty').value            = d.img_qty            || 0;
   if($id('list_qty'))           $id('list_qty').value           = d.list_qty           || 0;
@@ -1161,8 +1260,9 @@ function doImportObject(d, alreadyInKV){
         else { brandEl.value = 'Other'; const oth = $id('st'+n+'_brand_oth'); if(oth){ oth.style.display='block'; oth.value=s.brand; } }
       }
       // Scanners & Apps
-      if($id('st'+n+'_scanners')) $id('st'+n+'_scanners').value = s.scanners || '0';
-      if($id('st'+n+'_apps'))     $id('st'+n+'_apps').value     = s.apps     || '0';
+      if($id('st'+n+'_scanners_nodata')) $id('st'+n+'_scanners_nodata').value = s.scanners_nodata || s.scanners || '0';
+      if($id('st'+n+'_scanners_data'))   $id('st'+n+'_scanners_data').value   = s.scanners_data   || '0';
+      if($id('st'+n+'_apps'))            $id('st'+n+'_apps').value             = s.apps            || '0';
       // Market Manager
       if($id('st'+n+'_mgr'))      $id('st'+n+'_mgr').value      = s.mgr      || '';
       stUpdateTag(n);
@@ -1206,6 +1306,7 @@ async function saveCurrentFormState(extraFields){
     product_program:     product,
     f_show_name:         val('f_show_name'),
     f_location:          val('f_location'),
+    ship_type:           document.querySelector('input[name="ship_type"]:checked')?.value || '',
     f_delivery_addr:     val('f_delivery_addr'),
     f_open_date:         val('f_open_date'),
     f_close_date:        val('f_close_date'),
@@ -1225,6 +1326,7 @@ async function saveCurrentFormState(extraFields){
     app_qty:            qnum('app_qty'),
     scanner_qty_nodata: qnum('scanner_qty_nodata'),
     scanner_qty_data:   qnum('scanner_qty_data'),
+    internet_qty:       qnum('internet_qty'),
     qr_qty:             qnum('qr_qty'),
     img_qty:            qnum('img_qty'),
     list_qty:           qnum('list_qty'),
@@ -1448,7 +1550,7 @@ function addStation(){
   <span class="station-num-badge" id="slabel-${n}">Station ${n}</span>
   <button class="station-remove-btn" onclick="removeStation(${n})">✕ Remove</button>
 </div>
-<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;">
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:12px;">
   <div class="fgroup">
     <label class="lbl">Station</label>
     <select id="st${n}_name" onchange="stOtherToggle(${n},'name',this)">${sOpts(STATION_NAMES,'Select station')}</select>
@@ -1456,8 +1558,8 @@ function addStation(){
   </div>
   <div class="fgroup">
     <label class="lbl">Survey Type</label>
-    <select id="st${n}_survey" onchange="stOtherToggle(${n},'survey',this)">${sOpts(SURVEY_TYPES,'Select survey')}</select>
-    <input type="text" id="st${n}_survey_oth" placeholder="Describe survey…" style="display:none;margin-top:6px;">
+    <select id="st${n}_survey" onchange="stOtherToggle(${n},'survey',this);liveCalc()">${sOpts(SURVEY_TYPES,'Select survey')}</select>
+    <input type="text" id="st${n}_survey_oth" placeholder="Describe survey…" style="display:none;margin-top:6px;" oninput="liveCalc()">
   </div>
   <div class="fgroup">
     <label class="lbl">Therapy</label>
@@ -1466,18 +1568,22 @@ function addStation(){
   </div>
   <div class="fgroup">
     <label class="lbl">Brand</label>
-    <select id="st${n}_brand" onchange="stOtherToggle(${n},'brand',this);stUpdateTag(${n})">
+    <select id="st${n}_brand" onchange="stOtherToggle(${n},'brand',this);stUpdateTag(${n});liveCalc()">
       <option value="">— Select therapy first —</option>
     </select>
-    <input type="text" id="st${n}_brand_oth" placeholder="Describe brand…" style="display:none;margin-top:6px;" oninput="stUpdateTag(${n})">
+    <input type="text" id="st${n}_brand_oth" placeholder="Describe brand…" style="display:none;margin-top:6px;" oninput="stUpdateTag(${n});liveCalc()">
   </div>
   <div class="fgroup">
-    <label class="lbl">Scanners</label>
-    <input type="number" id="st${n}_scanners" min="0" value="0">
+    <label class="lbl" style="font-size:10px;">Scanners<br><span style="color:#888;font-weight:400;">No Data</span></label>
+    <input type="number" id="st${n}_scanners_nodata" min="0" value="0" oninput="liveCalc()">
+  </div>
+  <div class="fgroup">
+    <label class="lbl" style="font-size:10px;">Scanners<br><span style="color:#888;font-weight:400;">W/ Data</span></label>
+    <input type="number" id="st${n}_scanners_data" min="0" value="0" oninput="liveCalc()">
   </div>
   <div class="fgroup">
     <label class="lbl">Apps</label>
-    <input type="number" id="st${n}_apps" min="0" value="0">
+    <input type="number" id="st${n}_apps" min="0" value="0" oninput="liveCalc()">
   </div>
 </div>
 <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:flex-end;margin-top:10px;">
@@ -1565,19 +1671,21 @@ function getStationsDataQG(){
     const surveyOth = $id('st' + id + '_survey_oth');
     const therapyOth= $id('st' + id + '_therapy_oth');
     const brandOth  = $id('st' + id + '_brand_oth');
-    const scannersEl= $id('st' + id + '_scanners');
-    const appsEl    = $id('st' + id + '_apps');
-    const mgrEl     = $id('st' + id + '_mgr');
+    const scannersNodataEl = $id('st' + id + '_scanners_nodata');
+    const scannersdataEl   = $id('st' + id + '_scanners_data');
+    const appsEl           = $id('st' + id + '_apps');
+    const mgrEl            = $id('st' + id + '_mgr');
 
     stations.push({
-      station_num: i + 1,
-      name:     nameEl?.value === 'Other' ? (nameOth?.value || 'Other') : (nameEl?.value || ''),
-      survey:   surveyEl?.value === 'Other' ? (surveyOth?.value || 'Other') : (surveyEl?.value || ''),
-      therapy:  therapyEl?.value === 'Other' ? (therapyOth?.value || 'Other') : (therapyEl?.value || ''),
-      brand:    brandEl?.value === 'Other' ? (brandOth?.value || 'Other') : (brandEl?.value || ''),
-      scanners: scannersEl?.value || '0',
-      apps:     appsEl?.value || '0',
-      mgr:      mgrEl?.value || '',
+      station_num:     i + 1,
+      name:            nameEl?.value === 'Other' ? (nameOth?.value || 'Other') : (nameEl?.value || ''),
+      survey:          surveyEl?.value === 'Other' ? (surveyOth?.value || 'Other') : (surveyEl?.value || ''),
+      therapy:         therapyEl?.value === 'Other' ? (therapyOth?.value || 'Other') : (therapyEl?.value || ''),
+      brand:           brandEl?.value === 'Other' ? (brandOth?.value || 'Other') : (brandEl?.value || ''),
+      scanners_nodata: scannersNodataEl?.value || '0',
+      scanners_data:   scannersdataEl?.value   || '0',
+      apps:            appsEl?.value || '0',
+      mgr:             mgrEl?.value || '',
     });
   });
   return stations;

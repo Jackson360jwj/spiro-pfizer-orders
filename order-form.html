@@ -117,6 +117,7 @@ textarea{height:72px;resize:vertical;}
   <input name="Pfizer_Marketing_Email">
   <input name="Show_Name">
   <input name="Location_Venue">
+  <input name="Ship_Type">
   <input name="Delivery_Address">
   <input name="Open_Date">
   <input name="Close_Date">
@@ -214,8 +215,16 @@ textarea{height:72px;resize:vertical;}
           <textarea id="f_location" placeholder="Venue name — e.g. Ernest N Morial Convention Center"></textarea>
         </div>
         <div class="fgroup fw">
-          <label class="lbl">Delivery Address <span style="font-size:10px;font-weight:400;color:#888;text-transform:none;letter-spacing:0;">(hotel or shipping address for equipment)</span></label>
-          <textarea id="f_delivery_addr" placeholder="e.g. Le Meridien New Orleans, 333 Poydras Street, New Orleans, LA 70130&#10;Attn: Rob Loughran 404-717-3985"></textarea>
+          <label class="lbl">Delivery Address</label>
+          <div style="display:flex;gap:8px;margin-bottom:8px;">
+            <label style="display:flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #c5d3e8;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;color:#1a3a5c;background:#f5f8fc;flex:1;justify-content:center;" id="ship_booth_lbl">
+              <input type="radio" name="ship_type" id="ship_booth" value="booth" onchange="updateDeliveryUI()" style="accent-color:#1a3a5c;"> 🏛 Direct to Event Booth
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #c5d3e8;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;color:#1a3a5c;background:#f5f8fc;flex:1;justify-content:center;" id="ship_hotel_lbl">
+              <input type="radio" name="ship_type" id="ship_hotel" value="hotel" onchange="updateDeliveryUI()" style="accent-color:#1a3a5c;"> 🏨 Ship to Hotel
+            </label>
+          </div>
+          <textarea id="f_delivery_addr" placeholder="Select shipping type above…"></textarea>
         </div>
         <div class="fgroup">
           <label class="lbl">Open Date <span class="req">*</span></label>
@@ -413,7 +422,7 @@ function addStation(){
   <span class="station-num-badge" id="slabel-${n}">Station ${n}</span>
   <button class="station-remove-btn" onclick="removeStation(${n})">✕ Remove</button>
 </div>
-<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;">
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:12px;">
   <div class="fgroup">
     <label class="lbl">Station</label>
     <select id="st${n}_name" onchange="stOtherToggle(${n},'name',this)">${sOpts(STATION_NAMES,'Select station')}</select>
@@ -437,8 +446,12 @@ function addStation(){
     <input type="text" id="st${n}_brand_oth" placeholder="Describe brand…" style="display:none;margin-top:6px;" oninput="stUpdateTag(${n})">
   </div>
   <div class="fgroup">
-    <label class="lbl">Scanners</label>
-    <input type="number" id="st${n}_scanners" min="0" value="0">
+    <label class="lbl" style="font-size:10px;">Scanners<br><span style="color:#888;font-weight:400;">No Data</span></label>
+    <input type="number" id="st${n}_scanners_nodata" min="0" value="0">
+  </div>
+  <div class="fgroup">
+    <label class="lbl" style="font-size:10px;">Scanners<br><span style="color:#888;font-weight:400;">W/ Data</span></label>
+    <input type="number" id="st${n}_scanners_data" min="0" value="0">
   </div>
   <div class="fgroup">
     <label class="lbl">Apps</label>
@@ -532,19 +545,21 @@ function getStationsData(){
     const surveyOth = document.getElementById('st' + id + '_survey_oth');
     const therapyOth= document.getElementById('st' + id + '_therapy_oth');
     const brandOth  = document.getElementById('st' + id + '_brand_oth');
-    const scannersEl= document.getElementById('st' + id + '_scanners');
-    const appsEl    = document.getElementById('st' + id + '_apps');
-    const mgrEl     = document.getElementById('st' + id + '_mgr');
+    const scannersNodataEl = document.getElementById('st' + id + '_scanners_nodata');
+    const scannersdataEl   = document.getElementById('st' + id + '_scanners_data');
+    const appsEl           = document.getElementById('st' + id + '_apps');
+    const mgrEl            = document.getElementById('st' + id + '_mgr');
 
     stations.push({
-      station_num: i + 1,
-      name:     nameEl?.value === 'Other' ? (nameOth?.value || 'Other') : (nameEl?.value || ''),
-      survey:   surveyEl?.value === 'Other' ? (surveyOth?.value || 'Other') : (surveyEl?.value || ''),
-      therapy:  therapyEl?.value === 'Other' ? (therapyOth?.value || 'Other') : (therapyEl?.value || ''),
-      brand:    brandEl?.value === 'Other' ? (brandOth?.value || 'Other') : (brandEl?.value || ''),
-      scanners: scannersEl?.value || '0',
-      apps:     appsEl?.value || '0',
-      mgr:      mgrEl?.value || '',
+      station_num:     i + 1,
+      name:            nameEl?.value === 'Other' ? (nameOth?.value || 'Other') : (nameEl?.value || ''),
+      survey:          surveyEl?.value === 'Other' ? (surveyOth?.value || 'Other') : (surveyEl?.value || ''),
+      therapy:         therapyEl?.value === 'Other' ? (therapyOth?.value || 'Other') : (therapyEl?.value || ''),
+      brand:           brandEl?.value === 'Other' ? (brandOth?.value || 'Other') : (brandEl?.value || ''),
+      scanners_nodata: scannersNodataEl?.value || '0',
+      scanners_data:   scannersdataEl?.value   || '0',
+      apps:            appsEl?.value || '0',
+      mgr:             mgrEl?.value || '',
     });
   });
   return stations;
@@ -573,6 +588,25 @@ let selectedServiceTypes = new Set();
 function $id(id){ return document.getElementById(id); }
 function val(id){ return ($id(id)||{}).value?.trim() || ''; }
 function radioVal(name){ return document.querySelector(`input[name="${name}"]:checked`)?.value || ''; }
+
+function updateDeliveryUI(){
+  const type     = radioVal('ship_type');
+  const ta       = document.getElementById('f_delivery_addr');
+  const boothLbl = document.getElementById('ship_booth_lbl');
+  const hotelLbl = document.getElementById('ship_hotel_lbl');
+  const active = 'background:#1a3a5c;color:#fff;border-color:#1a3a5c;';
+  const idle   = 'background:#f5f8fc;color:#1a3a5c;border-color:#c5d3e8;';
+  if(boothLbl) boothLbl.setAttribute('style', boothLbl.getAttribute('style').replace(/background:[^;]+;color:[^;]+;border-color:[^;]+;/g,'') + (type==='booth' ? active : idle));
+  if(hotelLbl) hotelLbl.setAttribute('style', hotelLbl.getAttribute('style').replace(/background:[^;]+;color:[^;]+;border-color:[^;]+;/g,'') + (type==='hotel' ? active : idle));
+  if(!ta) return;
+  if(type === 'booth'){
+    ta.placeholder = 'Booth # and hall/location within venue\ne.g. Booth 1234, Hall B — Ernest N Morial Convention Center';
+  } else if(type === 'hotel'){
+    ta.placeholder = 'Hotel name, street address, city, state, zip\nAttn: [Contact Name] [Phone]\ne.g. Le Meridien New Orleans, 333 Poydras St, New Orleans, LA 70130\nAttn: Rob Loughran 404-717-3985';
+  } else {
+    ta.placeholder = 'Select shipping type above…';
+  }
+}
 
 function toggleServiceType(type, el){
   if(selectedServiceTypes.has(type)){
@@ -693,6 +727,7 @@ function buildData(){
     f_pfz_mktg_email:    val('f_pfz_mktg_email'),
     f_show_name:         val('f_show_name'),
     f_location:          val('f_location'),
+    ship_type:           radioVal('ship_type'),
     f_delivery_addr:     val('f_delivery_addr'),
     f_open_date:         val('f_open_date'),
     f_close_date:        val('f_close_date'),
@@ -734,7 +769,7 @@ function buildSummaryHTML(d){
     ['Therapeutic Area', d.f_therapy],
     ['Primary Product', d.f_product || d.product_program],
     ['Location / Venue', d.f_location],
-    ['Delivery Address', d.f_delivery_addr],
+    ['Delivery Address', (d.ship_type === 'booth' ? '📍 Direct to Booth — ' : d.ship_type === 'hotel' ? '🏨 Hotel — ' : '') + (d.f_delivery_addr||'')],
     ['Open Date', fmtDate(d.f_open_date)],
     ['Close Date', fmtDate(d.f_close_date)],
     ['Exhibit Size', d.f_exhibit_size],
@@ -755,7 +790,11 @@ function buildSummaryHTML(d){
     html += `<div class="row" style="margin-top:8px;"><span class="key">Stations (${d.stations.length}):</span></div>`;
     d.stations.forEach(s => {
       const tag = (s.brand && s.therapy) ? ` 🏷 ${s.brand}/${s.therapy}` : '';
-      html += `<div class="row" style="padding-left:16px;"><span class="key">Station ${s.station_num} — ${s.name||'—'}</span><span>${s.survey||'—'}${tag} | Scanners: ${s.scanners} | Apps: ${s.apps}${s.mgr ? ' | '+s.mgr : ''}</span></div>`;
+      const scanParts = [];
+      if(parseInt(s.scanners_nodata||0) > 0) scanParts.push(`${s.scanners_nodata} No Data`);
+      if(parseInt(s.scanners_data||0)   > 0) scanParts.push(`${s.scanners_data} w/ Data`);
+      const scanStr = scanParts.length ? scanParts.join(', ') : '0';
+      html += `<div class="row" style="padding-left:16px;"><span class="key">Station ${s.station_num} — ${s.name||'—'}</span><span>${s.survey||'—'}${tag} | Scanners: ${scanStr} | Apps: ${s.apps}${s.mgr ? ' | '+s.mgr : ''}</span></div>`;
     });
   }
   return html;
@@ -783,6 +822,7 @@ async function submitOrder(){
     'Pfizer_Marketing_Email': d.f_pfz_mktg_email,
     'Show_Name':              d.f_show_name,
     'Location_Venue':         d.f_location,
+    'Ship_Type':              d.ship_type === 'booth' ? 'Direct to Event Booth' : d.ship_type === 'hotel' ? 'Ship to Hotel' : '',
     'Delivery_Address':       d.f_delivery_addr,
     'Open_Date':              fmtDate(d.f_open_date),
     'Close_Date':             fmtDate(d.f_close_date),
