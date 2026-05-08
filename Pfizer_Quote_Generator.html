@@ -190,85 +190,75 @@ textarea{height:72px;resize:vertical;}
   <div class="card">
     <div class="card-title"><span class="step-badge">1</span>Event Information</div>
     <div class="fg">
-      <div class="fgroup">
-        <label class="lbl">AMEX Meeting Manager Name *</label>
-        <input type="text" id="f_mgr" placeholder="e.g. Lida Wilkinson" oninput="liveCalc()">
+      <!-- RE Internal -->
+      <div class="fgroup" style="background:#f0f4f8;border-radius:6px;padding:8px 10px;">
+        <label class="lbl" style="color:#1a3a5c;">Account Manager (RE) *</label>
+        <input type="text" id="f_acct_mgr" placeholder="e.g. Kylene Pastorius" oninput="liveCalc()">
       </div>
-      <div class="fgroup">
-        <label class="lbl">AMEX Meeting Manager Email</label>
-        <input type="email" id="f_mgr_email" placeholder="manager@amex.com" oninput="liveCalc()">
+      <div class="fgroup" style="background:#f0f4f8;border-radius:6px;padding:8px 10px;">
+        <label class="lbl" style="color:#1a3a5c;">AE (RE)</label>
+        <input type="text" id="f_ae" placeholder="e.g. Ashley Simmons" oninput="liveCalc()">
       </div>
+      <!-- Pfizer Contact -->
       <div class="fgroup">
-        <label class="lbl">Pfizer Meeting # *</label>
-        <input type="text" id="f_pfz" placeholder="e.g. PFZ159560" oninput="liveCalc()">
-      </div>
-      <div class="fgroup">
-        <label class="lbl">Legal Entity</label>
-        <input type="text" id="f_entity" value="1400: Pfizer Inc." oninput="liveCalc()">
-      </div>
-      <div class="fgroup fw">
-        <label class="lbl">Meeting Full Name *</label>
-        <input type="text" id="f_name" placeholder="e.g. American College of Osteopathic Family Physicians" oninput="liveCalc()">
+        <label class="lbl">Congress Manager *</label>
+        <input type="text" id="f_congress_mgr" placeholder="e.g. Kathy Deneen" oninput="liveCalc()">
       </div>
       <div class="fgroup">
-        <label class="lbl">Meeting Acronym (Short Name)</label>
-        <input type="text" id="f_acronym" placeholder="e.g. ACOFP" oninput="liveCalc()">
+        <label class="lbl">Congress Manager Email</label>
+        <input type="email" id="f_congress_email" placeholder="manager@pfizer.com" oninput="liveCalc()">
       </div>
-      <div class="fgroup">
-        <label class="lbl">Event Type *</label>
-        <select id="f_etype" onchange="liveCalc()">
-          <option value="">— Select —</option>
-          <option>Product Theater</option>
-          <option>Symposia</option>
-          <option>Education Reception</option>
-          <option>Congress</option>
-        </select>
-      </div>
-      <div class="fgroup fw">
-        <label class="lbl">Meeting Site / Address *</label>
-        <textarea id="f_addr" placeholder="e.g. Signia by Hilton Orlando Bonnet Creek Resort" oninput="liveCalc()"></textarea>
-      </div>
-      <div class="fgroup">
-        <label class="lbl">Meeting Date *</label>
-        <input type="date" id="f_date" oninput="liveCalc()">
-      </div>
-      <div class="fgroup">
-        <label class="lbl">Meeting Time</label>
-        <input type="text" id="f_time" placeholder="e.g. 12:15 PM – 1:15 PM" oninput="liveCalc()">
-      </div>
-      <div class="fgroup">
-        <label class="lbl">Meal Type</label>
-        <select id="f_meal" onchange="liveCalc()">
-          <option value="">— Select —</option>
-          <option>Breakfast</option>
-          <option>Lunch</option>
-          <option>Dinner</option>
-          <option>Coffee + Tea</option>
-          <option>Snacks</option>
-        </select>
-      </div>
-      <div class="fgroup">
-        <label class="lbl">Estimated # Attendees</label>
-        <input type="number" id="f_att" placeholder="e.g. 100" oninput="liveCalc()">
-      </div>
+      <!-- Event -->
       <div class="fgroup">
         <label class="lbl">Therapeutic Area</label>
-        <input type="text" id="f_therapy" placeholder="e.g. Oncology" oninput="liveCalc()">
+        <input type="text" id="f_therapy" placeholder="e.g. Vaccines" oninput="liveCalc()">
       </div>
       <div class="fgroup">
-        <label class="lbl">Product Associated *</label>
-        <input type="text" id="f_product" placeholder="e.g. Elrantamab" oninput="liveCalc()">
+        <label class="lbl">Primary Product *</label>
+        <input type="text" id="f_product" placeholder="e.g. Paxlovid" oninput="liveCalc()">
       </div>
       <div class="fgroup fw">
-        <label class="lbl">Pfizer Project Owner (Name &amp; Email)</label>
-        <input type="text" id="f_owner" placeholder="e.g. Todd.A.Bugbee@pfizer.com" oninput="liveCalc()">
+        <label class="lbl">Show Name *</label>
+        <input type="text" id="f_show_name" placeholder="e.g. AAPA 2026" oninput="liveCalc()">
       </div>
       <div class="fgroup fw">
-        <label class="lbl">TD Contact (Name, Phone / Email) <span style="font-weight:400;color:#999;font-size:10px;text-transform:none;letter-spacing:0;">— Optional, can fill in later</span></label>
-        <textarea id="f_td" placeholder="Fill in later if not yet known — e.g. Shameka Allen-Lane — shameka@catalysteventcoaching.com" oninput="liveCalc()"></textarea>
+        <label class="lbl">Location / Venue *</label>
+        <textarea id="f_location" placeholder="e.g. Ernest N Morial Convention Center" oninput="liveCalc()"></textarea>
       </div>
       <div class="fgroup fw">
-        <label class="lbl">Notes</label>
+        <label class="lbl">Delivery Address <span style="font-weight:400;color:#999;font-size:10px;text-transform:none;letter-spacing:0;">— hotel or shipping address for equipment</span></label>
+        <textarea id="f_delivery_addr" placeholder="e.g. Le Meridien New Orleans, 333 Poydras Street, New Orleans, Louisiana 70130&#10;Attn: Rob Loughran 404-717-3985" oninput="liveCalc()"></textarea>
+      </div>
+      <div class="fgroup">
+        <label class="lbl">Open Date *</label>
+        <input type="date" id="f_open_date" oninput="liveCalc()">
+      </div>
+      <div class="fgroup">
+        <label class="lbl">Close Date</label>
+        <input type="date" id="f_close_date" oninput="liveCalc()">
+      </div>
+      <div class="fgroup">
+        <label class="lbl">Exhibit Size</label>
+        <input type="text" id="f_exhibit_size" placeholder="e.g. 20x40" oninput="liveCalc()">
+      </div>
+      <div class="fgroup">
+        <label class="lbl">Booth #</label>
+        <input type="text" id="f_booth" placeholder="e.g. 3727" oninput="liveCalc()">
+      </div>
+      <div class="fgroup">
+        <label class="lbl">Pfizer Marketing Email</label>
+        <input type="email" id="f_pfz_mktg_email" placeholder="e.g. finley.hutchinson@pfizer.com" oninput="liveCalc()">
+      </div>
+      <div class="fgroup">
+        <label class="lbl">On-Site Contact (Name &amp; Phone) <span style="font-weight:400;color:#999;font-size:10px;text-transform:none;letter-spacing:0;">— Optional, can fill in later</span></label>
+        <input type="text" id="f_onsite_contact" placeholder="e.g. Rob Loughran 404-717-3985" oninput="liveCalc()">
+      </div>
+      <div class="fgroup">
+        <label class="lbl">Delivery Date</label>
+        <input type="date" id="f_delivery_date" oninput="liveCalc()">
+      </div>
+      <div class="fgroup fw">
+        <label class="lbl">Special Instructions / Notes</label>
         <textarea id="f_notes" placeholder="Special notes or instructions…" oninput="liveCalc()"></textarea>
       </div>
     </div>
@@ -479,7 +469,7 @@ textarea{height:72px;resize:vertical;}
       </div>
     </div>
 
-    <!-- SHARED: TOV (hidden until svc selected) — Payment always Credit Card for Pfizer/AMEX -->
+    <!-- SHARED: TOV (hidden until svc selected) — Payment always Credit Card for Pfizer/SPIRO -->
     <div id="shared_opts" style="display:none;margin-top:16px;padding-top:16px;border-top:1px solid #eee;">
       <div id="tov_block">
         <label class="lbl" style="display:block;margin-bottom:4px;">TOV / Compliance Reporting</label>
@@ -574,37 +564,37 @@ textarea{height:72px;resize:vertical;}
       <!-- EVENT INFO header -->
       <tr>
         <td colspan="2" class="qhbar" style="width:60%">EVENT INFO</td>
-        <td colspan="2" class="qhbar" style="text-align:center">TD Contact</td>
+        <td colspan="2" class="qhbar" style="text-align:center">Delivery Address</td>
       </tr>
-      <!-- Rows 1–9 share TD contact cell (rowspan) -->
+      <!-- Rows 1–9 share Delivery Address cell (rowspan=9) -->
       <tr>
-        <td class="qlbl">Meeting Manager</td>
-        <td class="qval" id="q_mgr">—</td>
-        <td class="qtd-area" colspan="2" rowspan="9" id="q_td" style="padding:8px;"></td>
+        <td class="qlbl">Account Manager (RE)</td>
+        <td class="qval" id="q_acct_mgr">—</td>
+        <td class="qtd-area" colspan="2" rowspan="9" id="q_delivery_addr" style="padding:8px;white-space:pre-line;color:#c0392b;font-weight:600;"></td>
       </tr>
-      <tr><td class="qlbl">Pfizer Meeting #</td><td id="q_pfz">—</td></tr>
-      <tr><td class="qlbl">Legal Entity</td><td class="qhighlight" id="q_entity">—</td></tr>
-      <tr><td class="qlbl">Meeting Full Name</td><td id="q_name">—</td></tr>
-      <tr><td class="qlbl">Meeting Acronym (Short Name)</td><td id="q_acronym">—</td></tr>
-      <tr><td class="qlbl">Event Type</td><td id="q_etype">—</td></tr>
-      <tr><td class="qlbl">Meeting Site/Address</td><td id="q_addr" style="white-space:pre-line;">—</td></tr>
-      <tr><td class="qlbl">Meeting Date</td><td id="q_date">—</td></tr>
-      <tr><td class="qlbl">Meeting Time</td><td id="q_time">—</td></tr>
+      <tr><td class="qlbl">AE (RE)</td><td id="q_ae">—</td></tr>
+      <tr><td class="qlbl">Congress Manager</td><td id="q_congress_mgr">—</td></tr>
+      <tr><td class="qlbl">Therapeutic Area</td><td id="q_therapy">—</td></tr>
+      <tr><td class="qlbl">Primary Product</td><td class="qhighlight" id="q_product">—</td></tr>
+      <tr><td class="qlbl">Show Name</td><td id="q_show_name">—</td></tr>
+      <tr><td class="qlbl">Location / Venue</td><td id="q_location" style="white-space:pre-line;">—</td></tr>
+      <tr><td class="qlbl">Open Date</td><td id="q_open_date">—</td></tr>
+      <tr><td class="qlbl">Close Date</td><td id="q_close_date">—</td></tr>
 
-      <!-- Meal type row — Note panel starts here (rowspan) -->
+      <!-- Exhibit Size row — Special Instructions panel starts here -->
       <tr>
-        <td class="qlbl">Meal Type</td>
-        <td id="q_meal">—</td>
-        <td class="qhbar" colspan="2" style="text-align:center">Note</td>
+        <td class="qlbl">Exhibit Size</td>
+        <td id="q_exhibit_size">—</td>
+        <td class="qhbar" colspan="2" style="text-align:center">Special Instructions</td>
       </tr>
       <tr>
-        <td class="qlbl">Therapy</td>
-        <td id="q_therapy">—</td>
-        <td class="qnote-area" colspan="2" rowspan="5" id="q_notes" style="padding:8px;"></td>
+        <td class="qlbl">Booth #</td>
+        <td id="q_booth">—</td>
+        <td class="qnote-area" colspan="2" rowspan="4" id="q_notes" style="padding:8px;"></td>
       </tr>
-      <tr><td class="qlbl">Product Associated</td><td class="qhighlight" id="q_product">—</td></tr>
-      <tr><td class="qlbl">Pfizer Project Owner</td><td id="q_owner">—</td></tr>
-      <tr id="q_att_row" style="visibility:collapse;"><td class="qlbl">Estimated # Attendees</td><td id="q_att">—</td></tr>
+      <tr><td class="qlbl">Pfizer Marketing Email</td><td id="q_pfz_mktg_email">—</td></tr>
+      <tr><td class="qlbl">On-Site Contact</td><td id="q_onsite_contact">—</td></tr>
+      <tr><td class="qlbl">Delivery Date</td><td id="q_delivery_date">—</td></tr>
       <tr id="q_badge_row" style="visibility:collapse;"><td class="qlbl">Badge Scannable?</td><td>for image capture</td></tr>
 
       <!-- SERVICES header -->
@@ -708,7 +698,7 @@ function onTovToggle(){
   if(yesCard){ yesCard.style.borderColor = isNo ? '#ddd' : '#1a3a5c'; yesCard.style.background = isNo ? '' : '#f0f4f8'; }
   if(noCard) { noCard.style.borderColor  = isNo ? '#c0392b' : '#ddd'; noCard.style.background  = isNo ? '#fff5f5' : ''; }
 }
-function isCC(){ return true; } // Pfizer/AMEX always pays by credit card
+function isCC(){ return true; } // Pfizer/SPIRO always pays by credit card
 function adj(id, delta){
   const el = $id(id); if(!el) return;
   el.value = Math.max(0, (parseInt(el.value)||0) + delta);
@@ -892,28 +882,22 @@ function buildQuote(){
   $id('q_num').textContent = val('f_qnum') || '—';
 
   // Event fields
-  $id('q_mgr').textContent = val('f_mgr') || '—';
-  $id('q_pfz').textContent = val('f_pfz') || '—';
-  $id('q_entity').textContent = val('f_entity') || '—';
-  $id('q_name').textContent = val('f_name') || '—';
-  $id('q_acronym').textContent = val('f_acronym') || '—';
-  $id('q_etype').textContent = val('f_etype') || '—';
-  $id('q_addr').textContent = val('f_addr') || '—';
-  $id('q_date').textContent = fmtDate(val('f_date'));
-  $id('q_time').textContent = val('f_time') || '—';
-  $id('q_meal').textContent = val('f_meal') || '—';
-  $id('q_therapy').textContent = val('f_therapy') || '—';
-  $id('q_product').textContent = val('f_product') || '—';
-  $id('q_owner').textContent = val('f_owner') || '—';
-  $id('q_td').textContent = val('f_td') || '';
-  $id('q_notes').textContent = val('f_notes') || '';
-
-  // Attendees
-  const att = val('f_att');
-  // Use visibility:collapse (not display:none) so the rowspan on the Note cell
-  // stays accurate — display:none rows aren't counted by browsers toward rowspan.
-  $id('q_att_row').style.visibility = att ? '' : 'collapse';
-  $id('q_att').textContent = att || '';
+  $id('q_acct_mgr').textContent    = val('f_acct_mgr')       || '—';
+  $id('q_ae').textContent          = val('f_ae')             || '—';
+  $id('q_congress_mgr').textContent= val('f_congress_mgr')   || '—';
+  $id('q_therapy').textContent     = val('f_therapy')        || '—';
+  $id('q_product').textContent     = val('f_product')        || '—';
+  $id('q_show_name').textContent   = val('f_show_name')      || '—';
+  $id('q_location').textContent    = val('f_location')       || '—';
+  $id('q_delivery_addr').textContent = val('f_delivery_addr')|| '';
+  $id('q_open_date').textContent   = fmtDate(val('f_open_date'));
+  $id('q_close_date').textContent  = fmtDate(val('f_close_date'));
+  $id('q_exhibit_size').textContent= val('f_exhibit_size')   || '—';
+  $id('q_booth').textContent       = val('f_booth')          || '—';
+  $id('q_pfz_mktg_email').textContent = val('f_pfz_mktg_email') || '—';
+  $id('q_onsite_contact').textContent = val('f_onsite_contact')  || '—';
+  $id('q_delivery_date').textContent  = fmtDate(val('f_delivery_date'));
+  $id('q_notes').textContent       = val('f_notes')          || '';
 
   // Badge row (image capture only)
   $id('q_badge_row').style.visibility = selectedSvcs.has('image') ? '' : 'collapse';
@@ -1046,10 +1030,14 @@ function doImportObject(d, alreadyInKV){
   if(!d) return;
   _importedData = d;
 
-  // Fill event fields — map both old and new field names
+  // Fill event fields — keys match both QG element IDs and Order Form buildData() keys
   const fieldMap = {
-    f_mgr:1, f_mgr_email:1, f_pfz:1, f_entity:1, f_name:1, f_acronym:1, f_etype:1,
-    f_addr:1, f_date:1, f_time:1, f_meal:1, f_att:1, f_therapy:1, f_owner:1, f_td:1, f_notes:1,
+    // RE internal
+    f_acct_mgr:1, f_ae:1,
+    // Event info
+    f_congress_mgr:1, f_congress_email:1, f_therapy:1, f_show_name:1, f_location:1,
+    f_delivery_addr:1, f_open_date:1, f_close_date:1, f_exhibit_size:1, f_booth:1,
+    f_pfz_mktg_email:1, f_onsite_contact:1, f_delivery_date:1, f_notes:1,
     // Association / API fields (from order form)
     badge_api_available:1, assoc_vendor_name:1, assoc_contact_name:1, assoc_contact_phone:1,
     assoc_contact_email:1, provider_reg_company:1, api_badge_contact_name:1, api_badge_contact_email:1,
@@ -1063,8 +1051,8 @@ function doImportObject(d, alreadyInKV){
     assocCard.style.display = 'block';
   }
 
-  // Product field — if product_program is "Other", use the details field (actual product name)
-  let prod = d.product_program || d.f_product || '';
+  // Product field — handle both new (f_product) and legacy (product_program) field names
+  let prod = d.f_product || d.product_program || '';
   if(prod === 'Other' && d.product_program_details) prod = d.product_program_details;
   if($id('f_product') && prod) $id('f_product').value = prod;
 
@@ -1135,6 +1123,52 @@ function doImportObject(d, alreadyInKV){
   $id('total_banner').style.display='block';
   $id('action_row').style.display='flex';
   liveCalc();
+
+  // Restore station rows from imported data
+  if(d.stations && Array.isArray(d.stations) && d.stations.length > 0){
+    stationCount = 0;
+    $id('stations-container').innerHTML = '';
+    d.stations.forEach(s => {
+      addStation();
+      const n = stationCount;
+      // Station name
+      const nameEl = $id('st' + n + '_name');
+      if(nameEl){
+        const isKnown = STATION_NAMES.includes(s.name);
+        if(isKnown){ nameEl.value = s.name; }
+        else { nameEl.value = 'Other'; const oth = $id('st'+n+'_name_oth'); if(oth){ oth.style.display='block'; oth.value=s.name||''; } }
+      }
+      // Survey type
+      const surveyEl = $id('st' + n + '_survey');
+      if(surveyEl){
+        const isKnown = SURVEY_TYPES.includes(s.survey);
+        if(isKnown){ surveyEl.value = s.survey; }
+        else { surveyEl.value = 'Other'; const oth = $id('st'+n+'_survey_oth'); if(oth){ oth.style.display='block'; oth.value=s.survey||''; } }
+      }
+      // Therapy
+      const therapyEl = $id('st' + n + '_therapy');
+      if(therapyEl){
+        const isKnown = THERAPY_LIST.includes(s.therapy);
+        if(isKnown){ therapyEl.value = s.therapy; }
+        else { therapyEl.value = 'Other'; const oth = $id('st'+n+'_therapy_oth'); if(oth){ oth.style.display='block'; oth.value=s.therapy||''; } }
+        stTherapyChange(n);
+      }
+      // Brand
+      const brandEl = $id('st' + n + '_brand');
+      if(brandEl && s.brand){
+        const brands = s.therapy && THERAPY_BRANDS[s.therapy] ? THERAPY_BRANDS[s.therapy] : [];
+        if(brands.includes(s.brand)){ brandEl.value = s.brand; }
+        else { brandEl.value = 'Other'; const oth = $id('st'+n+'_brand_oth'); if(oth){ oth.style.display='block'; oth.value=s.brand; } }
+      }
+      // Scanners & Apps
+      if($id('st'+n+'_scanners')) $id('st'+n+'_scanners').value = s.scanners || '0';
+      if($id('st'+n+'_apps'))     $id('st'+n+'_apps').value     = s.apps     || '0';
+      // Market Manager
+      if($id('st'+n+'_mgr'))      $id('st'+n+'_mgr').value      = s.mgr      || '';
+      stUpdateTag(n);
+    });
+  }
+
   window.scrollTo({top:0,behavior:'smooth'});
 
   // If order already lives in Worker KV (loaded via ?order_id=), just capture the ID —
@@ -1159,27 +1193,28 @@ async function saveCurrentFormState(extraFields){
   const product = val('f_product');
 
   const patch = {
-    order_id:        savedOrderId,
+    order_id:            savedOrderId,
+    // RE internal
+    f_acct_mgr:          val('f_acct_mgr'),
+    f_ae:                val('f_ae'),
     // Event info
-    f_mgr:           val('f_mgr'),
-    f_mgr_email:     val('f_mgr_email'),
-    f_pfz:           val('f_pfz'),
-    f_entity:        val('f_entity'),
-    f_name:          val('f_name'),
-    f_acronym:       val('f_acronym'),
-    f_etype:         val('f_etype'),
-    f_addr:          val('f_addr'),
-    f_date:          val('f_date'),
-    f_time:          val('f_time'),
-    f_meal:          val('f_meal'),
-    f_att:           val('f_att'),
-    f_therapy:       val('f_therapy'),
-    f_product:       product,
+    f_congress_mgr:      val('f_congress_mgr'),
+    f_congress_email:    val('f_congress_email'),
+    f_therapy:           val('f_therapy'),
+    f_product:           product,
     // Keep product_program in sync so Order Management dashboard shows the correct product
-    product_program: product,
-    f_owner:         val('f_owner'),
-    f_td:            val('f_td'),
-    f_notes:         val('f_notes'),
+    product_program:     product,
+    f_show_name:         val('f_show_name'),
+    f_location:          val('f_location'),
+    f_delivery_addr:     val('f_delivery_addr'),
+    f_open_date:         val('f_open_date'),
+    f_close_date:        val('f_close_date'),
+    f_exhibit_size:      val('f_exhibit_size'),
+    f_booth:             val('f_booth'),
+    f_pfz_mktg_email:    val('f_pfz_mktg_email'),
+    f_onsite_contact:    val('f_onsite_contact'),
+    f_delivery_date:     val('f_delivery_date'),
+    f_notes:             val('f_notes'),
     // Quote details
     f_qnum:          val('f_qnum'),
     otis_quote_number: val('f_qnum'),  // keep OTIS quote number field in sync
@@ -1207,6 +1242,8 @@ async function saveCurrentFormState(extraFields){
     opt_prereg_img:     qbtn('opt_prereg_img')    ? '1' : '0',
     opt_expedite_img:   qbtn('opt_expedite_img')  ? '1' : '0',
     opt_expedite_list:  qbtn('opt_expedite_list') ? '1' : '0',
+    // Station scanner configuration
+    stations:           getStationsDataQG(),
     // Merge any caller-supplied fields (e.g. order_status, timestamps) into the same PATCH
     // so we never have two concurrent PATCH calls racing against each other in the Worker.
     ...(extraFields || {}),
@@ -1286,23 +1323,23 @@ function otisBusinessType(){
   return '';
 }
 
-// Project title: "2026 Pfizer ADA" format
+// Project title: "2026 Pfizer AAPA 2026" format
 function otisProjectTitle(){
-  const acronym = val('f_acronym').trim();
-  const date    = val('f_date');
+  const showName = val('f_show_name').trim();
+  const date     = val('f_open_date');
   // Parse date safely — input type="date" stores YYYY-MM-DD; fall back to current year
   let year = new Date().getFullYear();
   if(date){
     const d = new Date(date.includes('T') ? date : date + 'T12:00:00');
     if(!isNaN(d.getFullYear())) year = d.getFullYear();
   }
-  // Format: "2026 Pfizer AAP" — acronym is required
-  return year + ' Pfizer ' + acronym;
+  // Format: "2026 Pfizer AAPA 2026"
+  return year + ' Pfizer ' + (showName || 'Show');
 }
 
 async function createOTISOrder(){
-  if(!val('f_acronym')){
-    $id('otis_status').textContent = '⚠️ Fill in the Meeting Acronym first (used for OTIS project title, e.g. "AAP").';
+  if(!val('f_show_name')){
+    $id('otis_status').textContent = '⚠️ Fill in the Show Name first (used for OTIS project title).';
     return;
   }
 
@@ -1319,7 +1356,7 @@ async function createOTISOrder(){
     SalesPerson:    'justinjackson',               // correct field name (NOT AccountOwner)
     Status:         1,                             // 1 = Quoted (confirmed from working quote)
     CompanyName:    'Pfizer SPIRO',
-    ContactName:    val('f_mgr') || val('f_pfz') || '',
+    ContactName:    val('f_congress_mgr') || val('f_acct_mgr') || '',
     BusinessType:   otisBusinessType() || 'app',
     QuotationDate:  qdate,                         // "YYYY-MM-DDTHH:00:00" (confirmed format)
   };
@@ -1380,8 +1417,7 @@ const SURVEY_TYPES = [
   'Scan & Go','Scan & Go with Notes','Attendee Type',
   'Attendee Type with Waiver','Attendee Type with Product Survey',
   'Attendee Type with Waiver and Product Survey',
-  'Migraine Survey w/ Opt In','Pax Survey w/ Opt In',
-  'Comirnaty Survey','Opt In Only','TOV Capture','Other'
+  'Opt In Only','TOV Capture','Other'
 ];
 
 const THERAPY_LIST = ['I&I','Derm','Vaccines','Migraine','Cardio','SINJ','Other'];
@@ -1412,7 +1448,7 @@ function addStation(){
   <span class="station-num-badge" id="slabel-${n}">Station ${n}</span>
   <button class="station-remove-btn" onclick="removeStation(${n})">✕ Remove</button>
 </div>
-<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;">
+<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;">
   <div class="fgroup">
     <label class="lbl">Station</label>
     <select id="st${n}_name" onchange="stOtherToggle(${n},'name',this)">${sOpts(STATION_NAMES,'Select station')}</select>
@@ -1436,8 +1472,12 @@ function addStation(){
     <input type="text" id="st${n}_brand_oth" placeholder="Describe brand…" style="display:none;margin-top:6px;" oninput="stUpdateTag(${n})">
   </div>
   <div class="fgroup">
-    <label class="lbl">Count</label>
-    <input type="number" id="st${n}_count" min="1" value="1">
+    <label class="lbl">Scanners</label>
+    <input type="number" id="st${n}_scanners" min="0" value="0">
+  </div>
+  <div class="fgroup">
+    <label class="lbl">Apps</label>
+    <input type="number" id="st${n}_apps" min="0" value="0">
   </div>
 </div>
 <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:flex-end;margin-top:10px;">
@@ -1513,14 +1553,41 @@ function stUpdateTag(n){
   }
 }
 
+function getStationsDataQG(){
+  const stations = [];
+  document.querySelectorAll('#stations-container .station-row').forEach((row, i) => {
+    const id = row.id.replace('station-row-', '');
+    const nameEl    = $id('st' + id + '_name');
+    const surveyEl  = $id('st' + id + '_survey');
+    const therapyEl = $id('st' + id + '_therapy');
+    const brandEl   = $id('st' + id + '_brand');
+    const nameOth   = $id('st' + id + '_name_oth');
+    const surveyOth = $id('st' + id + '_survey_oth');
+    const therapyOth= $id('st' + id + '_therapy_oth');
+    const brandOth  = $id('st' + id + '_brand_oth');
+    const scannersEl= $id('st' + id + '_scanners');
+    const appsEl    = $id('st' + id + '_apps');
+    const mgrEl     = $id('st' + id + '_mgr');
+
+    stations.push({
+      station_num: i + 1,
+      name:     nameEl?.value === 'Other' ? (nameOth?.value || 'Other') : (nameEl?.value || ''),
+      survey:   surveyEl?.value === 'Other' ? (surveyOth?.value || 'Other') : (surveyEl?.value || ''),
+      therapy:  therapyEl?.value === 'Other' ? (therapyOth?.value || 'Other') : (therapyEl?.value || ''),
+      brand:    brandEl?.value === 'Other' ? (brandOth?.value || 'Other') : (brandEl?.value || ''),
+      scanners: scannersEl?.value || '0',
+      apps:     appsEl?.value || '0',
+      mgr:      mgrEl?.value || '',
+    });
+  });
+  return stations;
+}
+
 function newOrder(){
   if(!confirm('Clear all data and start a new order?')) return;
   document.querySelectorAll('input[type=text],input[type=email],input[type=number],input[type=date],textarea')
-    .forEach(el => { if(el.id!=='f_entity') el.value=''; });
-  $id('f_entity').value = '1400: Pfizer Inc.';
+    .forEach(el => { el.value=''; });
   $id('f_qdate').value = new Date().toISOString().split('T')[0];
-  $id('f_etype').value = '';
-  $id('f_meal').value = '';
   document.querySelectorAll('input[name=tov]')[0].checked = true;
   document.querySelectorAll('.svc-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.svc-section').forEach(s => s.style.display='none');
