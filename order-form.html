@@ -156,7 +156,7 @@ textarea{height:72px;resize:vertical;}
 
   <!-- ── ORDER FORM ── -->
   <div id="order-form">
-    <div class="error-box" id="error-box">⚠️ Please fill in all required fields highlighted below.</div>
+    <div class="error-box" id="error-box" style="display:none;"></div>
 
     <!-- STEP 1: SERVICE TYPE -->
     <div class="card">
@@ -287,30 +287,9 @@ textarea{height:72px;resize:vertical;}
       </div>
     </div>
 
-    <!-- STEP 5: TOV / COMPLIANCE REPORTING -->
+    <!-- STEP 5: ASSOCIATION / VENDOR -->
     <div class="card">
-      <div class="card-title"><span class="step-badge">5</span>TOV / Compliance Reporting</div>
-      <div class="fg">
-        <div class="fgroup fw">
-          <label class="lbl">Is Transfer of Value (TOV) reporting required for this event?</label>
-          <p style="font-size:12px;color:#666;margin:0 0 10px;">TOV is required by default for Pfizer SPIRO events. Selecting "Not Required" reduces the price by $500.</p>
-          <div style="display:flex;flex-direction:column;gap:10px;">
-            <label style="display:flex;align-items:center;gap:10px;padding:12px 16px;border:2px solid #1a3a5c;border-radius:8px;cursor:pointer;background:#f0f4f8;">
-              <input type="radio" name="f_tov" id="f_tov_yes" value="yes" checked onchange="onTOVChange()">
-              <span><strong>TOV Required (standard)</strong> — Compliance data transfer included</span>
-            </label>
-            <label style="display:flex;align-items:center;gap:10px;padding:12px 16px;border:2px solid #ddd;border-radius:8px;cursor:pointer;">
-              <input type="radio" name="f_tov" id="f_tov_no" value="no" onchange="onTOVChange()">
-              <span><strong>TOV Not Required</strong> — Reduces quote by $500</span>
-            </label>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- STEP 6: ASSOCIATION / VENDOR -->
-    <div class="card">
-      <div class="card-title"><span class="step-badge">6</span>Association / Vendor <span style="font-size:11px;font-weight:400;color:#888;text-transform:none;letter-spacing:0;">(optional)</span></div>
+      <div class="card-title"><span class="step-badge">5</span>Association / Vendor <span style="font-size:11px;font-weight:400;color:#888;text-transform:none;letter-spacing:0;">(optional)</span></div>
       <div class="fg">
         <div class="fgroup">
           <label class="lbl">Association Contact Name</label>
@@ -327,9 +306,9 @@ textarea{height:72px;resize:vertical;}
       </div>
     </div>
 
-    <!-- STEP 7: BADGE KIT / API -->
+    <!-- STEP 6: BADGE KIT / API -->
     <div class="card">
-      <div class="card-title"><span class="step-badge">7</span>Badge Kit / Developer Kit / API Available <span class="req" style="font-size:11px;font-weight:400;">&nbsp;* required</span></div>
+      <div class="card-title"><span class="step-badge">6</span>Badge Kit / Developer Kit / API Available <span class="req" style="font-size:11px;font-weight:400;">&nbsp;* required</span></div>
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:4px;" id="badge_api_group">
         <label class="opt" style="flex:1;min-width:100px;" onclick="onBadgeAPIChange('Yes')">
           <input type="radio" name="badge_api" value="Yes" id="badge_api_yes"> Yes
@@ -646,14 +625,6 @@ function onProductChange(){
   $id('clinical_name_wrap').style.display = isAboveBrand ? 'block' : 'none';
 }
 
-function onTOVChange(){
-  // Highlight the selected radio card
-  document.querySelectorAll('input[name="f_tov"]').forEach(r => {
-    const card = r.closest('label');
-    if(card) card.style.borderColor = r.checked ? '#1a3a5c' : '#ddd';
-    if(card) card.style.background  = r.checked ? '#f0f4f8' : '';
-  });
-}
 
 function onBadgeAPIChange(val_){
   document.querySelectorAll('input[name="badge_api"]').forEach(r => {
@@ -669,37 +640,48 @@ function fmtDate(d){
 }
 
 function validate(){
-  const required = ['f_congress_mgr','f_congress_email','f_therapy','f_show_name','f_location','f_open_date','f_onsite_contact','f_product_program'];
+  const requiredFields = [
+    {id:'f_congress_mgr',    label:'Congress Manager'},
+    {id:'f_congress_email',  label:'Congress Manager Email'},
+    {id:'f_therapy',         label:'Therapeutic Area'},
+    {id:'f_show_name',       label:'Show Name'},
+    {id:'f_location',        label:'Location / Venue'},
+    {id:'f_open_date',       label:'Open Date'},
+    {id:'f_onsite_contact',  label:'On-Site Contact'},
+    {id:'f_product_program', label:'Primary Product'},
+  ];
   let ok = true;
-  required.forEach(id => {
+  const missing = [];
+
+  requiredFields.forEach(({id, label}) => {
     const el = $id(id);
     if(!el) return;
     el.classList.remove('error');
-    if(!el.value.trim()){ el.classList.add('error'); ok = false; }
+    if(!el.value.trim()){ el.classList.add('error'); ok = false; missing.push(label); }
   });
 
   // Service type — at least one must be selected
   if(selectedServiceTypes.size === 0){
     document.querySelectorAll('.svc-type-check').forEach(r => r.classList.add('error-border'));
-    ok = false;
+    ok = false; missing.push('Service Type (select at least one)');
   }
 
   // Quantity fields — required when Mobile App or Scanner selected
   if(selectedServiceTypes.has('Mobile App')){
     const el = $id('f_qty_app');
     el.classList.remove('error');
-    if(!el.value.trim()){ el.classList.add('error'); ok = false; }
+    if(!el.value.trim()){ el.classList.add('error'); ok = false; missing.push('Mobile App Quantity'); }
   }
   if(selectedServiceTypes.has('Scanner')){
     const el = $id('f_qty_scanner');
     el.classList.remove('error');
-    if(!el.value.trim()){ el.classList.add('error'); ok = false; }
+    if(!el.value.trim()){ el.classList.add('error'); ok = false; missing.push('Scanner Quantity'); }
   }
 
   // Badge API
   if(!radioVal('badge_api')){
     $id('badge_api_group').style.outline = '2px solid #e74c3c';
-    ok = false;
+    ok = false; missing.push('Badge / API Available (yes or no)');
   } else {
     $id('badge_api_group').style.outline = '';
   }
@@ -710,10 +692,16 @@ function validate(){
   if(prod && (!prodIsKnown || prod === 'Other')){
     const el = $id('f_product_details');
     el.classList.remove('error');
-    if(!el.value.trim()){ el.classList.add('error'); ok = false; }
+    if(!el.value.trim()){ el.classList.add('error'); ok = false; missing.push('Product Details (describe the product/program)'); }
   }
 
-  $id('error-box').style.display = ok ? 'none' : 'block';
+  const box = $id('error-box');
+  if(!ok){
+    box.innerHTML = `<strong>⚠️ Please complete the following required fields:</strong><ul style="margin:6px 0 0 0;padding-left:18px;">${missing.map(m=>`<li>${m}</li>`).join('')}</ul>`;
+    box.style.display = 'block';
+  } else {
+    box.style.display = 'none';
+  }
   return ok;
 }
 
@@ -745,7 +733,6 @@ function buildData(){
     service_type:        Array.from(selectedServiceTypes).join(', '),
     qty_app_licenses:    val('f_qty_app'),
     qty_scanners:        val('f_qty_scanner'),
-    tov:                 document.querySelector('input[name="f_tov"]:checked')?.value || 'yes',
     // Association / Badge API
     assoc_contact_name:  val('f_assoc_contact_name'),
     assoc_contact_email: val('f_assoc_contact_email'),
@@ -779,7 +766,6 @@ function buildSummaryHTML(d){
     ['Service Type', d.service_type],
     ['App Licenses', d.qty_app_licenses],
     ['Scanners', d.qty_scanners],
-    ['TOV Required', d.tov === 'no' ? 'No (−$500)' : 'Yes (standard)'],
     ['Badge / API Available', d.badge_api_available],
   ];
   let html = '<h3>Order Summary</h3>';
@@ -832,7 +818,6 @@ async function submitOrder(){
     'Delivery_Date':          fmtDate(d.f_delivery_date),
     'Notes':                  d.f_notes,
     'Service_Type':           d.service_type,
-    'TOV_Required':           d.tov === 'no' ? 'No (−$500)' : 'Yes (standard)',
     'Primary_Product':        d.f_product || d.product_program,
     'Product_Program_Details': d.product_program_details,
     'Clinical_Internal_Name': d.clinical_internal_name,
