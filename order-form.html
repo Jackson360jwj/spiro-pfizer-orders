@@ -678,6 +678,36 @@ function validate(){
     if(!el.value.trim()){ el.classList.add('error'); ok = false; missing.push('Scanner Quantity'); }
   }
 
+  // ── Cross-check: Step 1 quantities must match station totals ──
+  // Tally apps and scanners across all station rows
+  let stationApps = 0, stationScannersNoData = 0, stationScannersData = 0;
+  document.querySelectorAll('#stations-container .station-row').forEach(row => {
+    const id = row.id.replace('station-row-','');
+    stationApps            += parseInt(document.getElementById('st'+id+'_apps')?.value||0);
+    stationScannersNoData  += parseInt(document.getElementById('st'+id+'_scanners_nodata')?.value||0);
+    stationScannersData    += parseInt(document.getElementById('st'+id+'_scanners_data')?.value||0);
+  });
+  const stationScanners = stationScannersNoData + stationScannersData;
+
+  if(selectedServiceTypes.has('Mobile App')){
+    const el = $id('f_qty_app');
+    const qty = parseInt(el?.value||0);
+    if(stationApps > 0 && qty !== stationApps){
+      el.classList.add('error');
+      ok = false;
+      missing.push(`App licenses mismatch — Step 1 says ${qty} but stations total ${stationApps}. Update one to match.`);
+    }
+  }
+  if(selectedServiceTypes.has('Scanner')){
+    const el = $id('f_qty_scanner');
+    const qty = parseInt(el?.value||0);
+    if(stationScanners > 0 && qty !== stationScanners){
+      el.classList.add('error');
+      ok = false;
+      missing.push(`Scanner count mismatch — Step 1 says ${qty} but stations total ${stationScanners} (${stationScannersNoData} no data + ${stationScannersData} w/ data). Update one to match.`);
+    }
+  }
+
   // Badge API
   if(!radioVal('badge_api')){
     $id('badge_api_group').style.outline = '2px solid #e74c3c';
@@ -788,7 +818,12 @@ function buildSummaryHTML(d){
 
 async function submitOrder(){
   if(!validate()){
-    $id('error-box').scrollIntoView({behavior:'smooth', block:'start'});
+    // First scroll to error summary, then after a short delay jump to the first red field
+    $id('error-box').scrollIntoView({behavior:'smooth', block:'center'});
+    setTimeout(() => {
+      const firstBad = document.querySelector('.error, .svc-type-check.error-border, [style*="outline: 2px solid"]');
+      if(firstBad) firstBad.scrollIntoView({behavior:'smooth', block:'center'});
+    }, 600);
     return;
   }
 
