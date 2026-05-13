@@ -336,6 +336,39 @@ function populateTherapyFilter(){
   });
 }
 
+// Resolve a single order into the named fields the table + filters need.
+// Every field falls back to the raw form key so older orders (or orders saved
+// before the Worker's new field mapping was deployed) still display correctly.
+function resolveOrder(o){
+  // Tries the Worker's mapped names first (requester_name, event_name…), then
+  // the form's raw camelCase keys (f_congress_mgr, f_show_name…), then the
+  // legacy Netlify-era PascalCase keys (Congress_Manager, Show_Name…). This
+  // lets older orders display correctly no matter which code path saved them.
+  const pick = (...keys) => {
+    for (const k of keys) { if (o[k]) return o[k]; }
+    return '';
+  };
+  return {
+    congressMgr:   pick('requester_name',  'f_congress_mgr',   'Congress_Manager'),
+    congressEmail: pick('requester_email', 'f_congress_email', 'Congress_Manager_Email'),
+    showName:      pick('event_name',      'f_show_name',      'Show_Name'),
+    therapy:       pick('therapy_area',    'f_therapy',        'Therapeutic_Area'),
+    openDate:      pick('event_start_date','f_open_date',      'Open_Date'),
+    closeDate:     pick('event_end_date',  'f_close_date',     'Close_Date'),
+    venue:         pick('f_location',      'Location_Venue'),
+    reportEmail:   pick('f_pfz_mktg_email','Pfizer_Marketing_Email'),
+    notes:         pick('special_instructions', 'f_notes', 'Notes'),
+    shipType:      pick('ship_type',       'Ship_Type'),
+    shipAddr:      pick('meeting_address', 'f_delivery_addr',  'Delivery_Address'),
+    exhibitSize:   pick('f_exhibit_size',  'Exhibit_Size'),
+    boothNum:      pick('f_booth',         'Booth_Number'),
+    onsite:        pick('f_onsite_contact','OnSite_Contact'),
+    deliveryDate:  pick('f_delivery_date', 'Delivery_Date'),
+    qtyApps:       pick('qty_app_licenses','Qty_App_Licenses'),
+    qtyScanners:   pick('qty_scanners',    'Qty_Scanners'),
+  };
+}
+
 function applyFilters(){
   const search  = document.getElementById('search').value.toLowerCase();
   const fStatus = document.getElementById('filter-status').value;
@@ -343,18 +376,18 @@ function applyFilters(){
   const fTher   = document.getElementById('filter-therapy').value;
 
   filteredOrders = allOrders.filter(o => {
-    const therapy = o.therapy_area || o.f_therapy || '';
+    const r = resolveOrder(o);
     const brands  = brandsOf(o).join(' ');
     const stationSurveys = stationsOf(o).map(s => s.survey || '').join(' ');
-    const txt = [o.event_name, o.requester_name, o.requester_email,
-                 o.f_pfz_mktg_email, therapy, brands, stationSurveys,
+    const txt = [r.showName, r.congressMgr, r.congressEmail, r.reportEmail,
+                 r.therapy, brands, stationSurveys, r.venue,
                  o.service_type, o.order_status, o.order_id,
-                 o.otis_quote_number, o.f_location].join(' ').toLowerCase();
+                 o.otis_quote_number].join(' ').toLowerCase();
     if(search && !txt.includes(search)) return false;
     if(fStatus && o.order_status !== fStatus) return false;
     // service_type is comma-separated — match if the selected service is in the list
     if(fSvc && !serviceTypes(o).includes(fSvc)) return false;
-    if(fTher && therapy !== fTher) return false;
+    if(fTher && r.therapy !== fTher) return false;
     return true;
   });
   renderTable();
@@ -367,18 +400,18 @@ function renderTable(){
     return;
   }
   tbody.innerHTML = filteredOrders.map(o => {
-    const therapy = o.therapy_area || o.f_therapy || '';
+    const r = resolveOrder(o);
     const stationCount = stationsOf(o).length;
     return `
     <tr onclick="openDetail('${o.order_id}')" class="${o.order_id === selectedOrderId ? 'selected' : ''}">
       <td style="font-family:monospace;font-size:10px;">${o.order_id || '—'}</td>
       <td>${fmtDate(o.submitted_at)}</td>
-      <td>${o.requester_name || '—'}</td>
-      <td style="color:#2563eb;">${o.requester_email || '—'}</td>
-      <td title="${o.event_name || ''}">${o.event_name || '—'}</td>
-      <td style="white-space:nowrap;">${fmtDate(o.event_start_date)}${o.event_end_date ? '<br><span style=color:#999>→ '+fmtDate(o.event_end_date)+'</span>' : ''}</td>
+      <td>${r.congressMgr || '—'}</td>
+      <td style="color:#2563eb;">${r.congressEmail || '—'}</td>
+      <td title="${r.showName || ''}">${r.showName || '—'}</td>
+      <td style="white-space:nowrap;">${fmtDate(r.openDate)}${r.closeDate ? '<br><span style=color:#999>→ '+fmtDate(r.closeDate)+'</span>' : ''}</td>
       <td title="${o.service_type || ''}">${o.service_type || '—'}</td>
-      <td>${therapy || '—'}</td>
+      <td>${r.therapy || '—'}</td>
       <td style="text-align:center;">${stationCount || '—'}</td>
       <td>${badge(o.order_status)}</td>
       <td style="font-weight:700;color:#1a3a5c;">${o.otis_quote_number || '—'}</td>
@@ -417,33 +450,18 @@ function openDetail(orderId){
   document.getElementById('detail-title').textContent = o.event_name || o.order_id;
   document.getElementById('detail-pane').classList.add('open');
 
-  // ── SPIRO-specific field resolution ──
-  // Prefer the Worker's mapped names (requester_name, event_name, etc.) but fall
-  // back to the raw form keys (f_congress_mgr, f_show_name, …) for legacy or
-  // partially-mapped records.
-  const congressMgr   = o.requester_name      || o.f_congress_mgr   || '';
-  const congressEmail = o.requester_email     || o.f_congress_email || '';
-  const reportEmail   = o.f_pfz_mktg_email    || '';
-  const showName      = o.event_name          || o.f_show_name      || '';
-  const therapy       = o.therapy_area        || o.f_therapy        || '';
-  const venue         = o.f_location          || '';
-  const openDate      = o.event_start_date    || o.f_open_date      || '';
-  const closeDate     = o.event_end_date      || o.f_close_date     || '';
-  const notes         = o.special_instructions || o.f_notes         || '';
+  // Use the shared resolveOrder() helper — falls back across Worker-mapped names,
+  // form camelCase keys (f_*), AND legacy Netlify-era PascalCase keys.
+  const r = resolveOrder(o);
+  const { congressMgr, congressEmail, reportEmail, showName, therapy, venue,
+          openDate, closeDate, notes,
+          shipType, shipAddr, exhibitSize, boothNum, onsite, deliveryDate,
+          qtyApps, qtyScanners } = r;
 
-  const services      = serviceTypes(o);                  // ["Mobile App", "Scanner", …]
-  const hasApp        = services.includes('Mobile App');
-  const hasScanner    = services.includes('Scanner');
-
-  // Shipping fields only matter when Scanner is in play.
-  const shipType      = o.ship_type           || '';
-  const shipAddr      = o.meeting_address     || o.f_delivery_addr  || '';
-  const exhibitSize   = o.f_exhibit_size      || '';
-  const boothNum      = o.f_booth             || '';
-  const onsite        = o.f_onsite_contact    || '';
-  const deliveryDate  = o.f_delivery_date     || '';
-
-  const stations      = stationsOf(o);
+  const services   = serviceTypes(o);                  // ["Mobile App", "Scanner", …]
+  const hasApp     = services.includes('Mobile App');
+  const hasScanner = services.includes('Scanner');
+  const stations   = stationsOf(o);
 
   // Build detail body
   const body = document.getElementById('detail-body');
@@ -481,8 +499,8 @@ function openDetail(orderId){
     <div class="detail-section">
       <div class="detail-section-title">Service Type</div>
       <div class="detail-field"><label>Selected</label><span>${services.length ? services.join(', ') : '<span class="empty">Not provided</span>'}</span></div>
-      ${hasApp ? `<div class="detail-field"><label>App Licenses</label><span>${dv(o.qty_app_licenses)}</span></div>` : ''}
-      ${hasScanner ? `<div class="detail-field"><label>Scanners</label><span>${dv(o.qty_scanners)}</span></div>` : ''}
+      ${hasApp ? `<div class="detail-field"><label>App Licenses</label><span>${dv(qtyApps)}</span></div>` : ''}
+      ${hasScanner ? `<div class="detail-field"><label>Scanners</label><span>${dv(qtyScanners)}</span></div>` : ''}
     </div>
 
     ${hasScanner ? `
@@ -579,6 +597,10 @@ function openDetail(orderId){
       </div>
     </div>
 
+    <details style="margin-top:18px;border-top:1px dashed #ddd;padding-top:14px;">
+      <summary style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.6px;cursor:pointer;">Raw Order Data (debug)</summary>
+      <pre style="font-family:monospace;font-size:10px;background:#f5f5f5;border:1px solid #ddd;border-radius:4px;padding:10px;margin-top:8px;max-height:240px;overflow:auto;white-space:pre-wrap;word-break:break-word;color:#444;">${JSON.stringify(o, null, 2)}</pre>
+    </details>
   `;
 
   // Build status action buttons
