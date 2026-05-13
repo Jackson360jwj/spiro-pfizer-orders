@@ -213,10 +213,6 @@ textarea{height:72px;resize:vertical;}
         <label class="lbl">Therapeutic Area</label>
         <input type="text" id="f_therapy" placeholder="e.g. Vaccines" oninput="liveCalc()">
       </div>
-      <div class="fgroup">
-        <label class="lbl">Primary Product *</label>
-        <input type="text" id="f_product" placeholder="e.g. Paxlovid" oninput="liveCalc()">
-      </div>
       <div class="fgroup fw">
         <label class="lbl">Show Name *</label>
         <input type="text" id="f_show_name" placeholder="e.g. AAPA 2026" oninput="liveCalc()">
@@ -592,7 +588,6 @@ textarea{height:72px;resize:vertical;}
       <tr><td class="qlbl">AE (RE)</td><td id="q_ae">—</td></tr>
       <tr><td class="qlbl">Congress Manager</td><td id="q_congress_mgr">—</td></tr>
       <tr><td class="qlbl">Therapeutic Area</td><td id="q_therapy">—</td></tr>
-      <tr><td class="qlbl">Primary Product</td><td class="qhighlight" id="q_product">—</td></tr>
       <tr><td class="qlbl">Show Name</td><td id="q_show_name">—</td></tr>
       <tr><td class="qlbl">Location / Venue</td><td id="q_location" style="white-space:pre-line;">—</td></tr>
       <tr><td class="qlbl">Open Date</td><td id="q_open_date">—</td></tr>
@@ -993,7 +988,6 @@ function buildQuote(){
   $id('q_ae').textContent          = val('f_ae')             || '—';
   $id('q_congress_mgr').textContent= val('f_congress_mgr')   || '—';
   $id('q_therapy').textContent     = val('f_therapy')        || '—';
-  $id('q_product').textContent     = val('f_product')        || '—';
   $id('q_show_name').textContent   = val('f_show_name')      || '—';
   $id('q_location').textContent    = val('f_location')       || '—';
   const shipType = document.querySelector('input[name="ship_type"]:checked')?.value;
@@ -1238,7 +1232,11 @@ function doImportObject(d, alreadyInKV){
   $id('qdetails_card').style.display='block';
   $id('total_banner').style.display='block';
   $id('action_row').style.display='flex';
-  liveCalc();
+  // NOTE: liveCalc() moved to AFTER the station restore block. Calling it here
+  // would compute brand setup / Added Configuration charges against an empty
+  // stations container, leaving the banner perpetually low ($3,708) while the
+  // generated quote (calculated later, against the populated DOM) shows the
+  // real total ($5,562). One liveCalc() at the end now keeps them in sync.
 
   // Restore station rows from imported data
   if(d.stations && Array.isArray(d.stations) && d.stations.length > 0){
@@ -1285,6 +1283,10 @@ function doImportObject(d, alreadyInKV){
       stUpdateTag(n);
     });
   }
+
+  // Now that stations are populated, recompute the banner so it includes
+  // brand setup, Added Configuration ($250), and shipping charges.
+  liveCalc();
 
   window.scrollTo({top:0,behavior:'smooth'});
 
@@ -1580,8 +1582,8 @@ function addStation(){
   </div>
   <div class="fgroup">
     <label class="lbl">Therapy</label>
-    <select id="st${n}_therapy" onchange="stTherapyChange(${n})">${sOpts(THERAPY_LIST,'Select therapy')}</select>
-    <input type="text" id="st${n}_therapy_oth" placeholder="Describe therapy…" style="display:none;margin-top:6px;">
+    <select id="st${n}_therapy" onchange="stTherapyChange(${n});liveCalc()">${sOpts(THERAPY_LIST,'Select therapy')}</select>
+    <input type="text" id="st${n}_therapy_oth" placeholder="Describe therapy…" style="display:none;margin-top:6px;" oninput="liveCalc()">
   </div>
   <div class="fgroup">
     <label class="lbl">Product/Brand</label>
@@ -1614,12 +1616,14 @@ function addStation(){
 </div>`;
   $id('stations-container').appendChild(el);
   renumberStations();
+  liveCalc();   // an empty new row has no $ impact, but keeps the banner authoritative
 }
 
 function removeStation(n){
   const r = $id('station-row-' + n);
   if(r) r.remove();
   renumberStations();
+  liveCalc();   // removing a station can change brand setup / config charges
 }
 
 function renumberStations(){
