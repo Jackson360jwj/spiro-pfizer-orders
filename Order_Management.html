@@ -121,7 +121,8 @@ tr.selected td{background:#e8f0fe;}
     <div class="topbar-right">
       <span class="count-badge" id="order-count">Loading…</span>
       <button class="btn-refresh" onclick="loadOrders()">↻ Refresh</button>
-      <a href="Pfizer_Quote_Generator.html" style="padding:7px 14px;background:#27ae60;color:#fff;border-radius:5px;font-size:12px;font-weight:700;text-decoration:none;">📄 Quote Generator</a>
+      <a id="btn-quote-gen" href="#" onclick="return false;" title="Select an order first"
+         style="padding:7px 14px;background:#aaa;color:#fff;border-radius:5px;font-size:12px;font-weight:700;text-decoration:none;cursor:not-allowed;opacity:0.6;">📄 Quote Generator</a>
     </div>
   </div>
 
@@ -130,7 +131,7 @@ tr.selected td{background:#e8f0fe;}
     <!-- TABLE PANE -->
     <div class="table-pane">
       <div class="controls">
-        <input type="text" class="search-box" id="search" placeholder="Search event, requester, email, product, survey…" oninput="applyFilters()">
+        <input type="text" class="search-box" id="search" placeholder="Search event, congress manager, email, brand, therapy…" oninput="applyFilters()">
         <select class="filter-select" id="filter-status" onchange="applyFilters()">
           <option value="">All Statuses</option>
           <option>Submitted</option>
@@ -145,9 +146,12 @@ tr.selected td{background:#e8f0fe;}
           <option value="">All Service Types</option>
           <option>Mobile App</option>
           <option>Scanner</option>
+          <option>QR Code</option>
+          <option>Image Capture</option>
+          <option>List Import</option>
         </select>
-        <select class="filter-select" id="filter-product" onchange="applyFilters()">
-          <option value="">All Products</option>
+        <select class="filter-select" id="filter-therapy" onchange="applyFilters()">
+          <option value="">All Therapy Areas</option>
         </select>
       </div>
 
@@ -157,13 +161,13 @@ tr.selected td{background:#e8f0fe;}
             <tr>
               <th>Order ID</th>
               <th>Submitted</th>
-              <th>Requester</th>
+              <th>Congress Manager</th>
               <th>Email</th>
-              <th>Event Name</th>
+              <th>Show Name</th>
               <th>Dates</th>
-              <th>Service</th>
-              <th>Product</th>
-              <th>Survey</th>
+              <th>Service Type</th>
+              <th>Therapy Area</th>
+              <th>Stations</th>
               <th>Status</th>
               <th>Quote #</th>
             </tr>
@@ -282,7 +286,7 @@ async function loadOrders(){
     if(resp.status === 401){ handleUnauth(); return; }
     if(!resp.ok) throw new Error('HTTP ' + resp.status);
     allOrders = await resp.json();
-    populateProductFilter();
+    populateTherapyFilter();
     applyFilters();
     document.getElementById('order-count').textContent = allOrders.length + ' orders';
   } catch(err) {
@@ -301,13 +305,37 @@ function showOfflineState(){
     </div>`;
 }
 
-function populateProductFilter(){
-  const products = [...new Set(allOrders.map(o => o.product_program).filter(Boolean))].sort();
-  const sel = document.getElementById('filter-product');
-  sel.innerHTML = '<option value="">All Products</option>';
-  products.forEach(p => {
+// ── SPIRO helpers ──────────────────────────────────────────────────────────
+// service_type is a comma-separated string ("Mobile App, Scanner") because the
+// SPIRO form lets the user pick multiple. Use this everywhere we need the list.
+function serviceTypes(o){
+  return (o.service_type || '').split(',').map(s => s.trim()).filter(Boolean);
+}
+
+// Stations is an array of {station_num, name, survey, therapy, brand, scanners_*, apps, mgr}.
+// Returns [] for older orders that don't carry the array.
+function stationsOf(o){
+  return Array.isArray(o.stations) ? o.stations : [];
+}
+
+// Distinct product/brand list from this order's stations (deduped, in order).
+function brandsOf(o){
+  const seen = new Set();
+  const out = [];
+  stationsOf(o).forEach(s => {
+    const b = (s.brand || '').trim();
+    if (b && !seen.has(b)) { seen.add(b); out.push(b); }
+  });
+  return out;
+}
+
+function populateTherapyFilter(){
+  const therapies = [...new Set(allOrders.map(o => o.therapy_area || o.f_therapy).filter(Boolean))].sort();
+  const sel = document.getElementById('filter-therapy');
+  sel.innerHTML = '<option value="">All Therapy Areas</option>';
+  therapies.forEach(t => {
     const opt = document.createElement('option');
-    opt.value = p; opt.textContent = p;
+    opt.value = t; opt.textContent = t;
     sel.appendChild(opt);
   });
 }
@@ -316,17 +344,21 @@ function applyFilters(){
   const search  = document.getElementById('search').value.toLowerCase();
   const fStatus = document.getElementById('filter-status').value;
   const fSvc    = document.getElementById('filter-service').value;
-  const fProd   = document.getElementById('filter-product').value;
+  const fTher   = document.getElementById('filter-therapy').value;
 
   filteredOrders = allOrders.filter(o => {
+    const therapy = o.therapy_area || o.f_therapy || '';
+    const brands  = brandsOf(o).join(' ');
+    const stationSurveys = stationsOf(o).map(s => s.survey || '').join(' ');
     const txt = [o.event_name, o.requester_name, o.requester_email,
-                 o.product_program, o.survey_type, o.service_type, o.order_status,
-                 o.order_id, o.otis_quote_number, o.f_pfz, o.f_acronym,
-                 o.import_code ? '' : ''].join(' ').toLowerCase();
+                 o.f_pfz_mktg_email, therapy, brands, stationSurveys,
+                 o.service_type, o.order_status, o.order_id,
+                 o.otis_quote_number, o.f_location].join(' ').toLowerCase();
     if(search && !txt.includes(search)) return false;
     if(fStatus && o.order_status !== fStatus) return false;
-    if(fSvc && o.service_type !== fSvc) return false;
-    if(fProd && o.product_program !== fProd) return false;
+    // service_type is comma-separated — match if the selected service is in the list
+    if(fSvc && !serviceTypes(o).includes(fSvc)) return false;
+    if(fTher && therapy !== fTher) return false;
     return true;
   });
   renderTable();
@@ -338,7 +370,10 @@ function renderTable(){
     tbody.innerHTML = '<tr class="empty-row"><td colspan="11">No orders match your filters.</td></tr>';
     return;
   }
-  tbody.innerHTML = filteredOrders.map(o => `
+  tbody.innerHTML = filteredOrders.map(o => {
+    const therapy = o.therapy_area || o.f_therapy || '';
+    const stationCount = stationsOf(o).length;
+    return `
     <tr onclick="openDetail('${o.order_id}')" class="${o.order_id === selectedOrderId ? 'selected' : ''}">
       <td style="font-family:monospace;font-size:10px;">${o.order_id || '—'}</td>
       <td>${fmtDate(o.submitted_at)}</td>
@@ -346,12 +381,13 @@ function renderTable(){
       <td style="color:#2563eb;">${o.requester_email || '—'}</td>
       <td title="${o.event_name || ''}">${o.event_name || '—'}</td>
       <td style="white-space:nowrap;">${fmtDate(o.event_start_date)}${o.event_end_date ? '<br><span style=color:#999>→ '+fmtDate(o.event_end_date)+'</span>' : ''}</td>
-      <td>${o.service_type || '—'}</td>
-      <td title="${o.product_program || ''}">${o.product_program || '—'}</td>
-      <td title="${o.survey_type || ''}">${o.survey_type || '—'}</td>
+      <td title="${o.service_type || ''}">${o.service_type || '—'}</td>
+      <td>${therapy || '—'}</td>
+      <td style="text-align:center;">${stationCount || '—'}</td>
       <td>${badge(o.order_status)}</td>
       <td style="font-weight:700;color:#1a3a5c;">${o.otis_quote_number || '—'}</td>
-    </tr>`).join('');
+    </tr>`;
+  }).join('');
 }
 
 function dv(val, fallback){
@@ -371,8 +407,47 @@ function openDetail(orderId){
   });
   renderTable();
 
+  // Activate top-bar Quote Generator button with this order's ID
+  const qbtn = document.getElementById('btn-quote-gen');
+  if(qbtn){
+    qbtn.href = 'Pfizer_Quote_Generator.html?order_id=' + encodeURIComponent(orderId);
+    qbtn.onclick = null;
+    qbtn.title = 'Open Quote Generator for this order';
+    qbtn.style.background = '#27ae60';
+    qbtn.style.cursor = 'pointer';
+    qbtn.style.opacity = '1';
+  }
+
   document.getElementById('detail-title').textContent = o.event_name || o.order_id;
   document.getElementById('detail-pane').classList.add('open');
+
+  // ── SPIRO-specific field resolution ──
+  // Prefer the Worker's mapped names (requester_name, event_name, etc.) but fall
+  // back to the raw form keys (f_congress_mgr, f_show_name, …) for legacy or
+  // partially-mapped records.
+  const congressMgr   = o.requester_name      || o.f_congress_mgr   || '';
+  const congressEmail = o.requester_email     || o.f_congress_email || '';
+  const reportEmail   = o.f_pfz_mktg_email    || '';
+  const showName      = o.event_name          || o.f_show_name      || '';
+  const therapy       = o.therapy_area        || o.f_therapy        || '';
+  const venue         = o.f_location          || '';
+  const openDate      = o.event_start_date    || o.f_open_date      || '';
+  const closeDate     = o.event_end_date      || o.f_close_date     || '';
+  const notes         = o.special_instructions || o.f_notes         || '';
+
+  const services      = serviceTypes(o);                  // ["Mobile App", "Scanner", …]
+  const hasApp        = services.includes('Mobile App');
+  const hasScanner    = services.includes('Scanner');
+
+  // Shipping fields only matter when Scanner is in play.
+  const shipType      = o.ship_type           || '';
+  const shipAddr      = o.meeting_address     || o.f_delivery_addr  || '';
+  const exhibitSize   = o.f_exhibit_size      || '';
+  const boothNum      = o.f_booth             || '';
+  const onsite        = o.f_onsite_contact    || '';
+  const deliveryDate  = o.f_delivery_date     || '';
+
+  const stations      = stationsOf(o);
 
   // Build detail body
   const body = document.getElementById('detail-body');
@@ -388,72 +463,111 @@ function openDetail(orderId){
     </div>
 
     <div class="detail-section">
-      <div class="detail-section-title">Requester</div>
+      <div class="detail-section-title">Congress Manager</div>
       <div class="detail-2col">
-        <div class="detail-field"><label>Name</label><span>${dv(o.requester_name)}</span></div>
-        <div class="detail-field"><label>Email</label><span>${dv(o.requester_email)}</span></div>
+        <div class="detail-field"><label>Name</label><span>${dv(congressMgr)}</span></div>
+        <div class="detail-field"><label>Email</label><span style="color:#2563eb;">${dv(congressEmail)}</span></div>
       </div>
+      <div class="detail-field"><label>Report Recipient Email</label><span style="color:#2563eb;">${dv(reportEmail)}</span></div>
     </div>
 
     <div class="detail-section">
       <div class="detail-section-title">Event</div>
-      <div class="detail-field"><label>Meeting Name</label><span>${dv(o.event_name)}</span></div>
+      <div class="detail-field"><label>Show Name</label><span>${dv(showName)}</span></div>
+      <div class="detail-field"><label>Therapeutic Area</label><span>${dv(therapy)}</span></div>
+      <div class="detail-field"><label>Location / Venue</label><span style="white-space:pre-line;">${dv(venue)}</span></div>
       <div class="detail-2col">
-        <div class="detail-field"><label>Start Date</label><span>${dv(fmtDate(o.event_start_date))}</span></div>
-        <div class="detail-field"><label>End Date</label><span>${dv(fmtDate(o.event_end_date))}</span></div>
+        <div class="detail-field"><label>Open Date</label><span>${dv(fmtDate(openDate))}</span></div>
+        <div class="detail-field"><label>Close Date</label><span>${dv(fmtDate(closeDate))}</span></div>
       </div>
-      <div class="detail-field"><label>Pfizer Meeting #</label><span>${dv(o.pfizer_meeting_number)}</span></div>
-      <div class="detail-field"><label>Address / Venue</label><span style="white-space:pre-line;">${dv(o.meeting_address)}</span></div>
-      <div class="detail-2col">
-        <div class="detail-field"><label>Event Type</label><span>${dv(o.event_type)}</span></div>
-        <div class="detail-field"><label>Meal Type</label><span>${dv(o.meal_type)}</span></div>
-      </div>
-      <div class="detail-2col">
-        <div class="detail-field"><label>Attendees (est.)</label><span>${dv(o.estimated_attendees)}</span></div>
-        <div class="detail-field"><label>Therapy Area</label><span>${dv(o.therapy_area)}</span></div>
-      </div>
-      <div class="detail-field"><label>Pfizer Project Owner</label><span>${dv(o.pfizer_project_owner)}</span></div>
     </div>
 
     <div class="detail-section">
-      <div class="detail-section-title">Service & Product</div>
-      <div class="detail-2col">
-        <div class="detail-field"><label>Service Type</label><span>${dv(o.service_type)}</span></div>
-        <div class="detail-field"><label>Quantity</label><span>${dv(o.quantity)}</span></div>
-      </div>
-      <div class="detail-field"><label>Product / Program</label><span>${dv(o.product_program)}</span></div>
-      ${o.product_program_details ? `<div class="detail-field"><label>Product Details</label><span>${o.product_program_details}</span></div>` : ''}
-      ${o.clinical_internal_name ? `<div class="detail-field"><label>Clinical / Internal Name</label><span>${o.clinical_internal_name}</span></div>` : ''}
-      <div class="detail-field"><label>Survey Type</label><span>${dv(o.survey_type)}</span></div>
-      ${o.survey_details ? `<div class="detail-field"><label>Survey Details</label><span>${o.survey_details}</span></div>` : ''}
+      <div class="detail-section-title">Service Type</div>
+      <div class="detail-field"><label>Selected</label><span>${services.length ? services.join(', ') : '<span class="empty">Not provided</span>'}</span></div>
+      ${hasApp ? `<div class="detail-field"><label>App Licenses</label><span>${dv(o.qty_app_licenses)}</span></div>` : ''}
+      ${hasScanner ? `<div class="detail-field"><label>Scanners</label><span>${dv(o.qty_scanners)}</span></div>` : ''}
     </div>
+
+    ${hasScanner ? `
+    <div class="detail-section">
+      <div class="detail-section-title">Shipping &amp; On-Site</div>
+      <div class="detail-2col">
+        <div class="detail-field"><label>Ship To</label><span>${shipType === 'booth' ? '🏛 Direct to Event Booth' : shipType === 'hotel' ? '🏨 Ship to Hotel' : '<span class="empty">Not provided</span>'}</span></div>
+        <div class="detail-field"><label>Delivery Date</label><span>${dv(fmtDate(deliveryDate))}</span></div>
+      </div>
+      <div class="detail-field"><label>Delivery Address</label><span style="white-space:pre-line;">${dv(shipAddr)}</span></div>
+      <div class="detail-2col">
+        <div class="detail-field"><label>Exhibit Size</label><span>${dv(exhibitSize)}</span></div>
+        <div class="detail-field"><label>Booth #</label><span>${dv(boothNum)}</span></div>
+      </div>
+      <div class="detail-field"><label>On-Site Contact</label><span>${dv(onsite)}</span></div>
+    </div>` : ''}
+
+    ${stations.length ? `
+    <div class="detail-section">
+      <div class="detail-section-title">Stations (${stations.length})</div>
+      <div style="overflow-x:auto;border:1px solid #eee;border-radius:6px;">
+        <table style="width:100%;border-collapse:collapse;font-size:11px;">
+          <thead>
+            <tr style="background:#f5f8fc;">
+              <th style="padding:6px 8px;text-align:left;color:#1a3a5c;font-size:10px;">#</th>
+              <th style="padding:6px 8px;text-align:left;color:#1a3a5c;font-size:10px;">Name</th>
+              <th style="padding:6px 8px;text-align:left;color:#1a3a5c;font-size:10px;">Product/Brand · Therapy</th>
+              <th style="padding:6px 8px;text-align:left;color:#1a3a5c;font-size:10px;">Survey Type</th>
+              <th style="padding:6px 8px;text-align:center;color:#1a3a5c;font-size:10px;">Scanners</th>
+              <th style="padding:6px 8px;text-align:center;color:#1a3a5c;font-size:10px;">Apps</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${stations.map(s => {
+              const tag = [s.brand, s.therapy].filter(Boolean).join(' · ') || '—';
+              const nd  = parseInt(s.scanners_nodata || 0);
+              const wd  = parseInt(s.scanners_data || 0);
+              const scanCell = (nd + wd) === 0 ? '0' :
+                [nd > 0 ? `${nd} no-data` : '', wd > 0 ? `${wd} w/data` : ''].filter(Boolean).join(' + ');
+              return `
+              <tr style="border-top:1px solid #eee;">
+                <td style="padding:6px 8px;">${s.station_num || '—'}</td>
+                <td style="padding:6px 8px;">${s.name || '—'}${s.mgr ? `<br><span style="color:#999;font-size:10px;">${s.mgr}</span>` : ''}</td>
+                <td style="padding:6px 8px;">${tag}</td>
+                <td style="padding:6px 8px;">${s.survey || '—'}</td>
+                <td style="padding:6px 8px;text-align:center;">${scanCell}</td>
+                <td style="padding:6px 8px;text-align:center;">${s.apps || '0'}</td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>` : ''}
 
     <div class="detail-section">
       <div class="detail-section-title">Badge Kit / API</div>
       <div class="detail-field"><label>API Available?</label><span>${dv(o.badge_api_available)}</span></div>
       ${o.badge_api_available === 'Yes' ? `
       <div class="detail-2col">
-        <div class="detail-field"><label>Provider / Reg. Company</label><span>${dv(o.provider_registration_company)}</span></div>
+        <div class="detail-field"><label>Provider / Reg. Company</label><span>${dv(o.provider_registration_company || o.provider_reg_company)}</span></div>
         <div class="detail-field"><label>Contact Name</label><span>${dv(o.api_badge_contact_name)}</span></div>
       </div>
-      <div class="detail-field"><label>Contact Email</label><span>${dv(o.api_badge_contact_email)}</span></div>
-      ${o.api_badge_notes ? `<div class="detail-field"><label>Notes</label><span>${o.api_badge_notes}</span></div>` : ''}` : ''}
+      <div class="detail-field"><label>Contact Email</label><span style="color:#2563eb;">${dv(o.api_badge_contact_email)}</span></div>
+      ${o.api_badge_notes ? `<div class="detail-field"><label>Notes</label><span style="white-space:pre-line;">${o.api_badge_notes}</span></div>` : ''}` : ''}
     </div>
 
-    ${(o.association_contact_name || o.association_contact_email || o.association_vendor_name) ? `
+    ${(o.association_contact_name || o.association_contact_email || o.association_vendor_name ||
+       o.assoc_contact_name || o.assoc_contact_email || o.assoc_vendor_name) ? `
     <div class="detail-section">
       <div class="detail-section-title">Association / Vendor</div>
       <div class="detail-2col">
-        <div class="detail-field"><label>Contact Name</label><span>${dv(o.association_contact_name)}</span></div>
-        <div class="detail-field"><label>Contact Email</label><span>${dv(o.association_contact_email)}</span></div>
+        <div class="detail-field"><label>Contact Name</label><span>${dv(o.association_contact_name || o.assoc_contact_name)}</span></div>
+        <div class="detail-field"><label>Contact Email</label><span style="color:#2563eb;">${dv(o.association_contact_email || o.assoc_contact_email)}</span></div>
       </div>
-      <div class="detail-field"><label>Vendor Name</label><span>${dv(o.association_vendor_name)}</span></div>
+      <div class="detail-field"><label>Vendor Name</label><span>${dv(o.association_vendor_name || o.assoc_vendor_name)}</span></div>
     </div>` : ''}
 
-    ${o.special_instructions ? `
+    ${notes ? `
     <div class="detail-section">
-      <div class="detail-section-title">Special Instructions</div>
-      <div class="detail-field"><span style="white-space:pre-line;">${o.special_instructions}</span></div>
+      <div class="detail-section-title">Special Instructions / Notes</div>
+      <div class="detail-field"><span style="white-space:pre-line;">${notes}</span></div>
     </div>` : ''}
 
     <div class="detail-section">
@@ -555,6 +669,17 @@ function closeDetail(){
   selectedOrderId = null;
   document.getElementById('detail-pane').classList.remove('open');
   document.querySelectorAll('#order-tbody tr').forEach(tr => tr.classList.remove('selected'));
+
+  // Grey out top-bar Quote Generator button — no order selected
+  const qbtn = document.getElementById('btn-quote-gen');
+  if(qbtn){
+    qbtn.href = '#';
+    qbtn.onclick = function(){ return false; };
+    qbtn.title = 'Select an order first';
+    qbtn.style.background = '#aaa';
+    qbtn.style.cursor = 'not-allowed';
+    qbtn.style.opacity = '0.6';
+  }
 }
 
 // Boot: if we have a saved token try to load immediately; otherwise show login
