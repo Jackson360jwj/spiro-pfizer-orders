@@ -127,9 +127,6 @@ textarea{height:72px;resize:vertical;}
   <input name="Delivery_Date">
   <input name="Notes">
   <input name="Service_Type">
-  <input name="Primary_Product">
-  <input name="Product_Program_Details">
-  <input name="Clinical_Internal_Name">
   <input name="Assoc_Contact_Name">
   <input name="Assoc_Contact_Email">
   <input name="Assoc_Vendor_Name">
@@ -203,8 +200,8 @@ textarea{height:72px;resize:vertical;}
           <input type="text" id="f_therapy" placeholder="e.g. Vaccines">
         </div>
         <div class="fgroup">
-          <label class="lbl">Pfizer Marketing Email</label>
-          <input type="email" id="f_pfz_mktg_email" placeholder="e.g. finley.hutchinson@pfizer.com">
+          <label class="lbl">Report Recipient Email</label>
+          <input type="email" id="f_pfz_mktg_email" placeholder="Where final reports should be sent — e.g. finley.hutchinson@pfizer.com">
         </div>
         <div class="fgroup fw">
           <label class="lbl">Show Name <span class="req">*</span></label>
@@ -214,7 +211,7 @@ textarea{height:72px;resize:vertical;}
           <label class="lbl">Location / Venue <span class="req">*</span></label>
           <textarea id="f_location" placeholder="Venue name — e.g. Ernest N Morial Convention Center"></textarea>
         </div>
-        <div class="fgroup fw">
+        <div class="fgroup fw shipping-field" style="display:none;">
           <label class="lbl">Delivery Address</label>
           <div style="display:flex;gap:8px;margin-bottom:8px;">
             <label style="display:flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #c5d3e8;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;color:#1a3a5c;background:#f5f8fc;flex:1;justify-content:center;" id="ship_booth_lbl">
@@ -234,19 +231,19 @@ textarea{height:72px;resize:vertical;}
           <label class="lbl">Close Date</label>
           <input type="date" id="f_close_date">
         </div>
-        <div class="fgroup">
+        <div class="fgroup shipping-field" style="display:none;">
           <label class="lbl">Exhibit Size</label>
           <input type="text" id="f_exhibit_size" placeholder="e.g. 20x40">
         </div>
-        <div class="fgroup">
+        <div class="fgroup shipping-field" style="display:none;">
           <label class="lbl">Booth #</label>
           <input type="text" id="f_booth" placeholder="e.g. 3727">
         </div>
-        <div class="fgroup">
+        <div class="fgroup shipping-field" style="display:none;">
           <label class="lbl">On-Site Contact (Name &amp; Phone) <span class="req">*</span></label>
           <input type="text" id="f_onsite_contact" placeholder="e.g. Rob Loughran 404-717-3985">
         </div>
-        <div class="fgroup">
+        <div class="fgroup shipping-field" style="display:none;">
           <label class="lbl">Delivery Date</label>
           <input type="date" id="f_delivery_date">
         </div>
@@ -260,36 +257,16 @@ textarea{height:72px;resize:vertical;}
     <!-- STEP 3: STATION SCANNER CONFIGURATION -->
     <div class="card">
       <div class="card-title"><span class="step-badge">3</span>Station Scanner Configuration</div>
-      <p style="font-size:12px;color:#888;margin-bottom:16px;">Add each station in the booth. Specify the survey type, therapy area, brand, and how many scanners or app licenses are needed per station.</p>
+      <p style="font-size:12px;color:#888;margin-bottom:16px;">Add each station in the booth. Specify the survey type, therapy area, product/brand, and how many scanners or app licenses are needed per station.</p>
       <div id="stations-container"></div>
       <button class="add-station-btn" onclick="addStation()">＋ Add Station</button>
     </div>
 
-    <!-- STEP 4: PRIMARY PRODUCT -->
-    <div class="card">
-      <div class="card-title"><span class="step-badge">4</span>Primary Product</div>
-      <div class="fg">
-        <div class="fgroup fw">
-          <label class="lbl">Primary Product <span class="req">*</span></label>
-          <input type="text" id="f_product_program" list="product_program_options"
-                 placeholder="Type or select a product…" autocomplete="off"
-                 oninput="onProductChange()" onchange="onProductChange()">
-          <datalist id="product_program_options"></datalist>
-        </div>
-        <div class="fgroup fw conditional-field" id="product_details_wrap">
-          <label class="lbl">Product / Program Details <span class="req">*</span></label>
-          <textarea id="f_product_details" placeholder="Please describe the product or program…"></textarea>
-        </div>
-        <div class="fgroup fw conditional-field" id="clinical_name_wrap">
-          <label class="lbl">Clinical / Internal Name <span style="font-size:10px;font-weight:400;color:#888;text-transform:none;letter-spacing:0;">(optional)</span></label>
-          <input type="text" id="f_clinical_name" placeholder="e.g. Study XYZ-123">
-        </div>
-      </div>
-    </div>
+    <!-- (Step 4 "Primary Product" removed — product/brand is captured per station in Step 3) -->
 
-    <!-- STEP 5: ASSOCIATION / VENDOR -->
+    <!-- STEP 4: ASSOCIATION / VENDOR -->
     <div class="card">
-      <div class="card-title"><span class="step-badge">5</span>Association / Vendor <span style="font-size:11px;font-weight:400;color:#888;text-transform:none;letter-spacing:0;">(optional)</span></div>
+      <div class="card-title"><span class="step-badge">4</span>Association / Vendor <span style="font-size:11px;font-weight:400;color:#888;text-transform:none;letter-spacing:0;">(optional)</span></div>
       <div class="fg">
         <div class="fgroup">
           <label class="lbl">Association Contact Name</label>
@@ -308,7 +285,7 @@ textarea{height:72px;resize:vertical;}
 
     <!-- STEP 6: BADGE KIT / API -->
     <div class="card">
-      <div class="card-title"><span class="step-badge">6</span>Badge Kit / Developer Kit / API Available <span class="req" style="font-size:11px;font-weight:400;">&nbsp;* required</span></div>
+      <div class="card-title"><span class="step-badge">5</span>Badge Kit / Developer Kit / API Available <span class="req" style="font-size:11px;font-weight:400;">&nbsp;* required</span></div>
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:4px;" id="badge_api_group">
         <label class="opt" style="flex:1;min-width:100px;" onclick="onBadgeAPIChange('Yes')">
           <input type="radio" name="badge_api" value="Yes" id="badge_api_yes"> Yes
@@ -369,6 +346,9 @@ textarea{height:72px;resize:vertical;}
 </div>
 
 <script>
+// ── Cloudflare Worker endpoint (saves order to KV — same store the management dashboard reads) ──
+const WORKER_URL = 'https://spiro-order-api.realityengineeringops.workers.dev';
+
 // ── Station Scanner Data ──
 const STATION_NAMES = ['Commercial','Med Info','Med Affairs','Market Access','EPIC - Every Color is Primary','Round Table PT (TOV)','Surf Activation','FAL','Health Equity','Other'];
 const SURVEY_TYPES  = ['Scan & Go','Scan & Go with Notes','Attendee Type','Attendee Type with Waiver','Attendee Type with Product Survey','Attendee Type with Waiver and Product Survey','Opt In Only','TOV Capture','Other'];
@@ -418,11 +398,11 @@ function addStation(){
     <input type="text" id="st${n}_therapy_oth" placeholder="Describe therapy…" style="display:none;margin-top:6px;">
   </div>
   <div class="fgroup">
-    <label class="lbl">Brand</label>
+    <label class="lbl">Product/Brand</label>
     <select id="st${n}_brand" onchange="stOtherToggle(${n},'brand',this);stUpdateTag(${n})">
       <option value="">— Select therapy first —</option>
     </select>
-    <input type="text" id="st${n}_brand_oth" placeholder="Describe brand…" style="display:none;margin-top:6px;" oninput="stUpdateTag(${n})">
+    <input type="text" id="st${n}_brand_oth" placeholder="Describe product/brand…" style="display:none;margin-top:6px;" oninput="stUpdateTag(${n})">
   </div>
   <div class="fgroup">
     <label class="lbl" style="font-size:10px;">Scanners<br><span style="color:#888;font-weight:400;">No Data</span></label>
@@ -479,7 +459,7 @@ function stTherapyChange(n){
   if(!bSel) return;
 
   if(tv && THERAPY_BRANDS[tv]){
-    bSel.innerHTML = `<option value="">— Select brand —</option>` +
+    bSel.innerHTML = `<option value="">— Select product/brand —</option>` +
       THERAPY_BRANDS[tv].map(b => `<option value="${b}">${b}</option>`).join('');
     if(bOth) bOth.style.display = 'none';
   } else if(tv === 'Other'){
@@ -544,23 +524,7 @@ function getStationsData(){
   return stations;
 }
 
-// ── Product List (easy to maintain) ──
-const PRODUCT_LIST = [
-  'Abrysvo','Braftovi / Mektovi','Bosulif','Cibinqo','Daurismo','Elrexfio',
-  'Emblaveo','Ibrance','Inlyta','Litfulo','Lorbrena','Ngenla','Nurtec','Padcev',
-  'Paxlovid','Prevnar 13','Prevnar 20','Talzenna','Tivdak','Tukysa','Xtandi',
-  'Above Brand / Clinical Development','Other'
-];
-
-// Populate product datalist (combo box — allows both selection and free text)
-(function(){
-  const dl = document.getElementById('product_program_options');
-  PRODUCT_LIST.forEach(p => {
-    const o = document.createElement('option');
-    o.value = p;
-    dl.appendChild(o);
-  });
-})();
+// (Product List + datalist removed — product/brand is now captured per station in Step 3.)
 
 let selectedServiceTypes = new Set();
 
@@ -600,6 +564,7 @@ function toggleServiceType(type, el){
     document.querySelectorAll('.svc-type-check').forEach(r => r.classList.remove('error-border'));
   }
   updateQuantityFields();
+  updateShippingVisibility();
 }
 
 function updateQuantityFields(){
@@ -616,15 +581,23 @@ function updateQuantityFields(){
   if(!hasScanner) $id('f_qty_scanner').value = '';
 }
 
-function onProductChange(){
-  const v = val('f_product_program');
-  const isKnown = PRODUCT_LIST.includes(v);
-  const isAboveBrand = (v === 'Above Brand / Clinical Development');
-  // Show details box if they typed something custom (not in the list) or explicitly chose "Other"
-  $id('product_details_wrap').style.display = (!isKnown && v !== '') || v === 'Other' ? 'block' : 'none';
-  $id('clinical_name_wrap').style.display = isAboveBrand ? 'block' : 'none';
+// Shipping fields (delivery address, exhibit size, booth #, on-site contact, delivery date)
+// are only relevant when physical kit ships — i.e., when Scanner is selected. Mobile App,
+// QR Code, Image Capture, and List Import don't ship hardware, so we hide and clear those
+// fields to keep the form lean and prevent stale data from being submitted.
+function updateShippingVisibility(){
+  const hasScanner = selectedServiceTypes.has('Scanner');
+  document.querySelectorAll('.shipping-field').forEach(el => {
+    el.style.display = hasScanner ? '' : 'none';
+  });
+  if (!hasScanner) {
+    ['f_delivery_addr','f_exhibit_size','f_booth','f_onsite_contact','f_delivery_date']
+      .forEach(id => { const el = $id(id); if (el) { el.value = ''; el.classList.remove('error'); } });
+    const sb = $id('ship_booth'); if (sb) sb.checked = false;
+    const sh = $id('ship_hotel'); if (sh) sh.checked = false;
+    updateDeliveryUI();
+  }
 }
-
 
 function onBadgeAPIChange(val_){
   document.querySelectorAll('input[name="badge_api"]').forEach(r => {
@@ -647,8 +620,8 @@ function validate(){
     {id:'f_show_name',       label:'Show Name'},
     {id:'f_location',        label:'Location / Venue'},
     {id:'f_open_date',       label:'Open Date'},
-    {id:'f_onsite_contact',  label:'On-Site Contact'},
-    {id:'f_product_program', label:'Primary Product'},
+    // On-Site Contact is only required when Scanner is selected (handled below)
+    // Primary Product removed — no separate field; product is captured per station
   ];
   let ok = true;
   const missing = [];
@@ -676,6 +649,10 @@ function validate(){
     const el = $id('f_qty_scanner');
     el.classList.remove('error');
     if(!el.value.trim()){ el.classList.add('error'); ok = false; missing.push('Scanner Quantity'); }
+    // Shipping fields are visible — On-Site Contact is required for scanner deliveries
+    const onsite = $id('f_onsite_contact');
+    onsite.classList.remove('error');
+    if(!onsite.value.trim()){ onsite.classList.add('error'); ok = false; missing.push('On-Site Contact'); }
   }
 
   // ── Cross-check: Step 1 quantities must match station totals ──
@@ -716,15 +693,6 @@ function validate(){
     $id('badge_api_group').style.outline = '';
   }
 
-  // Conditional: product details required when custom/unknown product entered
-  const prod = val('f_product_program');
-  const prodIsKnown = PRODUCT_LIST.includes(prod);
-  if(prod && (!prodIsKnown || prod === 'Other')){
-    const el = $id('f_product_details');
-    el.classList.remove('error');
-    if(!el.value.trim()){ el.classList.add('error'); ok = false; missing.push('Product Details (describe the product/program)'); }
-  }
-
   const box = $id('error-box');
   if(!ok){
     box.innerHTML = `<strong>⚠️ Please complete the following required fields:</strong><ul style="margin:6px 0 0 0;padding-left:18px;">${missing.map(m=>`<li>${m}</li>`).join('')}</ul>`;
@@ -754,11 +722,7 @@ function buildData(){
     f_onsite_contact:    val('f_onsite_contact'),
     f_delivery_date:     val('f_delivery_date'),
     f_notes:             val('f_notes'),
-    // Product
-    f_product:           val('f_product_program'),
-    product_program:     val('f_product_program'),
-    product_program_details: val('f_product_details'),
-    clinical_internal_name: val('f_clinical_name'),
+    // (Primary Product fields removed — product/brand is captured per station)
     // Service
     service_type:        Array.from(selectedServiceTypes).join(', '),
     qty_app_licenses:    val('f_qty_app'),
@@ -784,7 +748,6 @@ function buildSummaryHTML(d){
     ['Email', d.f_congress_email],
     ['Show Name', d.f_show_name],
     ['Therapeutic Area', d.f_therapy],
-    ['Primary Product', d.f_product || d.product_program],
     ['Location / Venue', d.f_location],
     ['Delivery Address', (d.ship_type === 'booth' ? '📍 Direct to Booth — ' : d.ship_type === 'hotel' ? '🏨 Hotel — ' : '') + (d.f_delivery_addr||'')],
     ['Open Date', fmtDate(d.f_open_date)],
@@ -834,47 +797,28 @@ async function submitOrder(){
   const d = buildData();
   const code = btoa(JSON.stringify(d));
 
-  const payload = new URLSearchParams({
-    'form-name':              'pfizer-spiro-order',
-    'bot-field':              '',
-    'Congress_Manager':       d.f_congress_mgr,
-    'Congress_Manager_Email': d.f_congress_email,
-    'Therapeutic_Area':       d.f_therapy,
-    'Pfizer_Marketing_Email': d.f_pfz_mktg_email,
-    'Show_Name':              d.f_show_name,
-    'Location_Venue':         d.f_location,
-    'Ship_Type':              d.ship_type === 'booth' ? 'Direct to Event Booth' : d.ship_type === 'hotel' ? 'Ship to Hotel' : '',
-    'Delivery_Address':       d.f_delivery_addr,
-    'Open_Date':              fmtDate(d.f_open_date),
-    'Close_Date':             fmtDate(d.f_close_date),
-    'Exhibit_Size':           d.f_exhibit_size,
-    'Booth_Number':           d.f_booth,
-    'OnSite_Contact':         d.f_onsite_contact,
-    'Delivery_Date':          fmtDate(d.f_delivery_date),
-    'Notes':                  d.f_notes,
-    'Service_Type':           d.service_type,
-    'Primary_Product':        d.f_product || d.product_program,
-    'Product_Program_Details': d.product_program_details,
-    'Clinical_Internal_Name': d.clinical_internal_name,
-    'Assoc_Contact_Name':     d.assoc_contact_name,
-    'Assoc_Contact_Email':    d.assoc_contact_email,
-    'Assoc_Vendor_Name':      d.assoc_vendor_name,
-    'Badge_API_Available':    d.badge_api_available,
-    'Provider_Reg_Company':   d.provider_reg_company,
-    'API_Badge_Contact_Name': d.api_badge_contact_name,
-    'API_Badge_Contact_Email': d.api_badge_contact_email,
-    'API_Badge_Notes':        d.api_badge_notes,
-    'Qty_App_Licenses':       d.qty_app_licenses,
-    'Qty_Scanners':           d.qty_scanners,
-    'Import_Code':            code,
-  });
+  // POST JSON to the Cloudflare Worker — saves to the same KV the management dashboard reads.
+  // (Previous version posted form-urlencoded to '/' for Netlify Forms, but the page is served
+  //  from GitHub Pages, so submissions never reached any storage — orders silently disappeared.)
+  const payload = { ...d, import_code: code };
 
   try {
-    const res = await fetch('/', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: payload.toString() });
-    if(!res.ok) throw new Error('Network response not ok');
+    const res = await fetch(WORKER_URL + '/submit-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const detail = await res.text().catch(() => '');
+      throw new Error('Submit failed: HTTP ' + res.status + (detail ? ' — ' + detail : ''));
+    }
     showSuccess(d, code);
-  } catch(err) {
-    showSuccess(d, code);
+  } catch (err) {
+    console.error('Order submission failed:', err);
+    const btn = document.querySelector('.btn-submit');
+    btn.textContent = 'Submit Order';
+    btn.disabled = false;
+    alert('We could not submit your order. Please try again, or contact Reality Engineering and quote your import code:\n\n' + code);
   }
 }
 

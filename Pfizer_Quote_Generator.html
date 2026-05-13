@@ -254,8 +254,8 @@ textarea{height:72px;resize:vertical;}
         <input type="text" id="f_booth" placeholder="e.g. 3727" oninput="liveCalc()">
       </div>
       <div class="fgroup">
-        <label class="lbl">Pfizer Marketing Email</label>
-        <input type="email" id="f_pfz_mktg_email" placeholder="e.g. finley.hutchinson@pfizer.com" oninput="liveCalc()">
+        <label class="lbl">Report Recipient Email</label>
+        <input type="email" id="f_pfz_mktg_email" placeholder="Where final reports should be sent — e.g. finley.hutchinson@pfizer.com" oninput="liveCalc()">
       </div>
       <div class="fgroup">
         <label class="lbl">On-Site Contact (Name &amp; Phone) <span style="font-weight:400;color:#999;font-size:10px;text-transform:none;letter-spacing:0;">— Optional, can fill in later</span></label>
@@ -318,7 +318,7 @@ textarea{height:72px;resize:vertical;}
   <!-- ── STEP 2: STATION SCANNER CONFIGURATION ── -->
   <div class="card">
     <div class="card-title"><span class="step-badge">2</span>Station Scanner Configuration</div>
-    <p style="font-size:12px;color:#888;margin-bottom:16px;">Add each station in the booth. Each station gets its own survey type, brand/therapy tagging, scanner count, and market manager.</p>
+    <p style="font-size:12px;color:#888;margin-bottom:16px;">Add each station in the booth. Each station gets its own survey type, product/brand and therapy tagging, scanner count, and market manager.</p>
     <div id="stations-container"></div>
     <button class="add-station-btn" onclick="addStation()">＋ Add Station</button>
   </div>
@@ -609,7 +609,7 @@ textarea{height:72px;resize:vertical;}
         <td id="q_booth">—</td>
         <td class="qnote-area" colspan="2" rowspan="4" id="q_notes" style="padding:8px;"></td>
       </tr>
-      <tr><td class="qlbl">Pfizer Marketing Email</td><td id="q_pfz_mktg_email">—</td></tr>
+      <tr><td class="qlbl">Report Recipient Email</td><td id="q_pfz_mktg_email">—</td></tr>
       <tr><td class="qlbl">On-Site Contact</td><td id="q_onsite_contact">—</td></tr>
       <tr><td class="qlbl">Delivery Date</td><td id="q_delivery_date">—</td></tr>
       <tr id="q_badge_row" style="visibility:collapse;"><td class="qlbl">Badge Scannable?</td><td>for image capture</td></tr>
@@ -853,44 +853,61 @@ function calcPrices(){
   const needsSimpleSetup = selectedSvcs.has('qr');
 
   if(needsSetup){
-    // Collect brand → set of survey types from station rows
-    const brandSurveys = {}; // { brand: Set<survey> }
+    // Collect (brand, therapy) → ordered list of survey types from station rows.
+    // Brand-level setup is priced per distinct brand (preserves first-seen order),
+    // but the "New Configuration" $250 line items trigger when the same brand+therapy
+    // pair has more than one survey type — each additional survey is its own line.
+    const groups = {};        // { "brand||therapy": { brand, therapy, surveys: [] } }
+    const brandsOrder = [];   // distinct brands, first-seen order
     document.querySelectorAll('#stations-container .station-row').forEach(row => {
       const id = row.id.replace('station-row-','');
       const brandEl  = $id('st'+id+'_brand');
       const brandOth = $id('st'+id+'_brand_oth');
       const survEl   = $id('st'+id+'_survey');
       const survOth  = $id('st'+id+'_survey_oth');
-      const brand  = (brandEl?.value  === 'Other' ? (brandOth?.value||'Other') : (brandEl?.value||'')).trim();
-      const survey = (survEl?.value   === 'Other' ? (survOth?.value||'Other')  : (survEl?.value||'')).trim();
+      const therEl   = $id('st'+id+'_therapy');
+      const therOth  = $id('st'+id+'_therapy_oth');
+      const brand   = (brandEl?.value === 'Other' ? (brandOth?.value||'Other') : (brandEl?.value||'')).trim();
+      const survey  = (survEl?.value  === 'Other' ? (survOth?.value||'Other')  : (survEl?.value||'')).trim();
+      const therapy = (therEl?.value  === 'Other' ? (therOth?.value||'Other')  : (therEl?.value||'')).trim();
       if(!brand) return;
-      if(!brandSurveys[brand]) brandSurveys[brand] = new Set();
-      if(survey) brandSurveys[brand].add(survey);
+      if(!brandsOrder.includes(brand)) brandsOrder.push(brand);
+      const key = brand + '||' + therapy;
+      if(!groups[key]) groups[key] = { brand, therapy, surveys: [] };
+      if(survey && !groups[key].surveys.includes(survey)) groups[key].surveys.push(survey);
     });
 
-    const brands = Object.keys(brandSurveys);
     const setupPrice = notov ? 1650 : 2150; // first brand setup ($2,150; −$500 no-TOV = $1,650)
     const extraSetupPrice = notov ? 1050 : 1550; // additional brand ($1,550; −$500 no-TOV)
 
-    if(brands.length === 0){
+    if(brandsOrder.length === 0){
       // No stations yet — show a single setup line as placeholder
       lines.push({desc:setupDesc, qty:null, unit:null, total:setupPrice});
       ccBase += setupPrice;
     } else {
-      brands.forEach((brand, idx) => {
+      brandsOrder.forEach((brand, idx) => {
         const price = idx === 0 ? setupPrice : extraSetupPrice;
         const label = idx === 0 ? 'Lead Service Event Set-up' : 'Extra Event Set-up (Additional Brand)';
         const brandTag = brand ? ` — <em>${brand}</em>` : '';
         lines.push({desc:`<strong>${label}${brandTag}:</strong> ${idx===0 ? setupDesc.replace('Lead Service Event Set-up: ','') : 'Symposia Survey, Post Show Report, Export, Compliance Tracking, CDW delivery — additional brand tagging in Pfizer Data Warehouse.'}`, qty:null, unit:null, total:price});
         ccBase += price;
 
-        // Added Config: each survey type beyond the first costs $250
-        const surveys = Array.from(brandSurveys[brand]);
-        if(surveys.length > 1){
-          const addedConfigs = surveys.length - 1;
-          lines.push({desc:`<strong>Added Configuration${addedConfigs>1?'s':''} — ${brand}:</strong> Additional survey type${addedConfigs>1?'s':''} (${surveys.slice(1).join(', ')})`, qty:addedConfigs, unit:250, total:addedConfigs*250});
-          ccBase += addedConfigs*250;
-        }
+        // New Configuration: for each (brand, therapy) group under this brand,
+        // every survey type beyond the first is a separate $250 line item.
+        Object.values(groups)
+          .filter(g => g.brand === brand)
+          .forEach(g => {
+            const therapyTag = g.therapy ? ` · ${g.therapy}` : '';
+            g.surveys.slice(1).forEach(surveyName => {
+              lines.push({
+                desc: `<strong>New Configuration "${surveyName}":</strong> Additional survey type for ${brand}${therapyTag}`,
+                qty: 1,
+                unit: 250,
+                total: 250
+              });
+              ccBase += 250;
+            });
+          });
       });
     }
   } else if(needsSimpleSetup){
@@ -1567,11 +1584,11 @@ function addStation(){
     <input type="text" id="st${n}_therapy_oth" placeholder="Describe therapy…" style="display:none;margin-top:6px;">
   </div>
   <div class="fgroup">
-    <label class="lbl">Brand</label>
+    <label class="lbl">Product/Brand</label>
     <select id="st${n}_brand" onchange="stOtherToggle(${n},'brand',this);stUpdateTag(${n});liveCalc()">
       <option value="">— Select therapy first —</option>
     </select>
-    <input type="text" id="st${n}_brand_oth" placeholder="Describe brand…" style="display:none;margin-top:6px;" oninput="stUpdateTag(${n});liveCalc()">
+    <input type="text" id="st${n}_brand_oth" placeholder="Describe product/brand…" style="display:none;margin-top:6px;" oninput="stUpdateTag(${n});liveCalc()">
   </div>
   <div class="fgroup">
     <label class="lbl" style="font-size:10px;">Scanners<br><span style="color:#888;font-weight:400;">No Data</span></label>
@@ -1628,7 +1645,7 @@ function stTherapyChange(n){
   if(!bSel) return;
 
   if(tv && THERAPY_BRANDS[tv]){
-    bSel.innerHTML = `<option value="">— Select brand —</option>` +
+    bSel.innerHTML = `<option value="">— Select product/brand —</option>` +
       THERAPY_BRANDS[tv].map(b => `<option value="${b}">${b}</option>`).join('');
     if(bOth) bOth.style.display = 'none';
   } else if(tv === 'Other'){
