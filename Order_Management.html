@@ -59,10 +59,6 @@ tr.selected td{background:#e8f0fe;}
 .detail-field span{font-size:12px;color:#222;word-break:break-word;}
 .detail-field span.empty{color:#bbb;font-style:italic;}
 .detail-2col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.import-code-box{font-family:monospace;font-size:9px;background:#f5f5f5;border:1px solid #ddd;border-radius:4px;padding:8px;word-break:break-all;max-height:60px;overflow-y:auto;color:#555;}
-.copy-small{padding:4px 10px;background:#3498db;color:#fff;border:none;border-radius:4px;font-size:10px;cursor:pointer;font-weight:700;}
-.copy-small:hover{background:#2980b9;}
-
 /* ── STATUS ACTIONS ── */
 .status-actions{flex-shrink:0;padding:14px 16px;border-top:1px solid #eee;background:#fafafa;}
 .status-actions-title{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
@@ -583,11 +579,6 @@ function openDetail(orderId){
       </div>
     </div>
 
-    ${o.import_code ? `
-    <div class="detail-section">
-      <div class="detail-section-title">Import Code &nbsp;<button class="copy-small" onclick="copyImportCode('${orderId}')">Copy</button></div>
-      <div class="import-code-box" id="ic-${orderId}">${o.import_code}</div>
-    </div>` : ''}
   `;
 
   // Build status action buttons
@@ -653,16 +644,6 @@ async function updateStatus(orderId, newStatus){
   } catch(err) {
     alert('Failed to update status: ' + err.message);
   }
-}
-
-function copyImportCode(orderId){
-  const o = allOrders.find(x => x.order_id === orderId);
-  if(!o || !o.import_code) return;
-  navigator.clipboard.writeText(o.import_code).then(() => {
-    const btn = event.target;
-    btn.textContent = 'Copied!';
-    setTimeout(() => btn.textContent = 'Copy', 1500);
-  });
 }
 
 function closeDetail(){
