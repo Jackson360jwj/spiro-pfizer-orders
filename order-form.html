@@ -159,11 +159,12 @@ textarea{height:72px;resize:vertical;}
     <div class="card">
       <div class="card-title"><span class="step-badge">1</span>Service Type <span class="req" style="font-size:11px;font-weight:400;">&nbsp;* select all that apply</span></div>
       <div class="service-type-group" id="service_type_group">
-        <div class="svc-type-check" id="svc_mobile_app" onclick="toggleServiceType('Mobile App', this)">📱 Mobile App</div>
         <div class="svc-type-check" id="svc_scanner" onclick="toggleServiceType('Scanner', this)">📷 Scanner</div>
+        <div class="svc-type-check" id="svc_mobile_app" onclick="toggleServiceType('Mobile App', this)">📱 Mobile App</div>
         <div class="svc-type-check" id="svc_qr_code" onclick="toggleServiceType('QR Code', this)">🔲 QR Code</div>
         <div class="svc-type-check" id="svc_image_capture" onclick="toggleServiceType('Image Capture', this)">📸 Image Capture</div>
         <div class="svc-type-check" id="svc_list_import" onclick="toggleServiceType('List Import', this)">📋 List Import</div>
+        <div class="svc-type-check" id="svc_internet" onclick="toggleServiceType('Internet', this)" title="Wireless internet for 20x20 space up to 10 connections.">📶 Internet</div>
       </div>
       <div class="svc-note">Select one or more — customers may order multiple service types for the same event.</div>
 
@@ -178,6 +179,11 @@ textarea{height:72px;resize:vertical;}
             <label class="lbl">Number of Scanners <span class="req">*</span></label>
             <input type="number" id="f_qty_scanner" placeholder="e.g. 3" min="1">
             <p style="margin:6px 0 0;font-size:12px;color:#555;">📦 Shipping &amp; Handling ($250) will be included in your quote for scanner orders.</p>
+          </div>
+          <div class="fgroup fw" id="internet_info_wrap" style="display:none;">
+            <p style="margin:0;font-size:12px;color:#1a3a5c;background:#eef2f7;padding:10px 14px;border-radius:6px;">
+              📶 <strong>Internet</strong> ($1,550) — Wireless internet for 20x20 space up to 10 connections.
+            </p>
           </div>
         </div>
       </div>
@@ -599,13 +605,15 @@ function toggleServiceType(type, el){
 }
 
 function updateQuantityFields(){
-  const hasApp     = selectedServiceTypes.has('Mobile App');
-  const hasScanner = selectedServiceTypes.has('Scanner');
-  const showAny    = hasApp || hasScanner;
+  const hasApp      = selectedServiceTypes.has('Mobile App');
+  const hasScanner  = selectedServiceTypes.has('Scanner');
+  const hasInternet = selectedServiceTypes.has('Internet');
+  const showAny     = hasApp || hasScanner || hasInternet;
 
-  $id('svc_quantities').style.display  = showAny     ? 'block' : 'none';
-  $id('qty_app_wrap').style.display     = hasApp      ? 'block' : 'none';
-  $id('qty_scanner_wrap').style.display = hasScanner  ? 'block' : 'none';
+  $id('svc_quantities').style.display    = showAny     ? 'block' : 'none';
+  $id('qty_app_wrap').style.display       = hasApp      ? 'block' : 'none';
+  $id('qty_scanner_wrap').style.display   = hasScanner  ? 'block' : 'none';
+  $id('internet_info_wrap').style.display = hasInternet ? 'block' : 'none';
 
   // Clear values when hidden
   if(!hasApp)     $id('f_qty_app').value = '';
@@ -613,15 +621,17 @@ function updateQuantityFields(){
 }
 
 // Shipping fields (delivery address, exhibit size, booth #, on-site contact, delivery date)
-// are only relevant when physical kit ships — i.e., when Scanner is selected. Mobile App,
-// QR Code, Image Capture, and List Import don't ship hardware, so we hide and clear those
-// fields to keep the form lean and prevent stale data from being submitted.
+// show when physical kit ships (Scanner) OR when on-site infrastructure is needed (Internet —
+// the install team needs the booth number and on-site contact). Mobile App, QR Code, Image
+// Capture, and List Import don't need any of this, so the section is hidden and cleared.
 function updateShippingVisibility(){
-  const hasScanner = selectedServiceTypes.has('Scanner');
+  const hasScanner  = selectedServiceTypes.has('Scanner');
+  const hasInternet = selectedServiceTypes.has('Internet');
+  const showShipping = hasScanner || hasInternet;
   document.querySelectorAll('.shipping-field').forEach(el => {
-    el.style.display = hasScanner ? '' : 'none';
+    el.style.display = showShipping ? '' : 'none';
   });
-  if (!hasScanner) {
+  if (!showShipping) {
     ['f_delivery_addr','f_exhibit_size','f_booth','f_onsite_contact','f_delivery_date']
       .forEach(id => { const el = $id(id); if (el) { el.value = ''; el.classList.remove('error'); } });
     const sb = $id('ship_booth'); if (sb) sb.checked = false;
@@ -680,7 +690,26 @@ function validate(){
     const el = $id('f_qty_scanner');
     el.classList.remove('error');
     if(!el.value.trim()){ el.classList.add('error'); ok = false; missing.push('Scanner Quantity'); }
-    // Shipping fields are visible — On-Site Contact is required for scanner deliveries
+  }
+
+  // Shipping is required whenever the shipping/on-site panel is visible —
+  // that's Scanner (kit delivery) OR Internet (router/AP ship). Customer must
+  // pick a ship-to target (booth or hotel), give us an address, and an on-site
+  // contact so we know who to coordinate the install with.
+  if(selectedServiceTypes.has('Scanner') || selectedServiceTypes.has('Internet')){
+    const shipType = radioVal('ship_type');
+    if(!shipType){
+      ok = false; missing.push('Ship To (Direct to Booth or Ship to Hotel)');
+      const sb = $id('ship_booth_lbl'); if(sb) sb.style.outline = '2px solid #e74c3c';
+      const sh = $id('ship_hotel_lbl'); if(sh) sh.style.outline = '2px solid #e74c3c';
+    } else {
+      const sb = $id('ship_booth_lbl'); if(sb) sb.style.outline = '';
+      const sh = $id('ship_hotel_lbl'); if(sh) sh.style.outline = '';
+    }
+    const addr = $id('f_delivery_addr');
+    addr.classList.remove('error');
+    if(!addr.value.trim()){ addr.classList.add('error'); ok = false; missing.push('Delivery Address'); }
+
     const onsite = $id('f_onsite_contact');
     onsite.classList.remove('error');
     if(!onsite.value.trim()){ onsite.classList.add('error'); ok = false; missing.push('On-Site Contact'); }

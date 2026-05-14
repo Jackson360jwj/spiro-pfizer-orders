@@ -933,14 +933,28 @@ function calcPrices(){
   }
 
   // ── Shipping & Handling ──
-  if(selectedSvcs.has('scanner')){
+  // Triggers any time there's physical kit to send: scanners ($250), internet
+  // router/AP ($550), or both together ($550 — same shipment). Inputs live in
+  // the scanner section of the DOM but exist even when the scanner tab is
+  // hidden, so this works for internet-only orders too.
+  {
     const qInternet = parseInt(val('internet_qty'))||0;
     const qNoData   = parseInt(val('scanner_qty_nodata'))||0;
     const qData     = parseInt(val('scanner_qty_data'))||0;
-    const hasScanner = (qNoData + qData) > 0;
-    if(hasScanner || qInternet > 0){
-      const shCost = qInternet > 0 ? 550 : 250;
-      const shDesc = qInternet > 0 ? 'Shipping and Handling — Scanners and Internet' : 'Shipping and Handling — Scanners';
+    const hasScanner  = (qNoData + qData) > 0;
+    const hasInternet = qInternet > 0;
+    if(hasScanner || hasInternet){
+      let shCost, shDesc;
+      if(hasScanner && hasInternet){
+        shCost = 550;
+        shDesc = 'Shipping and Handling — Scanners and Internet';
+      } else if(hasInternet){
+        shCost = 550;
+        shDesc = 'Shipping and Handling — Internet';
+      } else {
+        shCost = 250;
+        shDesc = 'Shipping and Handling — Scanners';
+      }
       lines.push({desc:`<strong>${shDesc}</strong>`, qty:null, unit:null, total:shCost});
       ccBase += shCost;
     }
@@ -1166,19 +1180,23 @@ function doImportObject(d, alreadyInKV){
   if($id('f_product') && prod) $id('f_product').value = prod;
 
   // Service type — new form sends comma-separated string e.g. "Mobile App, Scanner"
-  // Map label → internal key
+  // Map label → internal key. Internet doesn't have its own tab in the QG —
+  // its quantity input lives inside the scanner section — so when "Internet"
+  // appears we open the scanner tab too and (below) seed internet_qty=1.
   const svcLabelMap = {
     'Mobile App':'app', 'Scanner':'scanner', 'QR Code':'qr',
-    'Image Capture':'image', 'List Import':'list'
+    'Image Capture':'image', 'List Import':'list',
+    'Internet':'scanner'
   };
   const svcString = d.service_type || '';
+  const svcLabels = svcString.split(',').map(s => s.trim()).filter(Boolean);
 
   // Reset all tabs first
   selectedSvcs.clear();
   document.querySelectorAll('.svc-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.svc-section').forEach(s => s.style.display = 'none');
 
-  svcString.split(',').map(s => s.trim()).forEach(label => {
+  svcLabels.forEach(label => {
     const key = svcLabelMap[label];
     if(!key) return;
     selectedSvcs.add(key);
@@ -1187,6 +1205,9 @@ function doImportObject(d, alreadyInKV){
     const sec = $id('svc_'+key);
     if(sec) sec.style.display = 'block';
   });
+
+  // Internet flag — remember it so the quantity loop below can seed internet_qty
+  const orderHasInternet = svcLabels.includes('Internet');
 
   // Legacy: handle old 'svc' field
   if(!svcString && d.svc){
@@ -1202,7 +1223,8 @@ function doImportObject(d, alreadyInKV){
   if($id('app_qty'))            $id('app_qty').value            = d.app_qty            || d.qty_app_licenses || 0;
   if($id('scanner_qty_nodata')) $id('scanner_qty_nodata').value = d.scanner_qty_nodata || d.qty_scanners || 0;
   if($id('scanner_qty_data'))   $id('scanner_qty_data').value   = d.scanner_qty_data   || 0;
-  if($id('internet_qty'))       $id('internet_qty').value       = d.internet_qty        || 0;
+  // If the order requested Internet but no explicit internet_qty was saved, default to 1.
+  if($id('internet_qty'))       $id('internet_qty').value       = d.internet_qty        || (orderHasInternet ? 1 : 0);
   if($id('qr_qty'))             $id('qr_qty').value             = d.qr_qty             || 0;
   if($id('img_qty'))            $id('img_qty').value            = d.img_qty            || 0;
   if($id('list_qty'))           $id('list_qty').value           = d.list_qty           || 0;
