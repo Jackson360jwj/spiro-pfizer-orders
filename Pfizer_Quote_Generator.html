@@ -1541,16 +1541,46 @@ const SURVEY_TYPES = [
   'Opt In Only','TOV Capture','Other'
 ];
 
-const THERAPY_LIST = ['I&I','Derm','Vaccines','Migraine','Cardio','SINJ','Other'];
+// Therapeutic areas (current Pfizer commercial buckets) — empty buckets dropped.
+const THERAPY_LIST = [
+  'Anti Viral',
+  'Cardiovascular / Metabolics',
+  'Chronic Diseases (Rheum)',
+  'Dermatology',
+  'Endocrine',
+  'Hemophilia',
+  'Hospital',
+  'Inflammation',
+  'Migraines',
+  'Oncology',
+  'Rare Diseases',
+  'Vaccines',
+  "Women's Health",
+  'Alternative Site',
+  'Sterile Injectables',
+  'Other'
+];
 
+// Brand list per therapy. Selecting a therapy filters the Product/Brand dropdown
+// to only the brands that live in that bucket. "Above Brand" / "Unbranded" /
+// "Other" are always available as escape hatches.
 const THERAPY_BRANDS = {
-  'I&I':      ['Velsipity','Xeljanz','Above Brand','Unbranded','Other'],
-  'Derm':     ['Cibinqo','Litfulo','Above Brand','Unbranded','Other'],
-  'Vaccines': ['Paxlovid','Comirnaty','Prevnar 20','Abrysvo','Vyndamax','Above Brand','Unbranded','Other'],
-  'Migraine': ['Nurtec','Zavzpret','IGIV','Above Brand','Unbranded','Other'],
-  'Cardio':   ['Vyndamax','Above Brand','Unbranded','Other'],
-  'SINJ':     ['SINJ','Above Brand','Unbranded','Other'],
-  'Other':    ['Other'],
+  'Anti Viral':                  ['Lucira by Pfizer','Paxlovid','Above Brand','Unbranded','Other'],
+  'Cardiovascular / Metabolics': ['Eliquis','Vyndamax','Vyndaqel','Above Brand','Unbranded','Other'],
+  'Chronic Diseases (Rheum)':    ['Xeljanz','Above Brand','Unbranded','Other'],
+  'Dermatology':                 ['Cibinqo','Eucrisa','Litfulo','Above Brand','Unbranded','Other'],
+  'Endocrine':                   ['Genotropin','Somavert','Above Brand','Unbranded','Other'],
+  'Hemophilia':                  ['Hympavzi','Above Brand','Unbranded','Other'],
+  'Hospital':                    ['Octagam','Panzyga','Thrombin','Above Brand','Unbranded','Other'],
+  'Inflammation':                ['Velsipity','Above Brand','Unbranded','Other'],
+  'Migraines':                   ['Nurtec','Zavzpret','Above Brand','Unbranded','Other'],
+  'Oncology':                    ['Adcetris','Bavencio','Besponsa','Biosimilars','Braftovi','Elranatamab','Ibrance','Inlyta','Lorbrena','Padcev','Raylumis','Talzenna','Tivdak','Tukysa','Xtandi','Above Brand','Unbranded','Other'],
+  'Rare Diseases':               ['Cutaquig','Oxbryta','Above Brand','Unbranded','Other'],
+  'Vaccines':                    ['Abrysvo','Comirnaty','Penbraya','Prevnar 20','Ticovac','Trumenba','Above Brand','Unbranded','Other'],
+  "Women's Health":              ['Duavee','Above Brand','Unbranded','Other'],
+  'Alternative Site':            ['Unbranded APC','Above Brand','Unbranded','Other'],
+  'Sterile Injectables':         ['Nexject','SI Product A','Above Brand','Unbranded','Other'],
+  'Other':                       ['Other'],
 };
 
 function sOpts(arr, ph){
