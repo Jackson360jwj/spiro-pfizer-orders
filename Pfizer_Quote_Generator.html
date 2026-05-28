@@ -254,7 +254,7 @@ textarea{height:72px;resize:vertical;}
         <input type="email" id="f_pfz_mktg_email" placeholder="Where final reports should be sent — e.g. finley.hutchinson@pfizer.com" oninput="liveCalc()">
       </div>
       <div class="fgroup">
-        <label class="lbl">On-Site Contact (Name &amp; Phone) <span style="font-weight:400;color:#999;font-size:10px;text-transform:none;letter-spacing:0;">— Optional, can fill in later</span></label>
+        <label class="lbl">On-Site Contact (Name &amp; Phone)</label>
         <input type="text" id="f_onsite_contact" placeholder="e.g. Rob Loughran 404-717-3985" oninput="liveCalc()">
       </div>
       <div class="fgroup">
@@ -376,8 +376,8 @@ textarea{height:72px;resize:vertical;}
     <!-- SCANNER -->
     <div id="svc_scanner" class="svc-section">
       <div class="svc-row">
-        <div><div class="svc-name">RE:nvent Mobile Scanner — <em>Without Data</em></div><div class="svc-desc">iPhone Scanner, badge scan only — no attendee data lookup</div></div>
-        <span class="svc-price">$400 / unit</span>
+        <div><div class="svc-name">Booth Scanner — <em>No Data Service</em></div><div class="svc-desc">iPhone no data service — badge scan only, no attendee data lookup</div></div>
+        <span class="svc-price">$350 / unit</span>
         <div class="qty-wrap">
           <button class="qbtn" onclick="adj('scanner_qty_nodata',-1)">−</button>
           <input class="qinput" type="number" id="scanner_qty_nodata" value="0" min="0" oninput="liveCalc()">
@@ -385,7 +385,7 @@ textarea{height:72px;resize:vertical;}
         </div>
       </div>
       <div class="svc-row">
-        <div><div class="svc-name">RE:nvent Mobile Scanner — <em>With Data</em></div><div class="svc-desc">iPhone Scanner with attendee data lookup and matching</div></div>
+        <div><div class="svc-name">Booth Scanner — <em>With Data</em></div><div class="svc-desc">iPhone scanner with attendee data lookup and matching</div></div>
         <span class="svc-price">$450 / unit</span>
         <div class="qty-wrap">
           <button class="qbtn" onclick="adj('scanner_qty_data',-1)">−</button>
@@ -404,8 +404,8 @@ textarea{height:72px;resize:vertical;}
       </div>
       <div class="svc-row" style="background:#fff8e1;border:1px solid #f9a825;">
         <div>
-          <div class="svc-name">API Connection Passthrough <span style="color:#e67e22;font-size:11px;">(if required)</span></div>
-          <div class="svc-desc" style="color:#c0392b;">Event venue API cost — estimate shown. Katherine to verify exact amount before finalizing.</div>
+          <div class="svc-name">Badge Dev Kit API <span style="color:#e67e22;font-size:11px;">(if required)</span></div>
+          <div class="svc-desc" style="color:#c0392b;">Pass through cost for API license — estimate shown. Verify exact amount before finalizing.</div>
         </div>
         <div style="display:flex;align-items:center;gap:6px;">
           <label class="opt" style="margin:0;"><input type="checkbox" id="opt_api_scanner" onchange="liveCalc()"> Include</label>
@@ -437,7 +437,7 @@ textarea{height:72px;resize:vertical;}
     <!-- IMAGE CAPTURE -->
     <div id="svc_image" class="svc-section">
       <div class="svc-row">
-        <div><div class="svc-name">RE:nvent Mobile App</div><div class="svc-desc">Custom iPhone or Android setup instructions to primary TD</div></div>
+        <div><div class="svc-name">APP — RE:nvent Mobile App</div><div class="svc-desc">RE:nvent Mobile App: Custom iPhone or Android set up instructions to primary TD</div></div>
         <span class="svc-price">$300 / unit</span>
         <div class="qty-wrap">
           <button class="qbtn" onclick="adj('img_qty',-1)">−</button>
@@ -458,7 +458,6 @@ textarea{height:72px;resize:vertical;}
       <div class="divider"></div>
       <label class="lbl">Add-ons</label>
       <div class="opt-grid">
-        <label class="opt"><input type="checkbox" id="opt_api_img" onchange="liveCalc()"> API Connection Passthrough ($500)</label>
         <label class="opt"><input type="checkbox" id="opt_prereg_img" onchange="liveCalc()"> Pre-Registration List Import into App ($500)</label>
         <label class="opt"><input type="checkbox" id="opt_expedite_img" onchange="liveCalc()"> Expedite Service – under 5 business days ($500)</label>
       </div>
@@ -469,10 +468,10 @@ textarea{height:72px;resize:vertical;}
       <div class="alert alert-info">ℹ️ <strong>Note:</strong> No TD Contact needed for List Import — the client will not be using RE scanning services.</div>
       <div class="svc-row green">
         <div>
-          <div class="svc-name">List Import Service</div>
-          <div class="svc-desc">Import attendees from show-provided scanners for compliance tracking, customer ID matching, summary report and CDW delivery</div>
+          <div class="svc-name">List Import</div>
+          <div class="svc-desc">Import attendee contact list for final reporting and customer matching</div>
         </div>
-        <span class="svc-price">$1,250 flat</span>
+        <span class="svc-price">$750 flat</span>
         <span style="font-size:11px;color:#27ae60;font-weight:700">Auto</span>
       </div>
       <div class="divider"></div>
@@ -609,6 +608,38 @@ textarea{height:72px;resize:vertical;}
       <tr><td class="qlbl">Delivery Date</td><td id="q_delivery_date">—</td></tr>
       <tr id="q_badge_row" style="visibility:collapse;"><td class="qlbl">Badge Scannable?</td><td>for image capture</td></tr>
 
+    </table>
+
+    <!-- Station Scanner Configuration table (injected by buildQuote) -->
+    <div id="q_stations_wrap" style="display:none;margin-top:10px;margin-bottom:0;">
+      <table class="qtable">
+        <tr>
+          <td colspan="7" class="qhbar">STATION SCANNER CONFIGURATION</td>
+        </tr>
+        <tr style="background:#f0f4f8;">
+          <th style="font-size:10px;font-weight:700;color:#1a3a5c;padding:5px 8px;border:1px solid #c8c8c8;text-align:left;">Station</th>
+          <th style="font-size:10px;font-weight:700;color:#1a3a5c;padding:5px 8px;border:1px solid #c8c8c8;text-align:left;">Survey Type</th>
+          <th style="font-size:10px;font-weight:700;color:#1a3a5c;padding:5px 8px;border:1px solid #c8c8c8;text-align:left;">Therapy</th>
+          <th style="font-size:10px;font-weight:700;color:#1a3a5c;padding:5px 8px;border:1px solid #c8c8c8;text-align:left;">Product / Brand / Drug</th>
+          <th style="font-size:10px;font-weight:700;color:#1a3a5c;padding:5px 8px;border:1px solid #c8c8c8;text-align:center;">Scanners (No Data)</th>
+          <th style="font-size:10px;font-weight:700;color:#1a3a5c;padding:5px 8px;border:1px solid #c8c8c8;text-align:center;">Scanners (W/ Data)</th>
+          <th style="font-size:10px;font-weight:700;color:#1a3a5c;padding:5px 8px;border:1px solid #c8c8c8;text-align:center;">Apps</th>
+        </tr>
+        <tbody id="q_stations_tbody"></tbody>
+        <tr id="q_stations_mgr_row" style="display:none;">
+          <td colspan="7" style="font-size:10px;color:#555;padding:4px 8px;border:1px solid #c8c8c8;background:#fafafa;" id="q_stations_mgr_cell"></td>
+        </tr>
+      </table>
+    </div>
+
+    <table class="qtable" style="margin-top:10px;">
+      <colgroup>
+        <col style="width:32%">
+        <col style="width:28%">
+        <col style="width:12%">
+        <col style="width:28%">
+      </colgroup>
+
       <!-- SERVICES header -->
       <tr>
         <td colspan="2" class="qsvc-hdr">SERVICES</td>
@@ -730,7 +761,7 @@ function onTovToggle(){
   if(yesCard){ yesCard.style.borderColor = isNo ? '#ddd' : '#1a3a5c'; yesCard.style.background = isNo ? '' : '#f0f4f8'; }
   if(noCard) { noCard.style.borderColor  = isNo ? '#c0392b' : '#ddd'; noCard.style.background  = isNo ? '#fff5f5' : ''; }
 }
-function isCC(){ return true; } // Pfizer/SPIRO always pays by credit card
+function isCC(){ return false; } // Pfizer/SPIRO — no CC processing fee on quotes
 function adj(id, delta){
   const el = $id(id); if(!el) return;
   el.value = Math.max(0, (parseInt(el.value)||0) + delta);
@@ -793,10 +824,10 @@ function calcPrices(){
   const lines = [];
 
   const setupDesc = notov
-    ? 'Lead Service Event Set-up: Symposia Survey, Post Show Summary Report and Export sent to Pfizer project owner. Manage DLU Compliance Data Transfer of Value for disclosure reporting for these (13) countries: Brazil, Colombia, Croatia, France, Italy, Netherlands, Pakistan, Philippines, Portugal, Saudi Arabia, Slovakia, Turkey, United States. Pfizer Customer Data Match Service run 3x weekly. For No TOV needed (−$500).'
-    : 'Lead Service Event Set-up: Symposia Survey, Post Show Summary Report and Export sent to Pfizer project owner. Manage DLU Compliance Data Transfer of Value for disclosure reporting for these (13) countries: Brazil, Colombia, Croatia, France, Italy, Netherlands, Pakistan, Philippines, Portugal, Saudi Arabia, Slovakia, Turkey, United States. Pfizer Customer Data Match Service run 3x weekly.';
+    ? 'Event Set-up, Badge Integration, Remote Support, Post Pfizer Customer match + NPI Matching. Executive summary report delivered 5 business days after receipt of data. Access to full data export provided to brand manager as requested. Deliver lead records and all required data to Pfizer MDM Data Warehouse. (No TOV − $500)'
+    : 'Event Set-up, Badge Integration, Remote Support, Post Pfizer Customer match + NPI Matching. Executive summary report delivered 5 business days after receipt of data. Access to full data export provided to brand manager as requested. Deliver lead records and all required data to Pfizer MDM Data Warehouse.';
 
-  const setupSimple = 'Event Set-up: Symposia Survey, Post Show Summary Report and Export Access sent to Brand Manager. Pfizer Customer Data Match Service run Thursdays therefore final reports sent ASAP after match is run unless otherwise requested. Manage DLU Compliance Data Transfer of Value for Monthly Disclosure reporting.';
+  const setupSimple = 'Event Set-up, Badge Integration, Remote Support, Post Pfizer Customer match + NPI Matching. Executive summary report delivered 5 business days after receipt of data. Access to full data export provided to brand manager as requested. Deliver lead records and all required data to Pfizer MDM Data Warehouse.';
 
   // ── Per-unit hardware lines ──
   if(selectedSvcs.has('app')){
@@ -809,11 +840,11 @@ function calcPrices(){
     const qNoData = parseInt(val('scanner_qty_nodata'))||0;
     const qData   = parseInt(val('scanner_qty_data'))||0;
     if(qNoData > 0){
-      lines.push({desc:'<strong>RE:nvent Mobile Scanner — Without Data:</strong> iPhone Scanner, badge scan only', qty:qNoData, unit:400, total:qNoData*400});
-      ccBase += qNoData*400;
+      lines.push({desc:'<strong>Booth Scanner:</strong> iPhone no data service', qty:qNoData, unit:350, total:qNoData*350});
+      ccBase += qNoData*350;
     }
     if(qData > 0){
-      lines.push({desc:'<strong>RE:nvent Mobile Scanner — With Data:</strong> iPhone Scanner with attendee data lookup', qty:qData, unit:450, total:qData*450});
+      lines.push({desc:'<strong>Booth Scanner:</strong> iPhone scanner with attendee data lookup and matching', qty:qData, unit:450, total:qData*450});
       ccBase += qData*450;
     }
     // Internet/PAX routers
@@ -832,15 +863,15 @@ function calcPrices(){
 
   if(selectedSvcs.has('image')){
     const q = parseInt(val('img_qty'))||0;
-    lines.push({desc:'<strong>RE:nvent Mobile App:</strong> Custom iPhone or Android set up instructions to primary TD',qty:q,unit:350,total:q*350});
-    ccBase += q*350;
+    lines.push({desc:'<strong>APP:</strong> RE:nvent Mobile App: Custom iPhone or Android set up instructions to primary TD',qty:q,unit:300,total:q*300});
+    ccBase += q*300;
     lines.push({desc:'<strong>Badge Image transcription</strong> and reg list match if available',qty:null,unit:null,total:650});
     ccBase += 650;
   }
 
   if(selectedSvcs.has('list')){
-    lines.push({desc:'<strong>List Import:</strong> RE will import scanned attendees from show-provided scanners for compliance tracking, Pfizer customer ID matching, summary report and CDW delivery.',qty:null,unit:null,total:1250});
-    ccBase += 1250;
+    lines.push({desc:'<strong>List Import:</strong> Import attendee contact list for final reporting and customer matching.',qty:null,unit:null,total:750});
+    ccBase += 750;
   }
 
   // ── SPIRO Event Set-up: driven by distinct brands in station rows ──
@@ -926,11 +957,9 @@ function calcPrices(){
   if(selectedSvcs.has('scanner') && $id('opt_api_scanner') && $id('opt_api_scanner').checked){
     const scanRaw     = $id('scanner_api_cost') ? $id('scanner_api_cost').value.trim() : '';
     const scanApiCost = (scanRaw === '' || isNaN(parseFloat(scanRaw))) ? 500 : parseFloat(scanRaw);
-    lines.push({desc:'API Connection Passthrough',qty:null,unit:null,total:scanApiCost}); api+=scanApiCost;
+    lines.push({desc:'<strong>Badge Dev Kit API:</strong> Pass through cost for API license',qty:0.3,unit:1250,total:scanApiCost}); api+=scanApiCost;
   }
-  if(selectedSvcs.has('image') && $id('opt_api_img') && $id('opt_api_img').checked){
-    lines.push({desc:'API connection cost passthrough',qty:null,unit:null,total:500}); api+=500;
-  }
+  // Image Capture does not use API Connection passthrough for Pfizer/SPIRO orders
 
   // ── Shipping & Handling ──
   // Triggers any time there's physical kit to send: scanners ($250), internet
@@ -947,13 +976,13 @@ function calcPrices(){
       let shCost, shDesc;
       if(hasScanner && hasInternet){
         shCost = 550;
-        shDesc = 'Shipping and Handling — Scanners and Internet';
+        shDesc = 'Shipping &amp; Handling — Estimated cost for pack, track and roundtrip FedEx shipping (Scanners + Internet)';
       } else if(hasInternet){
         shCost = 550;
-        shDesc = 'Shipping and Handling — Internet';
+        shDesc = 'Shipping &amp; Handling — Estimated cost for pack, track and roundtrip FedEx shipping (Internet)';
       } else {
-        shCost = 250;
-        shDesc = 'Shipping and Handling — Scanners';
+        shCost = 200;
+        shDesc = 'Shipping &amp; Handling — Estimated cost for pack, track and roundtrip FedEx shipping';
       }
       lines.push({desc:`<strong>${shDesc}</strong>`, qty:null, unit:null, total:shCost});
       ccBase += shCost;
@@ -985,7 +1014,7 @@ function liveCalc(){
   updateSharedOpts();
   const {grand, ccFee} = calcPrices();
   $id('total_amt').textContent = fmt(grand);
-  $id('total_note').textContent = isCC() ? '(includes 3% credit card processing fee)' : '';
+  $id('total_note').textContent = '';
 }
 
 // ── Build & render the quote ──
@@ -1015,6 +1044,65 @@ function buildQuote(){
   $id('q_onsite_contact').textContent = val('f_onsite_contact')  || '—';
   $id('q_delivery_date').textContent  = fmtDate(val('f_delivery_date'));
   $id('q_notes').textContent       = val('f_notes')          || '';
+
+  // Station Scanner Configuration table
+  const stationRows = document.querySelectorAll('#stations-container .station-row');
+  const stationsTbody = $id('q_stations_tbody');
+  stationsTbody.innerHTML = '';
+  const mgrEmails = [];
+
+  if(stationRows.length > 0){
+    stationRows.forEach((row, i) => {
+      const id = row.id.replace('station-row-', '');
+      const getStVal = (field) => {
+        const sel = $id('st' + id + '_' + field);
+        const oth = $id('st' + id + '_' + field + '_oth');
+        if(!sel) return '—';
+        return (sel.value === 'Other' && oth && oth.value.trim()) ? oth.value.trim() : (sel.value || '—');
+      };
+      const getNumVal = (field) => {
+        const el = $id('st' + id + '_' + field);
+        return el ? (parseInt(el.value) || 0) : 0;
+      };
+
+      const stName   = getStVal('name');
+      const survey   = getStVal('survey');
+      const therapy  = getStVal('therapy');
+      const brand    = getStVal('brand');
+      const noData   = getNumVal('scanners_nodata');
+      const withData = getNumVal('scanners_data');
+      const apps     = getNumVal('apps');
+      const mgrEl    = $id('st' + id + '_mgr');
+      const mgr      = mgrEl ? (mgrEl.value || '').trim() : '';
+
+      if(mgr) mgrEmails.push(mgr);
+
+      const tr = document.createElement('tr');
+      tr.style.background = i % 2 === 0 ? '#fff' : '#f7f9fc';
+      const cell = (txt, align) =>
+        `<td style="font-size:11px;padding:5px 8px;border:1px solid #c8c8c8;text-align:${align||'left'};">${txt}</td>`;
+      tr.innerHTML =
+        cell(stName) +
+        cell(survey) +
+        cell(therapy) +
+        cell(brand) +
+        cell(noData  > 0 ? noData  : '—', 'center') +
+        cell(withData > 0 ? withData : '—', 'center') +
+        cell(apps    > 0 ? apps    : '—', 'center');
+      stationsTbody.appendChild(tr);
+    });
+
+    $id('q_stations_wrap').style.display = '';
+
+    if(mgrEmails.length > 0){
+      $id('q_stations_mgr_cell').textContent = 'Market Manager(s): ' + mgrEmails.join(' | ');
+      $id('q_stations_mgr_row').style.display = '';
+    } else {
+      $id('q_stations_mgr_row').style.display = 'none';
+    }
+  } else {
+    $id('q_stations_wrap').style.display = 'none';
+  }
 
   // Badge row (image capture only)
   $id('q_badge_row').style.visibility = selectedSvcs.has('image') ? '' : 'collapse';
@@ -1573,13 +1661,13 @@ const THERAPY_LIST = [
   'Hemophilia',
   'Hospital',
   'Inflammation',
+  'Inflammation & Immunology (I&I)',
+  'Internal Medicine',
   'Migraines',
   'Oncology',
   'Rare Diseases',
-  'Vaccines',
-  "Women's Health",
-  'Alternative Site',
   'Sterile Injectables',
+  'Vaccines',
   'Other'
 ];
 
@@ -1587,22 +1675,22 @@ const THERAPY_LIST = [
 // to only the brands that live in that bucket. "Above Brand" / "Unbranded" /
 // "Other" are always available as escape hatches.
 const THERAPY_BRANDS = {
-  'Anti Viral':                  ['Lucira by Pfizer','Paxlovid','Above Brand','Unbranded','Other'],
-  'Cardiovascular / Metabolics': ['Eliquis','Vyndamax','Vyndaqel','Above Brand','Unbranded','Other'],
-  'Chronic Diseases (Rheum)':    ['Xeljanz','Above Brand','Unbranded','Other'],
-  'Dermatology':                 ['Cibinqo','Eucrisa','Litfulo','Above Brand','Unbranded','Other'],
-  'Endocrine':                   ['Genotropin','Somavert','Above Brand','Unbranded','Other'],
-  'Hemophilia':                  ['Hympavzi','Above Brand','Unbranded','Other'],
-  'Hospital':                    ['Octagam','Panzyga','Thrombin','Above Brand','Unbranded','Other'],
-  'Inflammation':                ['Velsipity','Above Brand','Unbranded','Other'],
-  'Migraines':                   ['Nurtec','Zavzpret','Above Brand','Unbranded','Other'],
-  'Oncology':                    ['Adcetris','Bavencio','Besponsa','Biosimilars','Braftovi','Elranatamab','Ibrance','Inlyta','Lorbrena','Padcev','Raylumis','Talzenna','Tivdak','Tukysa','Xtandi','Above Brand','Unbranded','Other'],
-  'Rare Diseases':               ['Cutaquig','Oxbryta','Above Brand','Unbranded','Other'],
-  'Vaccines':                    ['Abrysvo','Comirnaty','Penbraya','Prevnar 20','Ticovac','Trumenba','Above Brand','Unbranded','Other'],
-  "Women's Health":              ['Duavee','Above Brand','Unbranded','Other'],
-  'Alternative Site':            ['Unbranded APC','Above Brand','Unbranded','Other'],
-  'Sterile Injectables':         ['Nexject','SI Product A','Above Brand','Unbranded','Other'],
-  'Other':                       ['Other'],
+  'Anti Viral':                       ['Lucira by Pfizer','Paxlovid','Above Brand','Unbranded','Other'],
+  'Cardiovascular / Metabolics':      ['Eliquis','Vyndamax','Vyndaqel','Above Brand','Unbranded','Other'],
+  'Chronic Diseases (Rheum)':         ['Xeljanz','Above Brand','Unbranded','Other'],
+  'Dermatology':                      ['Cibinqo','Eucrisa','Litfulo','Above Brand','Unbranded','Other'],
+  'Endocrine':                        ['Genotropin','Somavert','Above Brand','Unbranded','Other'],
+  'Hemophilia':                       ['Hympavzi','Above Brand','Unbranded','Other'],
+  'Hospital':                         ['Octagam','Panzyga','Thrombin','Above Brand','Unbranded','Other'],
+  'Inflammation':                     ['Velsipity','Above Brand','Unbranded','Other'],
+  'Inflammation & Immunology (I&I)':  ['Cibinqo','Eucrisa','Litfulo','Velsipity','Xeljanz','Above Brand','Unbranded','Other'],
+  'Internal Medicine':                ['Eliquis','Vyndamax','Vyndaqel','Genotropin','Somavert','Above Brand','Unbranded','Other'],
+  'Migraines':                        ['Nurtec','Zavzpret','Above Brand','Unbranded','Other'],
+  'Oncology':                         ['Adcetris','Bavencio','Besponsa','Biosimilars','Braftovi','Elranatamab','Ibrance','Inlyta','Lorbrena','Padcev','Raylumis','Talzenna','Tivdak','Tukysa','Xtandi','Above Brand','Unbranded','Other'],
+  'Rare Diseases':                    ['Cutaquig','Oxbryta','Above Brand','Unbranded','Other'],
+  'Sterile Injectables':              ['Nexject','SI Product A','Above Brand','Unbranded','Other'],
+  'Vaccines':                         ['Abrysvo','Comirnaty','Penbraya','Prevnar 20','Ticovac','Trumenba','Above Brand','Unbranded','Other'],
+  'Other':                            ['Other'],
 };
 
 function sOpts(arr, ph){

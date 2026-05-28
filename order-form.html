@@ -132,8 +132,6 @@ textarea{height:72px;resize:vertical;}
   <input name="Assoc_Vendor_Name">
   <input name="Badge_API_Available">
   <input name="Provider_Reg_Company">
-  <input name="API_Badge_Contact_Name">
-  <input name="API_Badge_Contact_Email">
   <input name="API_Badge_Notes">
   <input name="Qty_App_Licenses">
   <input name="Qty_Scanners">
@@ -162,11 +160,11 @@ textarea{height:72px;resize:vertical;}
         <div class="svc-type-check" id="svc_scanner" onclick="toggleServiceType('Scanner', this)">📷 Scanner</div>
         <div class="svc-type-check" id="svc_mobile_app" onclick="toggleServiceType('Mobile App', this)">📱 Mobile App</div>
         <div class="svc-type-check" id="svc_qr_code" onclick="toggleServiceType('QR Code', this)">🔲 QR Code</div>
-        <div class="svc-type-check" id="svc_image_capture" onclick="toggleServiceType('Image Capture', this)">📸 Image Capture</div>
+        <div class="svc-type-check" id="svc_image_capture" onclick="toggleServiceType('Image Capture', this)" title="Image Capture uses the RE:nvent Mobile App to photograph attendee badges. When selected, Scanner, QR Code, and Mobile App are not applicable.">📸 Image Capture</div>
         <div class="svc-type-check" id="svc_list_import" onclick="toggleServiceType('List Import', this)">📋 List Import</div>
         <div class="svc-type-check" id="svc_internet" onclick="toggleServiceType('Internet', this)" title="Wireless internet for 20x20 space up to 10 connections.">📶 Internet</div>
       </div>
-      <div class="svc-note">Select one or more — customers may order multiple service types for the same event.</div>
+      <div class="svc-note">Select one or more — customers may order multiple service types for the same event. <strong>Note:</strong> Image Capture cannot be combined with Scanner, QR Code, or Mobile App.</div>
 
       <!-- Quantity fields — shown conditionally -->
       <div id="svc_quantities" style="display:none;margin-top:16px;">
@@ -202,7 +200,7 @@ textarea{height:72px;resize:vertical;}
         </div>
         <div class="fgroup">
           <label class="lbl">Therapeutic Area <span class="req">*</span></label>
-          <input type="text" id="f_therapy" placeholder="e.g. Vaccines">
+          <input type="text" id="f_therapy" placeholder="e.g. Migraines, Oncology, Vaccines">
         </div>
         <div class="fgroup">
           <label class="lbl">Report Recipient Email</label>
@@ -213,8 +211,8 @@ textarea{height:72px;resize:vertical;}
           <input type="text" id="f_show_name" placeholder="e.g. AAPA 2026">
         </div>
         <div class="fgroup fw">
-          <label class="lbl">Location / Venue <span class="req">*</span></label>
-          <textarea id="f_location" placeholder="Venue name — e.g. Ernest N Morial Convention Center"></textarea>
+          <label class="lbl">Location / Complete Venue Address <span class="req">*</span></label>
+          <textarea id="f_location" placeholder="Full venue name and street address — e.g. McCormick Place, 2301 S King Drive, Chicago, IL 60616. This is important for setup."></textarea>
         </div>
         <div class="fgroup fw shipping-field" style="display:none;">
           <label class="lbl">Delivery Address</label>
@@ -262,7 +260,8 @@ textarea{height:72px;resize:vertical;}
     <!-- STEP 3: STATION SCANNER CONFIGURATION -->
     <div class="card">
       <div class="card-title"><span class="step-badge">3</span>Station Scanner Configuration</div>
-      <p style="font-size:12px;color:#888;margin-bottom:16px;">Add each station in the booth. Specify the survey type, therapy area, product/brand, and how many scanners or app licenses are needed per station.</p>
+      <p style="font-size:12px;color:#888;margin-bottom:8px;">Add each station in the booth. Specify the survey type, therapy area, product/brand/drug, and how many scanners or app licenses are needed per station.</p>
+      <div class="tip-note" style="margin-bottom:16px;">💊 <strong>Product / Brand / Drug</strong> — Select the specific Pfizer product associated with each station. This is required for accurate reporting and processing in the Pfizer Data Warehouse.</div>
       <div id="stations-container"></div>
       <button class="add-station-btn" onclick="addStation()">＋ Add Station</button>
     </div>
@@ -306,19 +305,11 @@ textarea{height:72px;resize:vertical;}
         <div class="fg">
           <div class="fgroup">
             <label class="lbl">Provider / Registration Company</label>
-            <input type="text" id="f_provider_reg_company" placeholder="e.g. Cvent, Eventbrite">
-          </div>
-          <div class="fgroup">
-            <label class="lbl">API / Badge Kit Contact Name</label>
-            <input type="text" id="f_api_badge_contact_name" placeholder="Contact name">
-          </div>
-          <div class="fgroup">
-            <label class="lbl">API / Badge Kit Contact Email</label>
-            <input type="email" id="f_api_badge_contact_email" placeholder="api@provider.com">
+            <input type="text" id="f_provider_reg_company" placeholder="e.g. Cvent, Maritz, Eventbrite, Experient">
           </div>
           <div class="fgroup fw">
             <label class="lbl">API / Badge Kit Notes</label>
-            <textarea id="f_api_badge_notes" placeholder="Any relevant notes about the API or badge kit…"></textarea>
+            <textarea id="f_api_badge_notes" placeholder="Any relevant notes about the badge API or developer kit — e.g. badge type, registration platform version, contact info…"></textarea>
           </div>
         </div>
       </div>
@@ -367,13 +358,13 @@ const THERAPY_LIST = [
   'Hemophilia',
   'Hospital',
   'Inflammation',
+  'Inflammation & Immunology (I&I)',
+  'Internal Medicine',
   'Migraines',
   'Oncology',
   'Rare Diseases',
-  'Vaccines',
-  "Women's Health",
-  'Alternative Site',
   'Sterile Injectables',
+  'Vaccines',
   'Other'
 ];
 
@@ -381,22 +372,22 @@ const THERAPY_LIST = [
 // to only the brands that live in that bucket. "Above Brand" / "Unbranded" /
 // "Other" are always available as escape hatches.
 const THERAPY_BRANDS = {
-  'Anti Viral':                  ['Lucira by Pfizer','Paxlovid','Above Brand','Unbranded','Other'],
-  'Cardiovascular / Metabolics': ['Eliquis','Vyndamax','Vyndaqel','Above Brand','Unbranded','Other'],
-  'Chronic Diseases (Rheum)':    ['Xeljanz','Above Brand','Unbranded','Other'],
-  'Dermatology':                 ['Cibinqo','Eucrisa','Litfulo','Above Brand','Unbranded','Other'],
-  'Endocrine':                   ['Genotropin','Somavert','Above Brand','Unbranded','Other'],
-  'Hemophilia':                  ['Hympavzi','Above Brand','Unbranded','Other'],
-  'Hospital':                    ['Octagam','Panzyga','Thrombin','Above Brand','Unbranded','Other'],
-  'Inflammation':                ['Velsipity','Above Brand','Unbranded','Other'],
-  'Migraines':                   ['Nurtec','Zavzpret','Above Brand','Unbranded','Other'],
-  'Oncology':                    ['Adcetris','Bavencio','Besponsa','Biosimilars','Braftovi','Elranatamab','Ibrance','Inlyta','Lorbrena','Padcev','Raylumis','Talzenna','Tivdak','Tukysa','Xtandi','Above Brand','Unbranded','Other'],
-  'Rare Diseases':               ['Cutaquig','Oxbryta','Above Brand','Unbranded','Other'],
-  'Vaccines':                    ['Abrysvo','Comirnaty','Penbraya','Prevnar 20','Ticovac','Trumenba','Above Brand','Unbranded','Other'],
-  "Women's Health":              ['Duavee','Above Brand','Unbranded','Other'],
-  'Alternative Site':            ['Unbranded APC','Above Brand','Unbranded','Other'],
-  'Sterile Injectables':         ['Nexject','SI Product A','Above Brand','Unbranded','Other'],
-  'Other':                       ['Other'],
+  'Anti Viral':                       ['Lucira by Pfizer','Paxlovid','Above Brand','Unbranded','Other'],
+  'Cardiovascular / Metabolics':      ['Eliquis','Vyndamax','Vyndaqel','Above Brand','Unbranded','Other'],
+  'Chronic Diseases (Rheum)':         ['Xeljanz','Above Brand','Unbranded','Other'],
+  'Dermatology':                      ['Cibinqo','Eucrisa','Litfulo','Above Brand','Unbranded','Other'],
+  'Endocrine':                        ['Genotropin','Somavert','Above Brand','Unbranded','Other'],
+  'Hemophilia':                       ['Hympavzi','Above Brand','Unbranded','Other'],
+  'Hospital':                         ['Octagam','Panzyga','Thrombin','Above Brand','Unbranded','Other'],
+  'Inflammation':                     ['Velsipity','Above Brand','Unbranded','Other'],
+  'Inflammation & Immunology (I&I)':  ['Cibinqo','Eucrisa','Litfulo','Velsipity','Xeljanz','Above Brand','Unbranded','Other'],
+  'Internal Medicine':                ['Eliquis','Vyndamax','Vyndaqel','Genotropin','Somavert','Above Brand','Unbranded','Other'],
+  'Migraines':                        ['Nurtec','Zavzpret','Above Brand','Unbranded','Other'],
+  'Oncology':                         ['Adcetris','Bavencio','Besponsa','Biosimilars','Braftovi','Elranatamab','Ibrance','Inlyta','Lorbrena','Padcev','Raylumis','Talzenna','Tivdak','Tukysa','Xtandi','Above Brand','Unbranded','Other'],
+  'Rare Diseases':                    ['Cutaquig','Oxbryta','Above Brand','Unbranded','Other'],
+  'Sterile Injectables':              ['Nexject','SI Product A','Above Brand','Unbranded','Other'],
+  'Vaccines':                         ['Abrysvo','Comirnaty','Penbraya','Prevnar 20','Ticovac','Trumenba','Above Brand','Unbranded','Other'],
+  'Other':                            ['Other'],
 };
 
 let stationCount = 0;
@@ -434,11 +425,11 @@ function addStation(){
     <input type="text" id="st${n}_therapy_oth" placeholder="Describe therapy…" style="display:none;margin-top:6px;">
   </div>
   <div class="fgroup">
-    <label class="lbl">Product/Brand</label>
+    <label class="lbl" title="Select the specific Pfizer product, brand, or drug this station is associated with. Required for proper reporting and processing.">Product / Brand / Drug <span style="font-size:9px;color:#888;font-weight:400;text-transform:none;letter-spacing:0;">ⓘ</span></label>
     <select id="st${n}_brand" onchange="stOtherToggle(${n},'brand',this);stUpdateTag(${n})">
       <option value="">— Select therapy first —</option>
     </select>
-    <input type="text" id="st${n}_brand_oth" placeholder="Describe product/brand…" style="display:none;margin-top:6px;" oninput="stUpdateTag(${n})">
+    <input type="text" id="st${n}_brand_oth" placeholder="Enter product, brand, or drug name…" style="display:none;margin-top:6px;" oninput="stUpdateTag(${n})">
   </div>
   <div class="fgroup">
     <label class="lbl" style="font-size:10px;">Scanners<br><span style="color:#888;font-weight:400;">No Data</span></label>
@@ -587,11 +578,30 @@ function updateDeliveryUI(){
   }
 }
 
+// Service types that are mutually exclusive with Image Capture
+const IMAGE_CAPTURE_EXCLUDES = ['Scanner', 'QR Code', 'Mobile App'];
+
 function toggleServiceType(type, el){
   if(selectedServiceTypes.has(type)){
     selectedServiceTypes.delete(type);
     el.classList.remove('selected');
   } else {
+    // Image Capture is mutually exclusive with Scanner, QR Code, and Mobile App
+    if(type === 'Image Capture'){
+      IMAGE_CAPTURE_EXCLUDES.forEach(t => {
+        if(selectedServiceTypes.has(t)){
+          selectedServiceTypes.delete(t);
+          const tId = {'Scanner':'svc_scanner','QR Code':'svc_qr_code','Mobile App':'svc_mobile_app'}[t];
+          const tEl = document.getElementById(tId);
+          if(tEl) tEl.classList.remove('selected');
+        }
+      });
+    } else if(IMAGE_CAPTURE_EXCLUDES.includes(type) && selectedServiceTypes.has('Image Capture')){
+      // If selecting Scanner/QR/Mobile App while Image Capture is active, deselect Image Capture
+      selectedServiceTypes.delete('Image Capture');
+      const imgEl = document.getElementById('svc_image_capture');
+      if(imgEl) imgEl.classList.remove('selected');
+    }
     selectedServiceTypes.add(type);
     el.classList.add('selected');
   }
@@ -792,8 +802,6 @@ function buildData(){
     assoc_vendor_name:   val('f_assoc_vendor_name'),
     badge_api_available: badgeAPI,
     provider_reg_company: val('f_provider_reg_company'),
-    api_badge_contact_name: val('f_api_badge_contact_name'),
-    api_badge_contact_email: val('f_api_badge_contact_email'),
     api_badge_notes:     val('f_api_badge_notes'),
     // Stations
     stations:            getStationsData(),
