@@ -111,10 +111,15 @@ textarea{height:72px;resize:vertical;}
 <!-- Netlify form detection (hidden) -->
 <form name="pfizer-spiro-order" netlify netlify-honeypot="bot-field" hidden>
   <input name="bot-field">
+  <input name="Account_Manager">
+  <input name="Account_Manager_Email">
+  <input name="AE">
+  <input name="AE_Email">
   <input name="Congress_Manager">
   <input name="Congress_Manager_Email">
   <input name="Therapeutic_Area">
-  <input name="Pfizer_Marketing_Email">
+  <input name="Pfizer_Project_Owner">
+  <input name="Pfizer_Project_Owner_Email">
   <input name="Show_Name">
   <input name="Location_Venue">
   <input name="Ship_Type">
@@ -192,6 +197,22 @@ textarea{height:72px;resize:vertical;}
       <div class="card-title"><span class="step-badge">2</span>Event Information</div>
       <div class="fg">
         <div class="fgroup">
+          <label class="lbl">Account Manager</label>
+          <input type="text" id="f_acct_mgr" placeholder="RE Account Manager name">
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Account Manager Email</label>
+          <input type="email" id="f_acct_mgr_email" placeholder="acctmgr@realityengineering.com">
+        </div>
+        <div class="fgroup">
+          <label class="lbl">AE (Account Executive)</label>
+          <input type="text" id="f_ae" placeholder="RE Account Executive name">
+        </div>
+        <div class="fgroup">
+          <label class="lbl">AE Email</label>
+          <input type="email" id="f_ae_email" placeholder="ae@realityengineering.com">
+        </div>
+        <div class="fgroup">
           <label class="lbl">Congress Manager (Your Name) <span class="req">*</span></label>
           <input type="text" id="f_congress_mgr" placeholder="e.g. Kathy Deneen">
         </div>
@@ -204,8 +225,12 @@ textarea{height:72px;resize:vertical;}
           <input type="text" id="f_therapy" placeholder="e.g. Migraines, Oncology, Vaccines">
         </div>
         <div class="fgroup">
-          <label class="lbl">Report Recipient Email</label>
-          <input type="email" id="f_pfz_mktg_email" placeholder="Where final reports should be sent — e.g. finley.hutchinson@pfizer.com">
+          <label class="lbl">Pfizer Project Owner</label>
+          <input type="text" id="f_pfz_project_owner" placeholder="Pfizer project owner name">
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Pfizer Project Owner Email</label>
+          <input type="email" id="f_pfz_mktg_email" placeholder="Reports sent here — e.g. finley.hutchinson@pfizer.com">
         </div>
         <div class="fgroup fw">
           <label class="lbl">Show Name <span class="req">*</span></label>
@@ -796,9 +821,14 @@ function buildData(){
   const badgeAPI = radioVal('badge_api');
   const d = {
     // Event info — keys use f_ prefix to match Quote Generator element IDs directly
+    f_acct_mgr:          val('f_acct_mgr'),
+    f_acct_mgr_email:    val('f_acct_mgr_email'),
+    f_ae:                val('f_ae'),
+    f_ae_email:          val('f_ae_email'),
     f_congress_mgr:      val('f_congress_mgr'),
     f_congress_email:    val('f_congress_email'),
     f_therapy:           val('f_therapy'),
+    f_pfz_project_owner: val('f_pfz_project_owner'),
     f_pfz_mktg_email:    val('f_pfz_mktg_email'),
     f_show_name:         val('f_show_name'),
     f_location:          val('f_location'),

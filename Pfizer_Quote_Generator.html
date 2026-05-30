@@ -196,8 +196,16 @@ textarea{height:72px;resize:vertical;}
         <input type="text" id="f_acct_mgr" placeholder="e.g. Kylene Pastorius" oninput="liveCalc()">
       </div>
       <div class="fgroup" style="background:#f0f4f8;border-radius:6px;padding:8px 10px;">
+        <label class="lbl" style="color:#1a3a5c;">Account Manager Email</label>
+        <input type="email" id="f_acct_mgr_email" placeholder="acctmgr@realityengineering.com" oninput="liveCalc()">
+      </div>
+      <div class="fgroup" style="background:#f0f4f8;border-radius:6px;padding:8px 10px;">
         <label class="lbl" style="color:#1a3a5c;">AE (RE)</label>
         <input type="text" id="f_ae" placeholder="e.g. Ashley Simmons" oninput="liveCalc()">
+      </div>
+      <div class="fgroup" style="background:#f0f4f8;border-radius:6px;padding:8px 10px;">
+        <label class="lbl" style="color:#1a3a5c;">AE Email</label>
+        <input type="email" id="f_ae_email" placeholder="ae@realityengineering.com" oninput="liveCalc()">
       </div>
       <!-- Pfizer Contact -->
       <div class="fgroup">
@@ -207,6 +215,10 @@ textarea{height:72px;resize:vertical;}
       <div class="fgroup">
         <label class="lbl">Congress Manager Email</label>
         <input type="email" id="f_congress_email" placeholder="manager@pfizer.com" oninput="liveCalc()">
+      </div>
+      <div class="fgroup">
+        <label class="lbl">Pfizer Project Owner</label>
+        <input type="text" id="f_pfz_project_owner" placeholder="Pfizer project owner name" oninput="liveCalc()">
       </div>
       <!-- Event -->
       <div class="fgroup">
@@ -582,10 +594,13 @@ textarea{height:72px;resize:vertical;}
       <tr>
         <td class="qlbl">Account Manager (RE)</td>
         <td class="qval" id="q_acct_mgr">—</td>
-        <td class="qtd-area" colspan="2" rowspan="8" id="q_delivery_addr" style="padding:8px;white-space:pre-line;color:#c0392b;font-weight:600;"></td>
+        <td class="qtd-area" colspan="2" rowspan="10" id="q_delivery_addr" style="padding:8px;white-space:pre-line;color:#c0392b;font-weight:600;"></td>
       </tr>
+      <tr><td class="qlbl">Account Manager Email</td><td id="q_acct_mgr_email">—</td></tr>
       <tr><td class="qlbl">AE (RE)</td><td id="q_ae">—</td></tr>
+      <tr><td class="qlbl">AE Email</td><td id="q_ae_email">—</td></tr>
       <tr><td class="qlbl">Congress Manager</td><td id="q_congress_mgr">—</td></tr>
+      <tr><td class="qlbl">Pfizer Project Owner</td><td id="q_pfz_project_owner">—</td></tr>
       <tr><td class="qlbl">Therapeutic Area</td><td id="q_therapy">—</td></tr>
       <tr><td class="qlbl">Show Name</td><td id="q_show_name">—</td></tr>
       <tr><td class="qlbl">Location / Venue</td><td id="q_location" style="white-space:pre-line;">—</td></tr>
@@ -1027,9 +1042,12 @@ function buildQuote(){
   $id('q_num').textContent = val('f_qnum') || '—';
 
   // Event fields
-  $id('q_acct_mgr').textContent    = val('f_acct_mgr')       || '—';
-  $id('q_ae').textContent          = val('f_ae')             || '—';
-  $id('q_congress_mgr').textContent= val('f_congress_mgr')   || '—';
+  $id('q_acct_mgr').textContent       = val('f_acct_mgr')          || '—';
+  $id('q_acct_mgr_email').textContent = val('f_acct_mgr_email')    || '—';
+  $id('q_ae').textContent             = val('f_ae')                || '—';
+  $id('q_ae_email').textContent       = val('f_ae_email')          || '—';
+  $id('q_congress_mgr').textContent   = val('f_congress_mgr')      || '—';
+  $id('q_pfz_project_owner').textContent = val('f_pfz_project_owner') || '—';
   $id('q_therapy').textContent     = val('f_therapy')        || '—';
   $id('q_show_name').textContent   = val('f_show_name')      || '—';
   $id('q_location').textContent    = val('f_location')       || '—';
@@ -1238,9 +1256,9 @@ function doImportObject(d, alreadyInKV){
   // Fill event fields — keys match both QG element IDs and Order Form buildData() keys
   const fieldMap = {
     // RE internal
-    f_acct_mgr:1, f_ae:1,
+    f_acct_mgr:1, f_acct_mgr_email:1, f_ae:1, f_ae_email:1,
     // Event info
-    f_congress_mgr:1, f_congress_email:1, f_therapy:1, f_show_name:1, f_location:1,
+    f_pfz_project_owner:1, f_congress_mgr:1, f_congress_email:1, f_therapy:1, f_show_name:1, f_location:1,
     f_delivery_addr:1, f_open_date:1, f_close_date:1, f_exhibit_size:1, f_booth:1,
     f_pfz_mktg_email:1, f_onsite_contact:1, f_delivery_date:1, f_notes:1,
     // Association / API fields (from order form)
@@ -1425,7 +1443,10 @@ async function saveCurrentFormState(extraFields){
     order_id:            savedOrderId,
     // RE internal
     f_acct_mgr:          val('f_acct_mgr'),
+    f_acct_mgr_email:    val('f_acct_mgr_email'),
     f_ae:                val('f_ae'),
+    f_ae_email:          val('f_ae_email'),
+    f_pfz_project_owner: val('f_pfz_project_owner'),
     // Event info
     f_congress_mgr:      val('f_congress_mgr'),
     f_congress_email:    val('f_congress_email'),
