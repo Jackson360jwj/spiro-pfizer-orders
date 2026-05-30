@@ -335,8 +335,8 @@ textarea{height:72px;resize:vertical;}
     <!-- APP -->
     <div id="svc_app" class="svc-section">
       <div class="svc-row">
-        <div><div class="svc-name">RE:nvent Mobile App</div><div class="svc-desc">Custom iPhone or Android setup instructions to primary TD</div></div>
-        <span class="svc-price">$350 / unit</span>
+        <div><div class="svc-name">RE:nvent Mobile App</div><div class="svc-desc">iOS App on rep cell phone. Event Settings, Remote Support, Live NPI matching</div></div>
+        <span class="svc-price">$300 / unit</span>
         <div class="qty-wrap">
           <button class="qbtn" onclick="adj('app_qty',-1)">−</button>
           <input class="qinput" type="number" id="app_qty" value="1" min="0" oninput="liveCalc()">
@@ -386,7 +386,7 @@ textarea{height:72px;resize:vertical;}
       </div>
       <div class="svc-row">
         <div><div class="svc-name">Booth Scanner — <em>With Data</em></div><div class="svc-desc">iPhone scanner with attendee data lookup and matching</div></div>
-        <span class="svc-price">$450 / unit</span>
+        <span class="svc-price">$400 / unit</span>
         <div class="qty-wrap">
           <button class="qbtn" onclick="adj('scanner_qty_data',-1)">−</button>
           <input class="qinput" type="number" id="scanner_qty_data" value="0" min="0" oninput="liveCalc()">
@@ -437,7 +437,7 @@ textarea{height:72px;resize:vertical;}
     <!-- IMAGE CAPTURE -->
     <div id="svc_image" class="svc-section">
       <div class="svc-row">
-        <div><div class="svc-name">APP — RE:nvent Mobile App</div><div class="svc-desc">RE:nvent Mobile App: Custom iPhone or Android set up instructions to primary TD</div></div>
+        <div><div class="svc-name">APP — RE:nvent Mobile App</div><div class="svc-desc">iOS App on rep cell phone. Event Settings, Remote Support, Live NPI matching</div></div>
         <span class="svc-price">$300 / unit</span>
         <div class="qty-wrap">
           <button class="qbtn" onclick="adj('img_qty',-1)">−</button>
@@ -666,7 +666,7 @@ textarea{height:72px;resize:vertical;}
 
     <div class="qfooter">
       Account Executive: Justin Jackson &nbsp;360-909-3709 &nbsp;justin.jackson@realityengineering.com<br>
-      Reality Engineering | 4857 NW Lake Road, Suite 230 | Camas | WA | 98607 | 360-448-6361
+      Reality Engineering | 4421 C Street, Suite 1A | Washougal | WA | 98671 | 360-448-6361
     </div>
   </div>
 
@@ -832,8 +832,8 @@ function calcPrices(){
   // ── Per-unit hardware lines ──
   if(selectedSvcs.has('app')){
     const q = parseInt(val('app_qty'))||0;
-    lines.push({desc:'<strong>RE:nvent Mobile App:</strong> Custom iPhone or Android set up instructions to primary TD', qty:q, unit:350, total:q*350});
-    ccBase += q*350;
+    lines.push({desc:'<strong>RE:nvent Mobile App:</strong> iOS App on rep cell phone. Event Settings, Remote Support, Live NPI matching', qty:q, unit:300, total:q*300});
+    ccBase += q*300;
   }
 
   if(selectedSvcs.has('scanner')){
@@ -844,8 +844,8 @@ function calcPrices(){
       ccBase += qNoData*350;
     }
     if(qData > 0){
-      lines.push({desc:'<strong>Booth Scanner:</strong> iPhone scanner with attendee data lookup and matching', qty:qData, unit:450, total:qData*450});
-      ccBase += qData*450;
+      lines.push({desc:'<strong>Booth Scanner:</strong> iPhone scanner with attendee data lookup and matching', qty:qData, unit:400, total:qData*400});
+      ccBase += qData*400;
     }
     // Internet/PAX routers
     const qInternet = parseInt(val('internet_qty'))||0;
@@ -863,7 +863,7 @@ function calcPrices(){
 
   if(selectedSvcs.has('image')){
     const q = parseInt(val('img_qty'))||0;
-    lines.push({desc:'<strong>APP:</strong> RE:nvent Mobile App: Custom iPhone or Android set up instructions to primary TD',qty:q,unit:300,total:q*300});
+    lines.push({desc:'<strong>APP:</strong> RE:nvent Mobile App: iOS App on rep cell phone. Event Settings, Remote Support, Live NPI matching',qty:q,unit:300,total:q*300});
     ccBase += q*300;
     lines.push({desc:'<strong>Badge Image transcription</strong> and reg list match if available',qty:null,unit:null,total:650});
     ccBase += 650;
@@ -1688,7 +1688,7 @@ const THERAPY_BRANDS = {
   'Migraines':                        ['Nurtec','Zavzpret','Above Brand','Unbranded','Other'],
   'Oncology':                         ['Adcetris','Bavencio','Besponsa','Biosimilars','Braftovi','Elranatamab','Ibrance','Inlyta','Lorbrena','Padcev','Raylumis','Talzenna','Tivdak','Tukysa','Xtandi','Above Brand','Unbranded','Other'],
   'Rare Diseases':                    ['Cutaquig','Oxbryta','Above Brand','Unbranded','Other'],
-  'Sterile Injectables':              ['Nexject','SI Product A','Above Brand','Unbranded','Other'],
+  'Sterile Injectables':              ['Nexject','Above Brand','Unbranded','Other'],
   'Vaccines':                         ['Abrysvo','Comirnaty','Penbraya','Prevnar 20','Ticovac','Trumenba','Above Brand','Unbranded','Other'],
   'Other':                            ['Other'],
 };
