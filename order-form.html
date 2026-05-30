@@ -165,6 +165,7 @@ textarea{height:72px;resize:vertical;}
         <div class="svc-type-check" id="svc_internet" onclick="toggleServiceType('Internet', this)" title="Wireless internet for 20x20 space up to 10 connections.">📶 Internet</div>
       </div>
       <div class="svc-note">Select one or more — customers may order multiple service types for the same event.</div>
+      <div id="svc_desc_strip" style="display:none;margin-top:10px;padding:10px 14px;background:#eef2f7;border-left:3px solid #1a3a5c;border-radius:0 6px 6px 0;font-size:12px;color:#333;line-height:1.5;"></div>
 
       <!-- Quantity fields — shown conditionally -->
       <div id="svc_quantities" style="display:none;margin-top:16px;">
@@ -581,6 +582,24 @@ function updateDeliveryUI(){
 // Service types that are mutually exclusive with Image Capture
 const IMAGE_CAPTURE_EXCLUDES = ['Scanner', 'QR Code', 'Mobile App'];
 
+const SVC_DESCRIPTIONS = {
+  'Scanner':       '📷 <strong>Scanner</strong> — RE:nvent iPhone scans event badges directly. Best option when 3rd-party scanning is permitted at the event.',
+  'Mobile App':    '📱 <strong>Mobile App</strong> — iOS app on the rep\'s phone for lead capture with live NPI matching.',
+  'QR Code':       '🔲 <strong>QR Code</strong> — RE generates a QR code; attendees self-scan with their phone and enter their details. Use when 3rd-party scanning is not allowed.',
+  'Image Capture': '📸 <strong>Image Capture</strong> — App camera photographs the badge instead of scanning it. Use when no API kit is available.',
+  'List Import':   '📋 <strong>List Import</strong> — No on-site hardware needed. Import a pre-registration list and mark attendance digitally after the event.',
+  'Internet':      '📶 <strong>Internet</strong> — Dedicated wireless internet for the booth space (up to 10 connections).',
+};
+
+function updateSvcDescStrip(){
+  const strip = document.getElementById('svc_desc_strip');
+  if(!strip) return;
+  if(selectedServiceTypes.size === 0){ strip.style.display = 'none'; strip.innerHTML = ''; return; }
+  const parts = [...selectedServiceTypes].map(t => SVC_DESCRIPTIONS[t] || '').filter(Boolean);
+  strip.innerHTML = parts.join('<br><br>');
+  strip.style.display = 'block';
+}
+
 function toggleServiceType(type, el){
   if(selectedServiceTypes.has(type)){
     selectedServiceTypes.delete(type);
@@ -611,6 +630,7 @@ function toggleServiceType(type, el){
   }
   updateQuantityFields();
   updateShippingVisibility();
+  updateSvcDescStrip();
 }
 
 function updateQuantityFields(){
