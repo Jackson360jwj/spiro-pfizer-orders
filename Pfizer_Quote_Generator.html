@@ -493,23 +493,7 @@ textarea{height:72px;resize:vertical;}
       </div>
     </div>
 
-    <!-- SHARED: TOV (hidden until svc selected) — Payment always Credit Card for Pfizer/SPIRO -->
-    <div id="shared_opts" style="display:none;margin-top:16px;padding-top:16px;border-top:1px solid #eee;">
-      <div id="tov_block">
-        <label class="lbl" style="display:block;margin-bottom:4px;">TOV / Compliance Reporting</label>
-        <p style="font-size:11px;color:#888;margin:0 0 10px;">Default is TOV Required. Select "No TOV Needed" to remove $500 from the quote total.</p>
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:2px solid #1a3a5c;border-radius:8px;cursor:pointer;background:#f0f4f8;font-size:13px;" id="tov_yes_card">
-            <input type="radio" name="tov" value="yes" checked onchange="liveCalc();onTovToggle()">
-            <span><strong>TOV Required</strong> (standard)</span>
-          </label>
-          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:2px solid #ddd;border-radius:8px;cursor:pointer;font-size:13px;" id="tov_no_card">
-            <input type="radio" name="tov" value="no" onchange="liveCalc();onTovToggle()">
-            <span><strong>No TOV Needed</strong> <span style="color:#c0392b;font-weight:600;">−$500</span></span>
-          </label>
-        </div>
-      </div>
-    </div>
+    <!-- SHARED: no TOV for Pfizer SPIRO booth events -->
   </div>
 
   <!-- ── STEP 3: QUOTE DETAILS ── -->
@@ -768,14 +752,7 @@ function fmtDate(d){
   const dt = new Date(d+'T12:00:00');
   return dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
 }
-function noTOV(){ return document.querySelector('input[name="tov"]:checked')?.value === 'no'; }
-function onTovToggle(){
-  const isNo = noTOV();
-  const yesCard = $id('tov_yes_card');
-  const noCard  = $id('tov_no_card');
-  if(yesCard){ yesCard.style.borderColor = isNo ? '#ddd' : '#1a3a5c'; yesCard.style.background = isNo ? '' : '#f0f4f8'; }
-  if(noCard) { noCard.style.borderColor  = isNo ? '#c0392b' : '#ddd'; noCard.style.background  = isNo ? '#fff5f5' : ''; }
-}
+function noTOV(){ return true; } // SPIRO booth events do not use TOV
 function isCC(){ return false; } // Pfizer/SPIRO — no CC processing fee on quotes
 function adj(id, delta){
   const el = $id(id); if(!el) return;
@@ -823,24 +800,19 @@ function updateSharedOpts(){
   $id('qdetails_card').style.display  = hasSvcs ? 'block' : 'none';
   $id('total_banner').style.display   = hasSvcs ? 'block' : 'none';
   $id('action_row').style.display     = hasSvcs ? 'flex' : 'none';
-  // TOV only relevant when App or Image Capture is selected
-  const hasTOV = selectedSvcs.has('app') || selectedSvcs.has('image') || selectedSvcs.has('scanner');
-  $id('tov_block').style.display = hasTOV ? 'block' : 'none';
+  // TOV not used for SPIRO booth events
 }
 
 // ── Pricing engine ──
 // NOTE: API passthrough is excluded from CC fee base (it's a direct cost passthrough)
 function calcPrices(){
   if(selectedSvcs.size === 0) return {subtotal:0, api:0, ccFee:0, grand:0, lines:[]};
-  const notov = noTOV();
   const cc = isCC();
   let ccBase = 0;
   let api = 0;
   const lines = [];
 
-  const setupDesc = notov
-    ? 'Event Set-up, Badge Integration, Remote Support, Post Pfizer Customer match + NPI Matching. Executive summary report delivered 5 business days after receipt of data. Access to full data export provided to brand manager as requested. Deliver lead records and all required data to Pfizer MDM Data Warehouse. (No TOV − $500)'
-    : 'Event Set-up, Badge Integration, Remote Support, Post Pfizer Customer match + NPI Matching. Executive summary report delivered 5 business days after receipt of data. Access to full data export provided to brand manager as requested. Deliver lead records and all required data to Pfizer MDM Data Warehouse.';
+  const setupDesc = 'Event Set-up, Badge Integration, Remote Support, Post Pfizer Customer match + NPI Matching. Executive summary report delivered 5 business days after receipt of data. Access to full data export provided to brand manager as requested. Deliver lead records and all required data to Pfizer MDM Data Warehouse.';
 
   const setupSimple = 'Event Set-up, Badge Integration, Remote Support, Post Pfizer Customer match + NPI Matching. Executive summary report delivered 5 business days after receipt of data. Access to full data export provided to brand manager as requested. Deliver lead records and all required data to Pfizer MDM Data Warehouse.';
 
@@ -918,8 +890,8 @@ function calcPrices(){
       if(survey && !groups[key].surveys.includes(survey)) groups[key].surveys.push(survey);
     });
 
-    const setupPrice = notov ? 1650 : 2150; // first brand setup ($2,150; −$500 no-TOV = $1,650)
-    const extraSetupPrice = notov ? 1050 : 1550; // additional brand ($1,550; −$500 no-TOV)
+    const setupPrice = 2150;      // first brand setup
+    const extraSetupPrice = 1550; // additional brand setup
 
     if(brandsOrder.length === 0){
       // No stations yet — show a single setup line as placeholder
