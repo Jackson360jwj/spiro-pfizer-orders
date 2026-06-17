@@ -790,13 +790,11 @@ function toggleSvc(type, btn){
     const sec = $id('svc_'+type);
     if(sec) sec.style.display = 'block';
   }
-  $id('shared_opts').style.display = selectedSvcs.size > 0 ? '' : 'none';
   liveCalc();
 }
 
 function updateSharedOpts(){
   const hasSvcs = selectedSvcs.size > 0;
-  $id('shared_opts').style.display    = hasSvcs ? '' : 'none';
   $id('qdetails_card').style.display  = hasSvcs ? 'block' : 'none';
   $id('total_banner').style.display   = hasSvcs ? 'block' : 'none';
   $id('action_row').style.display     = hasSvcs ? 'flex' : 'none';
@@ -997,8 +995,8 @@ function calcPrices(){
 }
 
 function liveCalc(){
-  if(selectedSvcs.size === 0) return;
   updateSharedOpts();
+  if(selectedSvcs.size === 0) return;
   const {grand, ccFee} = calcPrices();
   $id('total_amt').textContent = fmt(grand);
   $id('total_note').textContent = '';
@@ -1855,7 +1853,6 @@ function newOrder(){
   document.querySelectorAll('.svc-section').forEach(s => s.style.display='none');
   document.querySelectorAll('input[type=checkbox]').forEach(c => c.checked=false);
   ['app_qty','qr_qty','img_qty','poster_qty'].forEach(id => { const el=$id(id); if(el) el.value=1; });
-  $id('shared_opts').style.display='none';
   $id('assoc_api_card').style.display='none';
   $id('qdetails_card').style.display='none';
   $id('total_banner').style.display='none';
