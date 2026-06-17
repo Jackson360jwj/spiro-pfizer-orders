@@ -322,7 +322,7 @@ textarea{height:72px;resize:vertical;}
     <!-- APP -->
     <div id="svc_app" class="svc-section">
       <div class="svc-row">
-        <div><div class="svc-name">RE:nvent Mobile App</div><div class="svc-desc">iOS App on rep cell phone. Event Settings, Remote Support, Live NPI matching</div></div>
+        <div><div class="svc-name">RE:nvent Mobile App</div><div class="svc-desc">iOS App on rep cell phone. Event Settings, Remote Support</div></div>
         <span class="svc-price">$300 / unit</span>
         <div class="qty-wrap">
           <button class="qbtn" onclick="adj('app_qty',-1)">−</button>
@@ -423,7 +423,7 @@ textarea{height:72px;resize:vertical;}
     <!-- IMAGE CAPTURE -->
     <div id="svc_image" class="svc-section">
       <div class="svc-row">
-        <div><div class="svc-name">APP — RE:nvent Mobile App</div><div class="svc-desc">iOS App on rep cell phone. Event Settings, Remote Support, Live NPI matching</div></div>
+        <div><div class="svc-name">APP — RE:nvent Mobile App</div><div class="svc-desc">iOS App on rep cell phone. Event Settings, Remote Support</div></div>
         <span class="svc-price">$300 / unit</span>
         <div class="qty-wrap">
           <button class="qbtn" onclick="adj('img_qty',-1)">−</button>
@@ -768,7 +768,7 @@ function calcPrices(){
   // ── Per-unit hardware lines ──
   if(selectedSvcs.has('app')){
     const q = parseInt(val('app_qty'))||0;
-    lines.push({desc:'<strong>RE:nvent Mobile App:</strong> iOS App on rep cell phone. Event Settings, Remote Support, Live NPI matching', qty:q, unit:300, total:q*300});
+    lines.push({desc:'<strong>RE:nvent Mobile App:</strong> iOS App on rep cell phone. Event Settings, Remote Support', qty:q, unit:300, total:q*300});
     ccBase += q*300;
   }
 
@@ -799,7 +799,7 @@ function calcPrices(){
 
   if(selectedSvcs.has('image')){
     const q = parseInt(val('img_qty'))||0;
-    lines.push({desc:'<strong>APP:</strong> RE:nvent Mobile App: iOS App on rep cell phone. Event Settings, Remote Support, Live NPI matching',qty:q,unit:300,total:q*300});
+    lines.push({desc:'<strong>APP:</strong> RE:nvent Mobile App: iOS App on rep cell phone. Event Settings, Remote Support',qty:q,unit:300,total:q*300});
     ccBase += q*300;
     lines.push({desc:'<strong>Badge Image transcription</strong> and reg list match if available',qty:null,unit:null,total:650});
     ccBase += 650;
@@ -925,10 +925,7 @@ function calcPrices(){
   if($id('opt_expedite_app')&&$id('opt_expedite_app').checked){ lines.push({desc:'Expedite Service: order received less than 5 business days prior to event',qty:null,unit:null,total:500}); ccBase+=500; }
   if($id('opt_expedite_img')&&$id('opt_expedite_img').checked){ lines.push({desc:'Expedite Service: order received less than 5 business days prior to event',qty:null,unit:null,total:500}); ccBase+=500; }
 
-  // Remote Training included for app and image only
-  if(selectedSvcs.has('app') || selectedSvcs.has('image')){
-    lines.push({desc:'<strong>Remote Training:</strong> pre-scheduled 15 minute call with TD to review application set-up on their cell',qty:null,unit:null,total:'Included',included:true});
-  }
+
 
   // ── Totals ──
   const ccFee    = cc ? Math.round(ccBase * 0.03 * 100) / 100 : 0;
