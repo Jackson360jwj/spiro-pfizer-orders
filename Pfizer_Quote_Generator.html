@@ -1244,9 +1244,6 @@ function doImportObject(d, alreadyInKV){
   if($id('img_qty'))            $id('img_qty').value            = d.img_qty            || 0;
   if($id('list_qty'))           $id('list_qty').value           = d.list_qty           || 0;
 
-  // TOV — restore radio selection and update card highlight
-  if(d.tov){ const r=document.querySelector(`input[name="tov"][value="${d.tov}"]`); if(r) r.checked=true; }
-  onTovToggle();
   // Payment method
   if(d.payment_method){ const r=document.querySelector(`input[name="payment"][value="${d.payment_method}"]`); if(r) r.checked=true; }
   // Checkboxes — includes opt_api_scanner so scanner API state is restored
