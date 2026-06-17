@@ -166,7 +166,6 @@ textarea{height:72px;resize:vertical;}
         <div class="svc-type-check" id="svc_mobile_app" onclick="toggleServiceType('Mobile App', this)">📱 Mobile App</div>
         <div class="svc-type-check" id="svc_qr_code" onclick="toggleServiceType('QR Code', this)">🔲 QR Code</div>
         <div class="svc-type-check" id="svc_image_capture" onclick="toggleServiceType('Image Capture', this)" title="Image Capture uses the RE:nvent Mobile App to photograph attendee badges. When selected, Scanner, QR Code, and Mobile App are not applicable.">📸 Image Capture</div>
-        <div class="svc-type-check" id="svc_list_import" onclick="toggleServiceType('List Import', this)">📋 List Import</div>
         <div class="svc-type-check" id="svc_internet" onclick="toggleServiceType('Internet', this)" title="Wireless internet for 20x20 space up to 10 connections.">📶 Internet</div>
       </div>
       <div class="svc-note">Select one or more — customers may order multiple service types for the same event.</div>
@@ -197,32 +196,12 @@ textarea{height:72px;resize:vertical;}
       <div class="card-title"><span class="step-badge">2</span>Event Information</div>
       <div class="fg">
         <div class="fgroup">
-          <label class="lbl">Account Manager</label>
+          <label class="lbl">Account Manager (your name)</label>
           <input type="text" id="f_acct_mgr" placeholder="RE Account Manager name">
-        </div>
-        <div class="fgroup">
-          <label class="lbl">Account Manager Email</label>
-          <input type="email" id="f_acct_mgr_email" placeholder="acctmgr@thisisspiro.com">
         </div>
         <div class="fgroup">
           <label class="lbl">AE (Account Executive)</label>
           <input type="text" id="f_ae" placeholder="RE Account Executive name">
-        </div>
-        <div class="fgroup">
-          <label class="lbl">AE Email</label>
-          <input type="email" id="f_ae_email" placeholder="ae@thisisspiro.com">
-        </div>
-        <div class="fgroup">
-          <label class="lbl">Congress Manager (Your Name) <span class="req">*</span></label>
-          <input type="text" id="f_congress_mgr" placeholder="e.g. Kathy Deneen">
-        </div>
-        <div class="fgroup">
-          <label class="lbl">Congress Manager Email <span class="req">*</span></label>
-          <input type="email" id="f_congress_email" placeholder="you@pfizer.com">
-        </div>
-        <div class="fgroup">
-          <label class="lbl">Therapeutic Area <span class="req">*</span></label>
-          <input type="text" id="f_therapy" placeholder="e.g. Migraines, Oncology, Vaccines">
         </div>
         <div class="fgroup">
           <label class="lbl">Pfizer Project Owner</label>
@@ -294,9 +273,9 @@ textarea{height:72px;resize:vertical;}
 
     <!-- (Step 4 "Primary Product" removed — product/brand is captured per station in Step 3) -->
 
-    <!-- STEP 4: ASSOCIATION / VENDOR -->
+    <!-- STEP 4: ASSOCIATION -->
     <div class="card">
-      <div class="card-title"><span class="step-badge">4</span>Association / Vendor <span style="font-size:11px;font-weight:400;color:#888;text-transform:none;letter-spacing:0;">(optional)</span></div>
+      <div class="card-title"><span class="step-badge">4</span>Association <span style="font-size:11px;font-weight:400;color:#888;text-transform:none;letter-spacing:0;">(optional)</span></div>
       <div class="fg">
         <div class="fgroup">
           <label class="lbl">Association Contact Name</label>
@@ -305,10 +284,6 @@ textarea{height:72px;resize:vertical;}
         <div class="fgroup">
           <label class="lbl">Association Contact Email</label>
           <input type="email" id="f_assoc_contact_email" placeholder="contact@association.org">
-        </div>
-        <div class="fgroup fw">
-          <label class="lbl">Association / Vendor Name</label>
-          <input type="text" id="f_assoc_vendor_name" placeholder="e.g. Freeman, Experient, etc.">
         </div>
       </div>
     </div>
@@ -372,16 +347,12 @@ textarea{height:72px;resize:vertical;}
 const WORKER_URL = 'https://spiro-order-api.realityengineeringops.workers.dev';
 
 // ── Station Scanner Data ──
-const STATION_NAMES = ['Commercial','Med Info','Med Affairs','Market Access','EPIC - Every Color is Primary','Round Table PT (TOV)','Surf Activation','FAL','Health Equity','Other'];
-const SURVEY_TYPES  = ['Scan & Go','Scan & Go with Notes','Attendee Type','Attendee Type with Waiver','Attendee Type with Product Survey','Attendee Type with Waiver and Product Survey','Opt In Only','TOV Capture','Other'];
+const STATION_NAMES = ['Commercial','Med Info','Med Affairs','FAL','Health Equity','Med Pipeline','Other'];
+const SURVEY_TYPES  = ['Scan & Go','Scan & Go w/Notes on','Provider role survey','Comirnaty survey','Nurtec/Migraines survey','Paxlovid survey','Prevnar survey','Other'];
 // Therapeutic areas (current Pfizer commercial buckets) — empty buckets dropped.
 const THERAPY_LIST = [
   'Anti Viral',
-  'Cardiovascular / Metabolics',
-  'Chronic Diseases (Rheum)',
   'Dermatology',
-  'Endocrine',
-  'Hemophilia',
   'Hospital',
   'Inflammation',
   'Inflammation & Immunology (I&I)',
@@ -389,7 +360,6 @@ const THERAPY_LIST = [
   'Migraines',
   'Oncology',
   'Rare Diseases',
-  'Sterile Injectables',
   'Vaccines',
   'Other'
 ];
@@ -398,21 +368,16 @@ const THERAPY_LIST = [
 // to only the brands that live in that bucket. "Above Brand" / "Unbranded" /
 // "Other" are always available as escape hatches.
 const THERAPY_BRANDS = {
-  'Anti Viral':                       ['Lucira by Pfizer','Paxlovid','Above Brand','Unbranded','Other'],
-  'Cardiovascular / Metabolics':      ['Eliquis','Vyndamax','Vyndaqel','Above Brand','Unbranded','Other'],
-  'Chronic Diseases (Rheum)':         ['Xeljanz','Above Brand','Unbranded','Other'],
+  'Anti Viral':                       ['Paxlovid','Above Brand','Unbranded','Other'],
   'Dermatology':                      ['Cibinqo','Eucrisa','Litfulo','Above Brand','Unbranded','Other'],
-  'Endocrine':                        ['Genotropin','Somavert','Above Brand','Unbranded','Other'],
-  'Hemophilia':                       ['Hympavzi','Above Brand','Unbranded','Other'],
-  'Hospital':                         ['Octagam','Panzyga','Thrombin','Above Brand','Unbranded','Other'],
+  'Hospital':                         ['Octagam','Panzyga','SI Product A','Thrombin','Above Brand','Unbranded','Other'],
   'Inflammation':                     ['Velsipity','Above Brand','Unbranded','Other'],
   'Inflammation & Immunology (I&I)':  ['Cibinqo','Eucrisa','Litfulo','Velsipity','Xeljanz','Above Brand','Unbranded','Other'],
   'Internal Medicine':                ['Eliquis','Vyndamax','Vyndaqel','Genotropin','Somavert','Above Brand','Unbranded','Other'],
   'Migraines':                        ['Nurtec','Zavzpret','Above Brand','Unbranded','Other'],
   'Oncology':                         ['Adcetris','Bavencio','Besponsa','Biosimilars','Braftovi','Elranatamab','Ibrance','Inlyta','Lorbrena','Padcev','Raylumis','Talzenna','Tivdak','Tukysa','Xtandi','Above Brand','Unbranded','Other'],
   'Rare Diseases':                    ['Cutaquig','Oxbryta','Above Brand','Unbranded','Other'],
-  'Sterile Injectables':              ['Nexject','Above Brand','Unbranded','Other'],
-  'Vaccines':                         ['Abrysvo','Comirnaty','Penbraya','Prevnar 20','Ticovac','Trumenba','Above Brand','Unbranded','Other'],
+  'Vaccines':                         ['Abrysvo','Comirnaty','Lucira by Pfizer','Penbraya','Prevnar 20','Ticovac','Trumenba','Above Brand','Unbranded','Other'],
   'Other':                            ['Other'],
 };
 
@@ -498,7 +463,11 @@ function renumberStations(){
 
 function stOtherToggle(n, field, sel){
   const oth = document.getElementById('st' + n + '_' + field + '_oth');
-  if(oth) oth.style.display = (sel.value === 'Other') ? 'block' : 'none';
+  if(oth){
+    const isOther = sel.value === 'Other';
+    oth.style.display = isOther ? 'block' : 'none';
+    if(field === 'survey') oth.required = isOther;
+  }
   stUpdateTag(n);
 }
 
@@ -612,7 +581,6 @@ const SVC_DESCRIPTIONS = {
   'Mobile App':    '📱 <strong>Mobile App</strong> — iOS app on the rep\'s phone for lead capture with live NPI matching.',
   'QR Code':       '🔲 <strong>QR Code</strong> — RE generates a QR code; attendees self-scan with their phone and enter their details. Use when 3rd-party scanning is not allowed.',
   'Image Capture': '📸 <strong>Image Capture</strong> — App camera photographs the badge instead of scanning it. Use when no API kit is available.',
-  'List Import':   '📋 <strong>List Import</strong> — No on-site hardware needed. Import a pre-registration list and mark attendance digitally after the event.',
   'Internet':      '📶 <strong>Internet</strong> — Dedicated wireless internet for the booth space (up to 10 connections).',
 };
 
@@ -677,7 +645,7 @@ function updateQuantityFields(){
 // Shipping fields (delivery address, exhibit size, booth #, on-site contact, delivery date)
 // show when physical kit ships (Scanner) OR when on-site infrastructure is needed (Internet —
 // the install team needs the booth number and on-site contact). Mobile App, QR Code, Image
-// Capture, and List Import don't need any of this, so the section is hidden and cleared.
+// Capture don't need any of this, so the section is hidden and cleared.
 function updateShippingVisibility(){
   const hasScanner  = selectedServiceTypes.has('Scanner');
   const hasInternet = selectedServiceTypes.has('Internet');
@@ -709,9 +677,6 @@ function fmtDate(d){
 
 function validate(){
   const requiredFields = [
-    {id:'f_congress_mgr',    label:'Congress Manager'},
-    {id:'f_congress_email',  label:'Congress Manager Email'},
-    {id:'f_therapy',         label:'Therapeutic Area'},
     {id:'f_show_name',       label:'Show Name'},
     {id:'f_location',        label:'Location / Venue'},
     {id:'f_open_date',       label:'Open Date'},
@@ -822,12 +787,7 @@ function buildData(){
   const d = {
     // Event info — keys use f_ prefix to match Quote Generator element IDs directly
     f_acct_mgr:          val('f_acct_mgr'),
-    f_acct_mgr_email:    val('f_acct_mgr_email'),
     f_ae:                val('f_ae'),
-    f_ae_email:          val('f_ae_email'),
-    f_congress_mgr:      val('f_congress_mgr'),
-    f_congress_email:    val('f_congress_email'),
-    f_therapy:           val('f_therapy'),
     f_pfz_project_owner: val('f_pfz_project_owner'),
     f_pfz_mktg_email:    val('f_pfz_mktg_email'),
     f_show_name:         val('f_show_name'),
@@ -849,7 +809,6 @@ function buildData(){
     // Association / Badge API
     assoc_contact_name:  val('f_assoc_contact_name'),
     assoc_contact_email: val('f_assoc_contact_email'),
-    assoc_vendor_name:   val('f_assoc_vendor_name'),
     badge_api_available: badgeAPI,
     provider_reg_company: val('f_provider_reg_company'),
     api_badge_notes:     val('f_api_badge_notes'),
@@ -861,10 +820,7 @@ function buildData(){
 
 function buildSummaryHTML(d){
   const rows = [
-    ['Congress Manager', d.f_congress_mgr],
-    ['Email', d.f_congress_email],
     ['Show Name', d.f_show_name],
-    ['Therapeutic Area', d.f_therapy],
     ['Location / Venue', d.f_location],
     ['Delivery Address', (d.ship_type === 'booth' ? '📍 Direct to Booth — ' : d.ship_type === 'hotel' ? '🏨 Hotel — ' : '') + (d.f_delivery_addr||'')],
     ['Open Date', fmtDate(d.f_open_date)],

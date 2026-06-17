@@ -192,38 +192,17 @@ textarea{height:72px;resize:vertical;}
     <div class="fg">
       <!-- RE Internal -->
       <div class="fgroup" style="background:#f0f4f8;border-radius:6px;padding:8px 10px;">
-        <label class="lbl" style="color:#1a3a5c;">Account Manager (RE) *</label>
+        <label class="lbl" style="color:#1a3a5c;">Account Manager (your name) *</label>
         <input type="text" id="f_acct_mgr" placeholder="e.g. Kylene Pastorius" oninput="liveCalc()">
-      </div>
-      <div class="fgroup" style="background:#f0f4f8;border-radius:6px;padding:8px 10px;">
-        <label class="lbl" style="color:#1a3a5c;">Account Manager Email</label>
-        <input type="email" id="f_acct_mgr_email" placeholder="acctmgr@thisisspiro.com" oninput="liveCalc()">
       </div>
       <div class="fgroup" style="background:#f0f4f8;border-radius:6px;padding:8px 10px;">
         <label class="lbl" style="color:#1a3a5c;">AE (RE)</label>
         <input type="text" id="f_ae" placeholder="e.g. Ashley Simmons" oninput="liveCalc()">
       </div>
-      <div class="fgroup" style="background:#f0f4f8;border-radius:6px;padding:8px 10px;">
-        <label class="lbl" style="color:#1a3a5c;">AE Email</label>
-        <input type="email" id="f_ae_email" placeholder="ae@thisisspiro.com" oninput="liveCalc()">
-      </div>
       <!-- Pfizer Contact -->
-      <div class="fgroup">
-        <label class="lbl">Congress Manager *</label>
-        <input type="text" id="f_congress_mgr" placeholder="e.g. Kathy Deneen" oninput="liveCalc()">
-      </div>
-      <div class="fgroup">
-        <label class="lbl">Congress Manager Email</label>
-        <input type="email" id="f_congress_email" placeholder="manager@pfizer.com" oninput="liveCalc()">
-      </div>
       <div class="fgroup">
         <label class="lbl">Pfizer Project Owner</label>
         <input type="text" id="f_pfz_project_owner" placeholder="Pfizer project owner name" oninput="liveCalc()">
-      </div>
-      <!-- Event -->
-      <div class="fgroup">
-        <label class="lbl">Therapeutic Area</label>
-        <input type="text" id="f_therapy" placeholder="e.g. Vaccines" oninput="liveCalc()">
       </div>
       <div class="fgroup fw">
         <label class="lbl">Show Name *</label>
@@ -289,9 +268,6 @@ textarea{height:72px;resize:vertical;}
         <input type="text" id="badge_api_available" placeholder="Yes / No / Unknown">
       </div>
       <div class="fgroup">
-        <label class="lbl">Association / Vendor Name</label>
-        <input type="text" id="assoc_vendor_name" placeholder="e.g. Freeman, Cvent">
-      </div>
       <div class="fgroup">
         <label class="lbl">Association Contact Name</label>
         <input type="text" id="assoc_contact_name" placeholder="Contact name">
@@ -341,7 +317,6 @@ textarea{height:72px;resize:vertical;}
       <button class="svc-tab" id="tab_scanner" onclick="toggleSvc('scanner',this)">📷 Scanner</button>
       <button class="svc-tab" id="tab_qr"      onclick="toggleSvc('qr',this)">🔲 QR Code</button>
       <button class="svc-tab" id="tab_image"   onclick="toggleSvc('image',this)">📸 Image Capture</button>
-      <button class="svc-tab" id="tab_list"    onclick="toggleSvc('list',this)">📋 List Import</button>
     </div>
 
     <!-- APP -->
@@ -380,7 +355,6 @@ textarea{height:72px;resize:vertical;}
       <div class="divider"></div>
       <label class="lbl">Add-ons</label>
       <div class="opt-grid">
-        <label class="opt"><input type="checkbox" id="opt_prereg_app" onchange="liveCalc()"> Pre-Registration List Import into App ($500)</label>
         <label class="opt"><input type="checkbox" id="opt_expedite_app" onchange="liveCalc()"> Expedite Service – under 5 business days ($500)</label>
       </div>
     </div>
@@ -470,26 +444,7 @@ textarea{height:72px;resize:vertical;}
       <div class="divider"></div>
       <label class="lbl">Add-ons</label>
       <div class="opt-grid">
-        <label class="opt"><input type="checkbox" id="opt_prereg_img" onchange="liveCalc()"> Pre-Registration List Import into App ($500)</label>
         <label class="opt"><input type="checkbox" id="opt_expedite_img" onchange="liveCalc()"> Expedite Service – under 5 business days ($500)</label>
-      </div>
-    </div>
-
-    <!-- LIST IMPORT -->
-    <div id="svc_list" class="svc-section">
-      <div class="alert alert-info">ℹ️ <strong>Note:</strong> No TD Contact needed for List Import — the client will not be using RE scanning services.</div>
-      <div class="svc-row green">
-        <div>
-          <div class="svc-name">List Import</div>
-          <div class="svc-desc">Import attendee contact list for final reporting and customer matching</div>
-        </div>
-        <span class="svc-price">$750 flat</span>
-        <span style="font-size:11px;color:#27ae60;font-weight:700">Auto</span>
-      </div>
-      <div class="divider"></div>
-      <label class="lbl">Add-ons</label>
-      <div class="opt-grid">
-        <label class="opt"><input type="checkbox" id="opt_expedite_list" onchange="liveCalc()"> Expedite Service – under 5 business days ($500)</label>
       </div>
     </div>
 
@@ -574,18 +529,14 @@ textarea{height:72px;resize:vertical;}
         <td colspan="2" class="qhbar" style="width:60%">EVENT INFO</td>
         <td colspan="2" class="qhbar" style="text-align:center">Delivery Address</td>
       </tr>
-      <!-- Rows 1–9 share Delivery Address cell (rowspan=9) -->
+      <!-- Rows sharing Delivery Address cell -->
       <tr>
-        <td class="qlbl">Account Manager (RE)</td>
+        <td class="qlbl">Account Manager (your name)</td>
         <td class="qval" id="q_acct_mgr">—</td>
-        <td class="qtd-area" colspan="2" rowspan="10" id="q_delivery_addr" style="padding:8px;white-space:pre-line;color:#c0392b;font-weight:600;"></td>
+        <td class="qtd-area" colspan="2" rowspan="6" id="q_delivery_addr" style="padding:8px;white-space:pre-line;color:#c0392b;font-weight:600;"></td>
       </tr>
-      <tr><td class="qlbl">Account Manager Email</td><td id="q_acct_mgr_email">—</td></tr>
       <tr><td class="qlbl">AE (RE)</td><td id="q_ae">—</td></tr>
-      <tr><td class="qlbl">AE Email</td><td id="q_ae_email">—</td></tr>
-      <tr><td class="qlbl">Congress Manager</td><td id="q_congress_mgr">—</td></tr>
       <tr><td class="qlbl">Pfizer Project Owner</td><td id="q_pfz_project_owner">—</td></tr>
-      <tr><td class="qlbl">Therapeutic Area</td><td id="q_therapy">—</td></tr>
       <tr><td class="qlbl">Show Name</td><td id="q_show_name">—</td></tr>
       <tr><td class="qlbl">Location / Venue</td><td id="q_location" style="white-space:pre-line;">—</td></tr>
       <tr><td class="qlbl">Open Date</td><td id="q_open_date">—</td></tr>
@@ -713,7 +664,7 @@ async function doLogin(){
 }
 
 // ── State ──
-let selectedSvcs = new Set();   // multi-select: 'app','scanner','qr','image','list'
+let selectedSvcs = new Set();   // multi-select: 'app','scanner','qr','image'
 let savedOrderId = null;        // set when order is saved to worker
 let _importedData = null;       // raw imported data object
 
@@ -854,10 +805,6 @@ function calcPrices(){
     ccBase += 650;
   }
 
-  if(selectedSvcs.has('list')){
-    lines.push({desc:'<strong>List Import:</strong> Import attendee contact list for final reporting and customer matching.',qty:null,unit:null,total:750});
-    ccBase += 750;
-  }
 
   // ── SPIRO Event Set-up: driven by distinct brands in station rows ──
   const needsSetup = selectedSvcs.has('app') || selectedSvcs.has('scanner') || selectedSvcs.has('image');
@@ -975,11 +922,8 @@ function calcPrices(){
   }
 
   // ── Shared add-ons ──
-  if($id('opt_prereg_app')&& $id('opt_prereg_app').checked){ lines.push({desc:'Pre-Registration Attendee List Import into RE:nvent Mobile App for attendee look-up',qty:null,unit:null,total:500}); ccBase+=500; }
-  if($id('opt_prereg_img')&& $id('opt_prereg_img').checked){ lines.push({desc:'Pre-Registration Attendee List Import into RE:nvent Mobile App for attendee look-up',qty:null,unit:null,total:500}); ccBase+=500; }
   if($id('opt_expedite_app')&&$id('opt_expedite_app').checked){ lines.push({desc:'Expedite Service: order received less than 5 business days prior to event',qty:null,unit:null,total:500}); ccBase+=500; }
   if($id('opt_expedite_img')&&$id('opt_expedite_img').checked){ lines.push({desc:'Expedite Service: order received less than 5 business days prior to event',qty:null,unit:null,total:500}); ccBase+=500; }
-  if($id('opt_expedite_list')&&$id('opt_expedite_list').checked){ lines.push({desc:'Expedite Service: order received less than 5 business days prior to event',qty:null,unit:null,total:500}); ccBase+=500; }
 
   // Remote Training included for app and image only
   if(selectedSvcs.has('app') || selectedSvcs.has('image')){
@@ -1012,13 +956,9 @@ function buildQuote(){
   $id('q_num').textContent = val('f_qnum') || '—';
 
   // Event fields
-  $id('q_acct_mgr').textContent       = val('f_acct_mgr')          || '—';
-  $id('q_acct_mgr_email').textContent = val('f_acct_mgr_email')    || '—';
-  $id('q_ae').textContent             = val('f_ae')                || '—';
-  $id('q_ae_email').textContent       = val('f_ae_email')          || '—';
-  $id('q_congress_mgr').textContent   = val('f_congress_mgr')      || '—';
+  $id('q_acct_mgr').textContent          = val('f_acct_mgr')          || '—';
+  $id('q_ae').textContent                = val('f_ae')                || '—';
   $id('q_pfz_project_owner').textContent = val('f_pfz_project_owner') || '—';
-  $id('q_therapy').textContent     = val('f_therapy')        || '—';
   $id('q_show_name').textContent   = val('f_show_name')      || '—';
   $id('q_location').textContent    = val('f_location')       || '—';
   const shipType = document.querySelector('input[name="ship_type"]:checked')?.value;
@@ -1226,13 +1166,13 @@ function doImportObject(d, alreadyInKV){
   // Fill event fields — keys match both QG element IDs and Order Form buildData() keys
   const fieldMap = {
     // RE internal
-    f_acct_mgr:1, f_acct_mgr_email:1, f_ae:1, f_ae_email:1,
+    f_acct_mgr:1, f_ae:1,
     // Event info
-    f_pfz_project_owner:1, f_congress_mgr:1, f_congress_email:1, f_therapy:1, f_show_name:1, f_location:1,
+    f_pfz_project_owner:1, f_show_name:1, f_location:1,
     f_delivery_addr:1, f_open_date:1, f_close_date:1, f_exhibit_size:1, f_booth:1,
     f_pfz_mktg_email:1, f_onsite_contact:1, f_delivery_date:1, f_notes:1,
     // Association / API fields (from order form)
-    badge_api_available:1, assoc_vendor_name:1, assoc_contact_name:1, assoc_contact_phone:1,
+    badge_api_available:1, assoc_contact_name:1, assoc_contact_phone:1,
     assoc_contact_email:1, provider_reg_company:1, api_badge_contact_name:1, api_badge_contact_email:1,
     api_badge_notes:1
   };
@@ -1246,7 +1186,7 @@ function doImportObject(d, alreadyInKV){
 
   // Show association card if there's any association data
   const assocCard = $id('assoc_api_card');
-  if(assocCard && (d.badge_api_available || d.assoc_vendor_name || d.assoc_contact_name || d.provider_reg_company)){
+  if(assocCard && (d.badge_api_available || d.assoc_contact_name || d.provider_reg_company)){
     assocCard.style.display = 'block';
   }
 
@@ -1261,8 +1201,7 @@ function doImportObject(d, alreadyInKV){
   // appears we open the scanner tab too and (below) seed internet_qty=1.
   const svcLabelMap = {
     'Mobile App':'app', 'Scanner':'scanner', 'QR Code':'qr',
-    'Image Capture':'image', 'List Import':'list',
-    'Internet':'scanner'
+    'Image Capture':'image', 'Internet':'scanner'
   };
   const svcString = d.service_type || '';
   const svcLabels = svcString.split(',').map(s => s.trim()).filter(Boolean);
@@ -1311,10 +1250,10 @@ function doImportObject(d, alreadyInKV){
   // Payment method
   if(d.payment_method){ const r=document.querySelector(`input[name="payment"][value="${d.payment_method}"]`); if(r) r.checked=true; }
   // Checkboxes — includes opt_api_scanner so scanner API state is restored
-  const cbMap = {opt_prereg_app:'opt_prereg_app', opt_expedite_app:'opt_expedite_app',
+  const cbMap = {opt_expedite_app:'opt_expedite_app',
     opt_api_scanner:'opt_api_scanner',
-    opt_api_img:'opt_api_img', opt_prereg_img:'opt_prereg_img',
-    opt_expedite_img:'opt_expedite_img', opt_expedite_list:'opt_expedite_list'};
+    opt_api_img:'opt_api_img',
+    opt_expedite_img:'opt_expedite_img'};
   Object.keys(cbMap).forEach(k => { const el=$id(cbMap[k]); if(el) el.checked=(d[k]==='1'); });
   // API costs
   if(d.api_cost         && $id('api_cost'))         $id('api_cost').value         = d.api_cost;
@@ -1413,14 +1352,9 @@ async function saveCurrentFormState(extraFields){
     order_id:            savedOrderId,
     // RE internal
     f_acct_mgr:          val('f_acct_mgr'),
-    f_acct_mgr_email:    val('f_acct_mgr_email'),
     f_ae:                val('f_ae'),
-    f_ae_email:          val('f_ae_email'),
     f_pfz_project_owner: val('f_pfz_project_owner'),
     // Event info
-    f_congress_mgr:      val('f_congress_mgr'),
-    f_congress_email:    val('f_congress_email'),
-    f_therapy:           val('f_therapy'),
     f_product:           product,
     // Keep product_program in sync so Order Management dashboard shows the correct product
     product_program:     product,
@@ -1441,7 +1375,7 @@ async function saveCurrentFormState(extraFields){
     otis_quote_number: val('f_qnum'),  // keep OTIS quote number field in sync
     f_qdate:         val('f_qdate'),
     // Services selected — keep service_type in sync with Order Management
-    service_type:    [...selectedSvcs].map(k => ({app:'Mobile App',scanner:'Scanner',qr:'QR Code',image:'Image Capture',list:'List Import'}[k]||k)).join(', '),
+    service_type:    [...selectedSvcs].map(k => ({app:'Mobile App',scanner:'Scanner',qr:'QR Code',image:'Image Capture'}[k]||k)).join(', '),
     // Quantities
     app_qty:            qnum('app_qty'),
     scanner_qty_nodata: qnum('scanner_qty_nodata'),
@@ -1457,13 +1391,10 @@ async function saveCurrentFormState(extraFields){
     tov:             document.querySelector('input[name="tov"]:checked')?.value || '',
     payment_method:  document.querySelector('input[name="payment"]:checked')?.value || '',
     // Checkboxes
-    opt_prereg_app:     qbtn('opt_prereg_app')   ? '1' : '0',
     opt_expedite_app:   qbtn('opt_expedite_app') ? '1' : '0',
     opt_api_scanner:    qbtn('opt_api_scanner')  ? '1' : '0',
     opt_api_img:        qbtn('opt_api_img')       ? '1' : '0',
-    opt_prereg_img:     qbtn('opt_prereg_img')    ? '1' : '0',
     opt_expedite_img:   qbtn('opt_expedite_img')  ? '1' : '0',
-    opt_expedite_list:  qbtn('opt_expedite_list') ? '1' : '0',
     // Station scanner configuration
     stations:           getStationsDataQG(),
     // Merge any caller-supplied fields (e.g. order_status, timestamps) into the same PATCH
@@ -1537,9 +1468,9 @@ function backToEdit(){
 
 // Business type map based on service selected (use first/primary selection for OTIS)
 function otisBusinessType(){
-  const map = { app:'app', scanner:'scanners', qr:'qr', image:'image', list:'list' }; // lowercase, matches OTIS API values
+  const map = { app:'app', scanner:'scanners', qr:'qr', image:'image' }; // lowercase, matches OTIS API values
   // Use the first selected service type as the primary OTIS business type
-  for(const s of ['app','scanner','qr','image','list']){
+  for(const s of ['app','scanner','qr','image']){
     if(selectedSvcs.has(s)) return map[s] || s;
   }
   return '';
@@ -1578,7 +1509,7 @@ async function createOTISOrder(){
     SalesPerson:    'justinjackson',               // correct field name (NOT AccountOwner)
     Status:         1,                             // 1 = Quoted (confirmed from working quote)
     CompanyName:    'Pfizer SPIRO',
-    ContactName:    val('f_congress_mgr') || val('f_acct_mgr') || '',
+    ContactName:    val('f_acct_mgr') || '',
     BusinessType:   otisBusinessType() || 'app',
     QuotationDate:  qdate,                         // "YYYY-MM-DDTHH:00:00" (confirmed format)
   };
@@ -1630,26 +1561,19 @@ async function createOTISOrder(){
 let stationCount = 0;
 
 const STATION_NAMES = [
-  'Commercial','Med Info','Med Affairs','Market Access',
-  'EPIC - Every Color is Primary','Round Table PT (TOV)',
-  'Surf Activation','FAL','Health Equity','Other'
+  'Commercial','Med Info','Med Affairs','FAL','Health Equity','Med Pipeline','Other'
 ];
 
 const SURVEY_TYPES = [
-  'Scan & Go','Scan & Go with Notes','Attendee Type',
-  'Attendee Type with Waiver','Attendee Type with Product Survey',
-  'Attendee Type with Waiver and Product Survey',
-  'Opt In Only','TOV Capture','Other'
+  'Scan & Go','Scan & Go w/Notes on','Provider role survey',
+  'Comirnaty survey','Nurtec/Migraines survey','Paxlovid survey',
+  'Prevnar survey','Other'
 ];
 
 // Therapeutic areas (current Pfizer commercial buckets) — empty buckets dropped.
 const THERAPY_LIST = [
   'Anti Viral',
-  'Cardiovascular / Metabolics',
-  'Chronic Diseases (Rheum)',
   'Dermatology',
-  'Endocrine',
-  'Hemophilia',
   'Hospital',
   'Inflammation',
   'Inflammation & Immunology (I&I)',
@@ -1657,7 +1581,6 @@ const THERAPY_LIST = [
   'Migraines',
   'Oncology',
   'Rare Diseases',
-  'Sterile Injectables',
   'Vaccines',
   'Other'
 ];
@@ -1666,21 +1589,16 @@ const THERAPY_LIST = [
 // to only the brands that live in that bucket. "Above Brand" / "Unbranded" /
 // "Other" are always available as escape hatches.
 const THERAPY_BRANDS = {
-  'Anti Viral':                       ['Lucira by Pfizer','Paxlovid','Above Brand','Unbranded','Other'],
-  'Cardiovascular / Metabolics':      ['Eliquis','Vyndamax','Vyndaqel','Above Brand','Unbranded','Other'],
-  'Chronic Diseases (Rheum)':         ['Xeljanz','Above Brand','Unbranded','Other'],
+  'Anti Viral':                       ['Paxlovid','Above Brand','Unbranded','Other'],
   'Dermatology':                      ['Cibinqo','Eucrisa','Litfulo','Above Brand','Unbranded','Other'],
-  'Endocrine':                        ['Genotropin','Somavert','Above Brand','Unbranded','Other'],
-  'Hemophilia':                       ['Hympavzi','Above Brand','Unbranded','Other'],
-  'Hospital':                         ['Octagam','Panzyga','Thrombin','Above Brand','Unbranded','Other'],
+  'Hospital':                         ['Octagam','Panzyga','SI Product A','Thrombin','Above Brand','Unbranded','Other'],
   'Inflammation':                     ['Velsipity','Above Brand','Unbranded','Other'],
   'Inflammation & Immunology (I&I)':  ['Cibinqo','Eucrisa','Litfulo','Velsipity','Xeljanz','Above Brand','Unbranded','Other'],
   'Internal Medicine':                ['Eliquis','Vyndamax','Vyndaqel','Genotropin','Somavert','Above Brand','Unbranded','Other'],
   'Migraines':                        ['Nurtec','Zavzpret','Above Brand','Unbranded','Other'],
   'Oncology':                         ['Adcetris','Bavencio','Besponsa','Biosimilars','Braftovi','Elranatamab','Ibrance','Inlyta','Lorbrena','Padcev','Raylumis','Talzenna','Tivdak','Tukysa','Xtandi','Above Brand','Unbranded','Other'],
   'Rare Diseases':                    ['Cutaquig','Oxbryta','Above Brand','Unbranded','Other'],
-  'Sterile Injectables':              ['Nexject','Above Brand','Unbranded','Other'],
-  'Vaccines':                         ['Abrysvo','Comirnaty','Penbraya','Prevnar 20','Ticovac','Trumenba','Above Brand','Unbranded','Other'],
+  'Vaccines':                         ['Abrysvo','Comirnaty','Lucira by Pfizer','Penbraya','Prevnar 20','Ticovac','Trumenba','Above Brand','Unbranded','Other'],
   'Other':                            ['Other'],
 };
 
