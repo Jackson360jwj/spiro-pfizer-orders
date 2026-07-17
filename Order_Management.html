@@ -100,6 +100,9 @@ tr.selected td{background:#e8f0fe;}
     <h2>RE Order Management</h2>
     <p>Pfizer SPIRO — Internal Use Only</p>
     <input type="password" id="login-pw" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
+    <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#555;margin-bottom:10px;cursor:pointer;text-align:left;">
+      <input type="checkbox" id="login-remember" checked style="width:auto;margin:0;"> Remember me on this computer
+    </label>
     <button onclick="doLogin()">Sign In</button>
     <div class="login-error" id="login-error"></div>
   </div>
@@ -208,10 +211,13 @@ async function doLogin(){
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({password: pw})
     });
-    if(!r.ok){ err.textContent = 'Incorrect password. Try again.'; return; }
+    if(!r.ok){ localStorage.removeItem('re_saved_pw'); err.textContent = 'Incorrect password. Try again.'; return; }
     const data = await r.json();
     sessionToken = data.token;
     sessionStorage.setItem('pfizer_token', sessionToken);
+    const remEl = document.getElementById('login-remember');
+    if(remEl && remEl.checked) localStorage.setItem('re_saved_pw', pw);
+    else localStorage.removeItem('re_saved_pw');
     document.getElementById('login-overlay').classList.add('hidden');
     loadOrders();
   } catch(e){
@@ -691,8 +697,14 @@ if(sessionToken){
   document.getElementById('login-overlay').classList.add('hidden');
   loadOrders();
 } else {
-  // leave overlay visible; focus password field
-  document.getElementById('login-pw').focus();
+  const saved = localStorage.getItem('re_saved_pw');
+  if(saved){
+    document.getElementById('login-pw').value = saved;
+    doLogin();
+  } else {
+    // leave overlay visible; focus password field
+    document.getElementById('login-pw').focus();
+  }
 }
 // Auto-refresh every 60s (only when logged in)
 setInterval(()=>{ if(sessionToken) loadOrders(); }, 60000);
