@@ -1342,13 +1342,12 @@ function doImportObject(d, alreadyInKV){
 // Pass extraFields (e.g. {order_status, quote_generated_at}) to merge into the same single
 // PATCH — this avoids a race condition where two simultaneous PATCHes overwrite each other.
 async function saveCurrentFormState(extraFields){
-  if(!savedOrderId) return; // no order loaded, nothing to save
   const qbtn = (id) => { const el=$id(id); return el ? el.checked : false; };
   const qnum = (id) => { const el=$id(id); return el ? (parseFloat(el.value) || 0) : 0; };
   const product = val('f_product');
 
-  const patch = {
-    order_id:            savedOrderId,
+  // Collect current form state (without order_id — added below as needed)
+  const formData = {
     // RE internal
     f_acct_mgr:          val('f_acct_mgr'),
     f_ae:                val('f_ae'),
@@ -1396,11 +1395,18 @@ async function saveCurrentFormState(extraFields){
     opt_expedite_img:   qbtn('opt_expedite_img')  ? '1' : '0',
     // Station scanner configuration
     stations:           getStationsDataQG(),
-    // Merge any caller-supplied fields (e.g. order_status, timestamps) into the same PATCH
-    // so we never have two concurrent PATCH calls racing against each other in the Worker.
+    // Merge any caller-supplied fields (e.g. order_status, timestamps)
     ...(extraFields || {}),
   };
 
+  if(!savedOrderId){
+    // QG was opened directly (no ?order_id=) — create a new KV record from current form state.
+    // saveOrderToProxy will set savedOrderId on success.
+    await saveOrderToProxy(formData, '');
+    return;
+  }
+
+  const patch = Object.assign({ order_id: savedOrderId }, formData);
   try {
     await fetch(WORKER_URL + '/update-order', {
       method: 'PATCH',
@@ -1414,10 +1420,9 @@ async function saveOrderToProxy(d, importCode){
   const statusEl = $id('save-order-status');
   if(statusEl) statusEl.textContent = '⏳ Saving order…';
   try {
-    const payload = Object.assign({}, d, {
+    const payload = Object.assign({ order_status: 'Submitted' }, d, {
       import_code: importCode || '',
-      order_status: 'Submitted',
-    });
+    }); // d.order_status wins if set (e.g. 'Quote Generated' when saving directly from QG)
     const resp = await fetch(WORKER_URL + '/save-order', {
       method: 'POST',
       headers: authHeaders(),
