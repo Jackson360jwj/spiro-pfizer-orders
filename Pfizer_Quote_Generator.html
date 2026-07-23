@@ -766,9 +766,9 @@ function calcPrices(){
   let api = 0;
   const lines = [];
 
-  const setupDesc = 'Event Set-up, Badge Integration, Remote Support, Post Pfizer Customer match + NPI Matching. Executive summary report delivered 5 business days after receipt of data. Access to full data export provided to brand manager as requested. Deliver lead records and all required data to Pfizer MDM Data Warehouse.';
+  const setupDesc = 'Each unique Brand/Therapy requires its own event and set-up in our system so that its leads are tagged and labeled correctly in the Pfizer Data Warehouse. The Lead Service Fee covers:<ul style="margin:6px 0 0 18px;padding:0;line-height:1.7;"><li>Setting up the configuration for each of the devices/apps</li><li>Implementing badge/API integration and testing</li><li>Setting up devices, or creating instruction sheets for Reps to set up their own devices</li><li>Remote support during the show if needed</li><li>Post-event lead cleaning (removing test leads) and matching scans with the registration company if needed</li><li>Post-event NPI matching</li><li>Post-event Pfizer Customer Matching</li><li>Delivery of the data to the Pfizer MDM warehouse</li><li>Delivery of the summary report and full data export to the Pfizer brand manager</li></ul>';
 
-  const setupSimple = 'Event Set-up, Badge Integration, Remote Support, Post Pfizer Customer match + NPI Matching. Executive summary report delivered 5 business days after receipt of data. Access to full data export provided to brand manager as requested. Deliver lead records and all required data to Pfizer MDM Data Warehouse.';
+  const setupSimple = setupDesc;
 
   // ── Per-unit hardware lines ──
   if(selectedSvcs.has('app')){
