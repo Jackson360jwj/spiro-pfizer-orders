@@ -466,6 +466,14 @@ textarea{height:72px;resize:vertical;}
     </div>
 
     <!-- SHARED: no TOV for Pfizer SPIRO booth events -->
+
+    <!-- Custom Line Items - one-off extras with editable name and price -->
+    <div id="custom_lines_block" style="margin-top:16px;padding-top:16px;border-top:1px solid #eee;">
+      <label class="lbl" style="display:block;margin-bottom:4px;">Custom Line Items</label>
+      <p style="font-size:11px;color:#888;margin:0 0 10px;">Add one-off extras to the quote &mdash; name it and set a price. Appears as its own line on the quote.</p>
+      <div id="custom_lines_rows"></div>
+      <button type="button" onclick="addCustomLine()" style="padding:7px 14px;background:#fff;color:#1a3a5c;border:2px dashed #1a3a5c;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">+ Add Custom Line Item</button>
+    </div>
   </div>
 
   <!-- ── STEP 3: QUOTE DETAILS ── -->
@@ -819,9 +827,12 @@ function calcPrices(){
   }
 
   if(selectedSvcs.has('image')){
-    const q = parseInt(val('img_qty'))||0;
-    lines.push({desc:'<strong>APP:</strong> RE:nvent Mobile App: iOS App on rep cell phone. Event Settings, Remote Support',qty:q,unit:300,total:q*300});
-    ccBase += q*300;
+    // If Mobile App is also selected, its licenses are already billed above - don't double-charge
+    if(!selectedSvcs.has('app')){
+      const q = parseInt(val('img_qty'))||0;
+      lines.push({desc:'<strong>APP:</strong> RE:nvent Mobile App: iOS App on rep cell phone. Event Settings, Remote Support',qty:q,unit:300,total:q*300});
+      ccBase += q*300;
+    }
     lines.push({desc:'<strong>Badge Image transcription</strong> and reg list match if available',qty:null,unit:null,total:650});
     ccBase += 650;
   }
@@ -952,8 +963,16 @@ function calcPrices(){
   }
 
   // ── Shared add-ons ──
-  if($id('opt_expedite_app')&&$id('opt_expedite_app').checked){ lines.push({desc:'Expedite Service: order received less than 5 business days prior to event',qty:null,unit:null,total:500}); ccBase+=500; }
-  if($id('opt_expedite_img')&&$id('opt_expedite_img').checked){ lines.push({desc:'Expedite Service: order received less than 5 business days prior to event',qty:null,unit:null,total:500}); ccBase+=500; }
+  // Expedite is billed once per event even if checked in multiple service sections
+  if(($id('opt_expedite_app')&&$id('opt_expedite_app').checked) || ($id('opt_expedite_img')&&$id('opt_expedite_img').checked)){
+    lines.push({desc:'Expedite Service: order received less than 5 business days prior to event',qty:null,unit:null,total:500}); ccBase+=500;
+  }
+
+  // Custom line items (one-off extras with editable name + price)
+  getCustomLines().forEach(cl => {
+    lines.push({desc: cl.name, qty:null, unit:null, total: cl.price});
+    ccBase += cl.price;
+  });
 
 
 
@@ -963,6 +982,40 @@ function calcPrices(){
   const grand    = subtotal + ccFee;
 
   return {ccBase, subtotal, api, ccFee, grand, lines};
+}
+
+// Custom line items - add/remove/read
+function addCustomLine(name, price){
+  const row = document.createElement('div');
+  row.className = 'custom-line-row';
+  row.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:8px;';
+  row.innerHTML =
+    '<input type="text" class="cl-name" placeholder="e.g. On-site support day" ' +
+      'style="flex:1;padding:8px 10px;border:1px solid #ddd;border-radius:5px;font-size:13px;" oninput="liveCalc()">' +
+    '<span style="font-size:12px;color:#555;">$</span>' +
+    '<input type="number" class="cl-price" placeholder="0" min="0" step="0.01" ' +
+      'style="width:100px;padding:8px 10px;border:1px solid #ddd;border-radius:5px;font-size:13px;text-align:right;" oninput="liveCalc()">' +
+    '<button type="button" onclick="this.parentElement.remove();liveCalc();" title="Remove" ' +
+      'style="padding:6px 10px;background:#fdf2f2;color:#c0392b;border:1px solid #e74c3c;border-radius:5px;font-size:12px;font-weight:700;cursor:pointer;">X</button>';
+  $id('custom_lines_rows').appendChild(row);
+  if(name !== undefined)  row.querySelector('.cl-name').value  = name;
+  if(price !== undefined) row.querySelector('.cl-price').value = price;
+}
+
+function getCustomLines(){
+  const out = [];
+  document.querySelectorAll('#custom_lines_rows .custom-line-row').forEach(row => {
+    const name  = row.querySelector('.cl-name').value.trim();
+    const price = parseFloat(row.querySelector('.cl-price').value);
+    if(name && !isNaN(price)) out.push({name, price});
+  });
+  return out;
+}
+
+function setCustomLines(arr){
+  const wrap = $id('custom_lines_rows');
+  if(wrap) wrap.innerHTML = '';
+  (arr || []).forEach(cl => addCustomLine(cl.name, cl.price));
 }
 
 function liveCalc(){
@@ -1283,6 +1336,10 @@ function doImportObject(d, alreadyInKV){
   // API costs
   if(d.api_cost         && $id('api_cost'))         $id('api_cost').value         = d.api_cost;
   if(d.scanner_api_cost && $id('scanner_api_cost')) $id('scanner_api_cost').value = d.scanner_api_cost;
+  // Custom line items - restore from saved JSON
+  if(d.custom_lines){
+    try { setCustomLines(JSON.parse(d.custom_lines)); } catch(e){ console.error('custom_lines parse failed', e); }
+  }
   if($id('api_cost_actual')){ $id('api_cost_actual').checked = (d.api_cost_actual === '1'); onApiActualToggle(); }
   // Quote number — restore if previously saved
   if(d.f_qnum && $id('f_qnum')) $id('f_qnum').value = d.f_qnum;
@@ -1414,6 +1471,7 @@ async function saveCurrentFormState(extraFields){
     api_cost:        val('api_cost'),
     api_cost_actual: ($id('api_cost_actual') && $id('api_cost_actual').checked) ? '1' : '0',
     scanner_api_cost: val('scanner_api_cost'),
+    custom_lines:    JSON.stringify(getCustomLines()),
     tov:             document.querySelector('input[name="tov"]:checked')?.value || '',
     payment_method:  document.querySelector('input[name="payment"]:checked')?.value || '',
     // Checkboxes
