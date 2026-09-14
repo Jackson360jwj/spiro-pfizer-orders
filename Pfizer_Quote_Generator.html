@@ -333,7 +333,7 @@ textarea{height:72px;resize:vertical;}
         </div>
       </div>
       <div class="svc-row green">
-        <div><div class="svc-name">Event Set-up</div><div class="svc-desc">Symposia Survey, Post Show Report, DLU Compliance, CDW delivery (13 countries)</div></div>
+        <div><div class="svc-name">Event Set-up</div><div class="svc-desc">Per-brand event set-up: device/app configuration, badge/API integration, remote support, post-event NPI and Pfizer Customer Matching, delivery to the Pfizer MDM warehouse, summary report and data export</div></div>
         <span class="svc-price" id="app_setup_disp">$1,850</span>
         <span style="font-size:11px;color:#27ae60;font-weight:700">Auto</span>
       </div>
@@ -390,16 +390,22 @@ textarea{height:72px;resize:vertical;}
           <button class="qbtn" onclick="adj('internet_qty',1)">+</button>
         </div>
       </div>
-      <div class="svc-row" style="background:#fff8e1;border:1px solid #f9a825;">
-        <div>
-          <div class="svc-name">Badge Dev Kit API <span style="color:#e67e22;font-size:11px;">(if required)</span></div>
-          <div class="svc-desc" style="color:#c0392b;">Pass through cost for API license — estimate shown. Verify exact amount before finalizing.</div>
+      <div class="svc-row" style="background:#fff8e1;border:1px solid #f9a825;flex-wrap:wrap;gap:6px;">
+        <div style="flex:1;min-width:200px;">
+          <div class="svc-name">Badge Dev Kit API <span style="color:#e67e22;font-size:11px;">(included by default; uncheck for shows with no API)</span></div>
+          <div class="svc-desc" id="scanner_api_desc" style="color:#c0392b;">Pass through cost for API license. The $1,200 placeholder prints as an estimate until "Actual cost confirmed" is checked; issue a revised quote once the venue cost is known.</div>
         </div>
-        <div style="display:flex;align-items:center;gap:6px;">
-          <label class="opt" style="margin:0;"><input type="checkbox" id="opt_api_scanner" onchange="liveCalc()"> Include</label>
-          <span style="font-size:12px;color:#555;margin-left:8px;">$</span>
-          <input type="number" id="scanner_api_cost" value="500" min="0" style="width:80px;text-align:center;padding:5px 6px;border:1px solid #f9a825;border-radius:4px;font-size:13px;font-weight:700;" oninput="liveCalc()">
-          <span style="font-size:10px;color:#888;font-style:italic;">est.</span>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <label class="opt" style="margin:0;"><input type="checkbox" id="opt_api_scanner" checked onchange="liveCalc()"> Include</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#555;cursor:pointer;white-space:nowrap;">
+            <input type="checkbox" id="scanner_api_actual" onchange="onScannerApiActualToggle()">
+            Actual cost confirmed
+          </label>
+          <div style="display:flex;align-items:center;gap:4px;">
+            <span style="font-size:12px;color:#555;">$</span>
+            <input type="number" id="scanner_api_cost" value="1200" min="0" style="width:80px;text-align:center;padding:5px 6px;border:1px solid #f9a825;border-radius:4px;font-size:13px;font-weight:700;" oninput="liveCalc()">
+            <span id="scanner_api_est_label" style="font-size:10px;color:#e67e22;font-style:italic;font-weight:600;">est.</span>
+          </div>
         </div>
       </div>
     </div>
@@ -416,7 +422,7 @@ textarea{height:72px;resize:vertical;}
         </div>
       </div>
       <div class="svc-row green">
-        <div><div class="svc-name">Event Set-up</div><div class="svc-desc">Symposia Survey, Post Show Report, Export, Compliance Tracking</div></div>
+        <div><div class="svc-name">Event Set-up</div><div class="svc-desc">Event set-up: configuration, remote support, post-event matching, data delivery and summary report. No API charge for QR Code.</div></div>
         <span class="svc-price">$1,250</span>
         <span style="font-size:11px;color:#27ae60;font-weight:700">Auto</span>
       </div>
@@ -434,7 +440,7 @@ textarea{height:72px;resize:vertical;}
         </div>
       </div>
       <div class="svc-row green">
-        <div><div class="svc-name">Event Set-up</div><div class="svc-desc">Symposia Survey, Post Show Report, DLU Compliance, CDW delivery (13 countries)</div></div>
+        <div><div class="svc-name">Event Set-up</div><div class="svc-desc">Per-brand event set-up: device/app configuration, badge/API integration, remote support, post-event NPI and Pfizer Customer Matching, delivery to the Pfizer MDM warehouse, summary report and data export</div></div>
         <span class="svc-price" id="img_setup_disp">$1,850</span>
         <span style="font-size:11px;color:#27ae60;font-weight:700">Auto</span>
       </div>
@@ -641,7 +647,7 @@ textarea{height:72px;resize:vertical;}
 
     <div class="qfooter">
       Account Executive: Justin Jackson &nbsp;360-909-3709 &nbsp;justin.jackson@realityengineering.com<br>
-      Reality Engineering | 4421 C Street, Suite 1A | Washougal | WA | 98671 | 360-448-6361
+      Reality Engineering | 421 C Street, Suite 1A | Washougal | WA | 98671 | 360-909-3709
     </div>
   </div>
 
@@ -751,6 +757,23 @@ function onApiActualToggle(){
     } else {
       descEl.style.color = '#c0392b';
       descEl.textContent = 'Event venue API cost — estimate shown. Katherine to verify exact amount before finalizing.';
+    }
+  }
+  liveCalc();
+}
+
+function onScannerApiActualToggle(){
+  const isActual = $id('scanner_api_actual') && $id('scanner_api_actual').checked;
+  const estLabel = $id('scanner_api_est_label');
+  const descEl   = $id('scanner_api_desc');
+  if(estLabel) estLabel.style.display = isActual ? 'none' : 'inline';
+  if(descEl){
+    if(isActual){
+      descEl.style.color = '#27ae60';
+      descEl.textContent = 'Actual cost confirmed. The quote will print this line without the estimate note.';
+    } else {
+      descEl.style.color = '#c0392b';
+      descEl.textContent = 'Pass through cost for API license. The $1,200 placeholder prints as an estimate until "Actual cost confirmed" is checked; issue a revised quote once the venue cost is known.';
     }
   }
   liveCalc();
@@ -879,7 +902,7 @@ function calcPrices(){
         const price = idx === 0 ? setupPrice : extraSetupPrice;
         const label = idx === 0 ? 'Lead Service Event Set-up' : 'Extra Event Set-up (Additional Brand)';
         const brandTag = brand ? ` — <em>${brand}</em>` : '';
-        lines.push({desc:`<strong>${label}${brandTag}:</strong> ${idx===0 ? setupDesc.replace('Lead Service Event Set-up: ','') : 'Symposia Survey, Post Show Report, Export, Compliance Tracking, CDW delivery — additional brand tagging in Pfizer Data Warehouse.'}`, qty:null, unit:null, total:price});
+        lines.push({desc:`<strong>${label}${brandTag}:</strong> ${idx===0 ? setupDesc.replace('Lead Service Event Set-up: ','') : 'Separate event and set-up for this brand so its leads are tagged and labeled correctly in the Pfizer Data Warehouse. Covers the same services listed under the Lead Service Event Set-up above.'}`, qty:null, unit:null, total:price});
         ccBase += price;
 
         // New Configuration: for each (brand, therapy) group under this brand,
@@ -906,12 +929,14 @@ function calcPrices(){
   }
 
   // ── API passthrough ──
+  // Client-facing note printed next to any API amount that has not been confirmed.
+  const API_EST_NOTE = ' <em style="font-size:10px;color:#e67e22;">(estimate; final venue API cost will be confirmed and a revised quote issued)</em>';
   if(selectedSvcs.has('app')){
     const apiRaw  = $id('api_cost') ? $id('api_cost').value.trim() : '';
     const apiCost = (apiRaw === '' || isNaN(parseFloat(apiRaw))) ? 1200 : parseFloat(apiRaw);
     const apiIsEst = !($id('api_cost_actual') && $id('api_cost_actual').checked);
     if(apiCost > 0){
-      lines.push({desc:'API Connection Passthrough' + (apiIsEst ? ' <em style="font-size:10px;color:#e67e22;">(estimate — Katherine to verify exact cost)</em>' : ''), qty:null, unit:null, total:apiCost});
+      lines.push({desc:'API Connection Passthrough' + (apiIsEst ? API_EST_NOTE : ''), qty:null, unit:null, total:apiCost});
       api += apiCost;
     }
     if(apiCost === 0 && !apiIsEst){
@@ -920,9 +945,13 @@ function calcPrices(){
   }
   if(selectedSvcs.has('scanner') && $id('opt_api_scanner') && $id('opt_api_scanner').checked){
     const scanRaw     = $id('scanner_api_cost') ? $id('scanner_api_cost').value.trim() : '';
-    const scanApiCost = (scanRaw === '' || isNaN(parseFloat(scanRaw))) ? 500 : parseFloat(scanRaw);
-    lines.push({desc:'<strong>Badge Dev Kit API:</strong> Pass through cost for API license',qty:1,unit:scanApiCost,total:scanApiCost}); api+=scanApiCost;
+    const scanApiCost = (scanRaw === '' || isNaN(parseFloat(scanRaw))) ? 1200 : parseFloat(scanRaw);
+    const scanIsEst   = !($id('scanner_api_actual') && $id('scanner_api_actual').checked);
+    // qty is always 1: the API license is a single pass-through cost per order (never a fractional multiplier).
+    lines.push({desc:'<strong>Badge Dev Kit API:</strong> Pass through cost for API license' + (scanIsEst ? API_EST_NOTE : ''),qty:1,unit:scanApiCost,total:scanApiCost}); api+=scanApiCost;
   }
+  // QR Code service never adds an API charge (no badge API involved). Scanners/apps in the
+  // same quote keep their own API line above.
   // Image Capture does not use API Connection passthrough for Pfizer/SPIRO orders
 
   // ── Shipping & Handling ──
@@ -1332,7 +1361,9 @@ function doImportObject(d, alreadyInKV){
     opt_api_scanner:'opt_api_scanner',
     opt_api_img:'opt_api_img',
     opt_expedite_img:'opt_expedite_img'};
-  Object.keys(cbMap).forEach(k => { const el=$id(cbMap[k]); if(el) el.checked=(d[k]==='1'); });
+  // Only override a checkbox when the record actually carries the key, so records that predate
+  // a field (e.g. opt_api_scanner, now on by default) keep the form default.
+  Object.keys(cbMap).forEach(k => { const el=$id(cbMap[k]); if(el && d[k] !== undefined && d[k] !== null && d[k] !== '') el.checked=(d[k]==='1'); });
   // API costs
   if(d.api_cost         && $id('api_cost'))         $id('api_cost').value         = d.api_cost;
   if(d.scanner_api_cost && $id('scanner_api_cost')) $id('scanner_api_cost').value = d.scanner_api_cost;
@@ -1341,6 +1372,7 @@ function doImportObject(d, alreadyInKV){
     try { setCustomLines(JSON.parse(d.custom_lines)); } catch(e){ console.error('custom_lines parse failed', e); }
   }
   if($id('api_cost_actual')){ $id('api_cost_actual').checked = (d.api_cost_actual === '1'); onApiActualToggle(); }
+  if($id('scanner_api_actual')){ $id('scanner_api_actual').checked = (d.scanner_api_actual === '1'); onScannerApiActualToggle(); }
   // Quote number — restore if previously saved
   if(d.f_qnum && $id('f_qnum')) $id('f_qnum').value = d.f_qnum;
   // Set today's quote date
@@ -1471,6 +1503,7 @@ async function saveCurrentFormState(extraFields){
     api_cost:        val('api_cost'),
     api_cost_actual: ($id('api_cost_actual') && $id('api_cost_actual').checked) ? '1' : '0',
     scanner_api_cost: val('scanner_api_cost'),
+    scanner_api_actual: ($id('scanner_api_actual') && $id('scanner_api_actual').checked) ? '1' : '0',
     custom_lines:    JSON.stringify(getCustomLines()),
     tov:             document.querySelector('input[name="tov"]:checked')?.value || '',
     payment_method:  document.querySelector('input[name="payment"]:checked')?.value || '',
