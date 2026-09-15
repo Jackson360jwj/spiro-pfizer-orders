@@ -955,8 +955,9 @@ function calcPrices(){
   // Image Capture does not use API Connection passthrough for Pfizer/SPIRO orders
 
   // ── Shipping & Handling ──
-  // Triggers any time there's physical kit to send: scanners ($250), internet
-  // router/AP ($550), or both together ($550 — same shipment). Inputs live in
+  // Triggers any time there's physical kit to send: scanners, internet router/AP,
+  // or both together (same shipment). $550 in every case (pack, track, roundtrip
+  // FedEx and handling); the old $200 scanner-only rate did not cover handling. Inputs live in
   // the scanner section of the DOM but exist even when the scanner tab is
   // hidden, so this works for internet-only orders too.
   {
@@ -974,7 +975,7 @@ function calcPrices(){
         shCost = 550;
         shDesc = 'Shipping &amp; Handling — Estimated cost for pack, track and roundtrip FedEx shipping (Internet)';
       } else {
-        shCost = 200;
+        shCost = 550;
         shDesc = 'Shipping &amp; Handling — Estimated cost for pack, track and roundtrip FedEx shipping';
       }
       lines.push({desc:`<strong>${shDesc}</strong>`, qty:null, unit:null, total:shCost});
