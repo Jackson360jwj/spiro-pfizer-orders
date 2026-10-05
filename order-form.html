@@ -221,6 +221,7 @@ textarea{height:72px;resize:vertical;}
         </div>
         <div class="fgroup fw shipping-field" style="display:none;">
           <label class="lbl">Delivery Address</label>
+          <p style="margin:0 0 8px;font-size:12px;color:#555;">📦 For booth shipments, copy the shipping address <b>exactly as it is listed in the show's Quick Facts</b>, including the "c/o" exhibit house line, booth number and any label instructions. We ship to it as written.</p>
           <div style="display:flex;gap:8px;margin-bottom:8px;">
             <label style="display:flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #c5d3e8;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;color:#1a3a5c;background:#f5f8fc;flex:1;justify-content:center;" id="ship_booth_lbl">
               <input type="radio" name="ship_type" id="ship_booth" value="booth" onchange="updateDeliveryUI()" style="accent-color:#1a3a5c;"> 🏛 Direct to Event Booth
@@ -569,7 +570,7 @@ function updateDeliveryUI(){
   if(hotelLbl) hotelLbl.setAttribute('style', hotelLbl.getAttribute('style').replace(/background:[^;]+;color:[^;]+;border-color:[^;]+;/g,'') + (type==='hotel' ? active : idle));
   if(!ta) return;
   if(type === 'booth'){
-    ta.placeholder = 'Booth # and hall/location within venue\ne.g. Booth 1234, Hall B — Ernest N Morial Convention Center';
+    ta.placeholder = 'Shipping address exactly as listed in the Quick Facts, with the c/o line and booth #\ne.g. Pfizer c/o T3 Expo, Booth 1234\n[street address, city, state, zip as on the Quick Facts]';
   } else if(type === 'hotel'){
     ta.placeholder = 'Hotel name, street address, city, state, zip\nAttn: [Contact Name] [Phone]\ne.g. Le Meridien New Orleans, 333 Poydras St, New Orleans, LA 70130\nAttn: Rob Loughran 404-717-3985';
   } else {
