@@ -861,15 +861,17 @@ function calcPrices(){
   }
 
 
-  // ── SPIRO Event Set-up: driven by distinct brands in station rows ──
+  // ── SPIRO Event Set-up: driven by distinct (brand, therapy) pairs in station rows ──
   const needsSetup = selectedSvcs.has('app') || selectedSvcs.has('scanner') || selectedSvcs.has('image');
   const needsSimpleSetup = selectedSvcs.has('qr');
 
   if(needsSetup){
     // Collect (brand, therapy) → ordered list of survey types from station rows.
-    // Brand-level setup is priced per distinct brand (preserves first-seen order),
-    // but the "New Configuration" $250 line items trigger when the same brand+therapy
-    // pair has more than one survey type — each additional survey is its own line.
+    // Each unique Brand/Therapy pair is its own event and dashboard, so setup is
+    // priced per pair (first-seen order): e.g. "Unbranded" under Anti Viral and
+    // "Unbranded" under Vaccines are two events. The "New Configuration" $250 line
+    // items trigger when one pair has more than one survey type — each additional
+    // survey is its own line.
     const groups = {};        // { "brand||therapy": { brand, therapy, surveys: [] } }
     const brandsOrder = [];   // distinct brands, first-seen order
     document.querySelectorAll('#stations-container .station-row').forEach(row => {
@@ -890,37 +892,44 @@ function calcPrices(){
       if(survey && !groups[key].surveys.includes(survey)) groups[key].surveys.push(survey);
     });
 
-    const setupPrice = 2150;      // first brand setup
-    const extraSetupPrice = 1550; // additional brand setup
+    // Events in order: brands first-seen, then each brand's therapies first-seen.
+    const events = [];
+    brandsOrder.forEach(brand => events.push(...Object.values(groups).filter(g => g.brand === brand)));
+    const brandTherapyCount = {};
+    events.forEach(g => { brandTherapyCount[g.brand] = (brandTherapyCount[g.brand]||0) + 1; });
 
-    if(brandsOrder.length === 0){
+    const setupPrice = 2150;      // first event setup
+    const extraSetupPrice = 1550; // each additional brand/therapy event
+
+    if(events.length === 0){
       // No stations yet — show a single setup line as placeholder
       lines.push({desc:setupDesc, qty:null, unit:null, total:setupPrice});
       ccBase += setupPrice;
     } else {
-      brandsOrder.forEach((brand, idx) => {
+      events.forEach((g, idx) => {
+        const brand = g.brand;
+        // Show the therapy only when this brand appears under more than one therapy
+        const multiTherapy = brandTherapyCount[brand] > 1;
+        const eventName = multiTherapy && g.therapy ? `${brand} · ${g.therapy}` : brand;
         const price = idx === 0 ? setupPrice : extraSetupPrice;
-        const label = idx === 0 ? 'Lead Service Event Set-up' : 'Extra Event Set-up (Additional Brand)';
-        const brandTag = brand ? ` — <em>${brand}</em>` : '';
-        lines.push({desc:`<strong>${label}${brandTag}:</strong> ${idx===0 ? setupDesc.replace('Lead Service Event Set-up: ','') : 'Separate event and set-up for this brand so its leads are tagged and labeled correctly in the Pfizer Data Warehouse. Covers the same services listed under the Lead Service Event Set-up above.'}`, qty:null, unit:null, total:price});
+        const label = idx === 0 ? 'Lead Service Event Set-up' : (multiTherapy ? 'Extra Event Set-up (Additional Brand/Therapy)' : 'Extra Event Set-up (Additional Brand)');
+        const brandTag = eventName ? ` — <em>${eventName}</em>` : '';
+        const extraDesc = `Separate event and set-up for this ${multiTherapy ? 'brand and therapy' : 'brand'} so its leads are tagged and labeled correctly in the Pfizer Data Warehouse. Covers the same services listed under the Lead Service Event Set-up above.`;
+        lines.push({desc:`<strong>${label}${brandTag}:</strong> ${idx===0 ? setupDesc.replace('Lead Service Event Set-up: ','') : extraDesc}`, qty:null, unit:null, total:price});
         ccBase += price;
 
-        // New Configuration: for each (brand, therapy) group under this brand,
-        // every survey type beyond the first is a separate $250 line item.
-        Object.values(groups)
-          .filter(g => g.brand === brand)
-          .forEach(g => {
-            const therapyTag = g.therapy ? ` · ${g.therapy}` : '';
-            g.surveys.slice(1).forEach(surveyName => {
-              lines.push({
-                desc: `<strong>New Configuration "${surveyName}":</strong> Additional survey type for ${brand}${therapyTag}`,
-                qty: 1,
-                unit: 250,
-                total: 250
-              });
-              ccBase += 250;
-            });
+        // New Configuration: every survey type beyond the first for this
+        // (brand, therapy) event is a separate $250 line item.
+        const therapyTag = g.therapy ? ` · ${g.therapy}` : '';
+        g.surveys.slice(1).forEach(surveyName => {
+          lines.push({
+            desc: `<strong>New Configuration "${surveyName}":</strong> Additional survey type for ${brand}${therapyTag}`,
+            qty: 1,
+            unit: 250,
+            total: 250
           });
+          ccBase += 250;
+        });
       });
     }
   } else if(needsSimpleSetup){
