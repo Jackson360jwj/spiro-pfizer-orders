@@ -730,7 +730,9 @@ function updateDeliveryUI(){
 }
 function fmt(n){
   if(typeof n === 'string') return n;
-  return '$' + Number(n).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:2});
+  // Cents always print two places ($100.50, not $100.5); whole dollars stay plain ($300). JJ, Oct 23 2026.
+  const _v = Number(n), _c = Math.round(Math.abs(_v) * 100) % 100 !== 0;
+  return '$' + _v.toLocaleString('en-US',{minimumFractionDigits:_c ? 2 : 0, maximumFractionDigits:2});
 }
 function fmtDate(d){
   if(!d) return '—';
