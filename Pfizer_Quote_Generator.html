@@ -888,9 +888,14 @@ function calcPrices(){
       const survey  = (survEl?.value  === 'Other' ? (survOth?.value||'Other')  : (survEl?.value||'')).trim();
       const therapy = (therEl?.value  === 'Other' ? (therOth?.value||'Other')  : (therEl?.value||'')).trim();
       if(!brand) return;
-      if(!brandsOrder.includes(brand)) brandsOrder.push(brand);
-      const key = brand + '||' + therapy;
-      if(!groups[key]) groups[key] = { brand, therapy, surveys: [] };
+      // Compare brands and therapies ignoring case and extra spaces (Oct 28 2026: "Obesity", "obesity" and
+      // "Obesity " on one order were priced as two events, adding a $1,550 Extra Event Set-up). The first-seen
+      // spelling is what prints.
+      const norm = t => t.toLowerCase().replace(/\s+/g, ' ').trim();
+      const brandShown = brandsOrder.find(b => norm(b) === norm(brand)) || brand;
+      if(!brandsOrder.includes(brandShown)) brandsOrder.push(brandShown);
+      const key = norm(brand) + '||' + norm(therapy);
+      if(!groups[key]) groups[key] = { brand: brandShown, therapy, surveys: [] };
       if(survey && !groups[key].surveys.includes(survey)) groups[key].surveys.push(survey);
     });
 
@@ -1357,8 +1362,13 @@ function doImportObject(d, alreadyInKV){
 
   // Quantities — prefer saved Quote Generator values; fall back to original order-form values
   if($id('app_qty'))            $id('app_qty').value            = d.app_qty            || d.qty_app_licenses || 0;
-  if($id('scanner_qty_nodata')) $id('scanner_qty_nodata').value = d.scanner_qty_nodata || d.qty_scanners || 0;
-  if($id('scanner_qty_data'))   $id('scanner_qty_data').value   = d.scanner_qty_data   || 0;
+  // Scanner type comes from the stations when the order has them (Oct 28 2026: an order asking for
+  // "Scanners (W/ Data)" on every station was quoted as no-data scanners because qty_scanners fell into no-data).
+  const stSum = k => (d.stations || []).reduce((n, s) => n + (parseInt(s[k]) || 0), 0);
+  const stData = stSum('scanners_data'), stNoData = stSum('scanners_nodata');
+  const fromStations = !d.scanner_qty_nodata && !d.scanner_qty_data && (stData + stNoData) > 0;
+  if($id('scanner_qty_nodata')) $id('scanner_qty_nodata').value = fromStations ? stNoData : (d.scanner_qty_nodata || d.qty_scanners || 0);
+  if($id('scanner_qty_data'))   $id('scanner_qty_data').value   = fromStations ? stData   : (d.scanner_qty_data   || 0);
   // If the order requested Internet but no explicit internet_qty was saved, default to 1.
   if($id('internet_qty'))       $id('internet_qty').value       = d.internet_qty        || (orderHasInternet ? 1 : 0);
   if($id('qr_qty'))             $id('qr_qty').value             = d.qr_qty             || 0;
