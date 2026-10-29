@@ -1367,7 +1367,9 @@ function doImportObject(d, alreadyInKV){
   const stSum = k => (d.stations || []).reduce((n, s) => n + (parseInt(s[k]) || 0), 0);
   const stData = stSum('scanners_data'), stNoData = stSum('scanners_nodata');
   const fromStations = !d.scanner_qty_nodata && !d.scanner_qty_data && (stData + stNoData) > 0;
-  if($id('scanner_qty_nodata')) $id('scanner_qty_nodata').value = fromStations ? stNoData : (d.scanner_qty_nodata || d.qty_scanners || 0);
+  // A saved 0 is a real value (Oct 29 2026: 13722 reloaded with 3 no-data scanners because a saved 0 fell back to qty_scanners).
+  const savedQty = v => v !== undefined && v !== null && v !== '';
+  if($id('scanner_qty_nodata')) $id('scanner_qty_nodata').value = fromStations ? stNoData : (savedQty(d.scanner_qty_nodata) ? d.scanner_qty_nodata : (d.qty_scanners || 0));
   if($id('scanner_qty_data'))   $id('scanner_qty_data').value   = fromStations ? stData   : (d.scanner_qty_data   || 0);
   // If the order requested Internet but no explicit internet_qty was saved, default to 1.
   if($id('internet_qty'))       $id('internet_qty').value       = d.internet_qty        || (orderHasInternet ? 1 : 0);
